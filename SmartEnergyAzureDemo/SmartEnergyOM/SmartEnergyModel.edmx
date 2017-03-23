@@ -1,0 +1,555 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="SmartEnergyDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="CarbonEmissionsDataPoints">
+          <Key>
+            <PropertyRef Name="EmissionsRegionID" />
+            <PropertyRef Name="DateTimeUTC" />
+          </Key>
+          <Property Name="EmissionsRegionID" Type="int" Nullable="false" />
+          <Property Name="DateTimeUTC" Type="datetime" Nullable="false" />
+          <Property Name="SystemWideCO2Intensity_gCO2kWh" Type="float" />
+          <Property Name="SystemWideCO2Intensity_IsForcast" Type="bit" Nullable="false" />
+          <Property Name="MarginalCO2Intensity_gCO2kWh" Type="float" />
+          <Property Name="MarginalCO2Intensity_IsForcast" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EmissionsRegion">
+          <Key>
+            <PropertyRef Name="EmissionsRegionID" />
+          </Key>
+          <Property Name="EmissionsRegionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FriendlyName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="TimeZoneUTCRelative" Type="datetimeoffset" Precision="7" Nullable="false" />
+          <Property Name="Latitude" Type="float" />
+          <Property Name="Longitude" Type="float" />
+          <Property Name="EmissionsRegionWattTimeSubUrl" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="MarketDataPoints">
+          <Key>
+            <PropertyRef Name="MarketRegionID" />
+            <PropertyRef Name="DateTimeUTC" />
+          </Key>
+          <Property Name="MarketRegionID" Type="int" Nullable="false" />
+          <Property Name="DateTimeUTC" Type="datetime" Nullable="false" />
+          <Property Name="Price" Type="float" />
+          <Property Name="DemandMW" Type="float" />
+          <Property Name="RenewablesMW" Type="float" />
+          <Property Name="RenewablesPercentage" Type="float" />
+          <Property Name="WindMW" Type="float" />
+          <Property Name="WindPercentage" Type="float" />
+          <Property Name="SolarMW" Type="float" />
+          <Property Name="SolarPercentage" Type="float" />
+          <Property Name="CarbonPricePerKg" Type="float" />
+          <Property Name="IsForcastRow" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MarketRegion">
+          <Key>
+            <PropertyRef Name="MarketRegionID" />
+          </Key>
+          <Property Name="MarketRegionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FriendlyName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="TimeZoneUTCRelative" Type="datetimeoffset" Precision="7" Nullable="false" />
+          <Property Name="Latitude" Type="float" />
+          <Property Name="Longitude" Type="float" />
+          <Property Name="CurrencyName" Type="nvarchar" MaxLength="50" />
+          <Property Name="CurrencyValuePerUSD" Type="float" />
+        </EntityType>
+        <EntityType Name="MarketWeatherEmissionsRegionMapping">
+          <Key>
+            <PropertyRef Name="RegionMappingID" />
+          </Key>
+          <Property Name="RegionMappingID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FriendlyName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="MarketRegionID" Type="int" />
+          <Property Name="WeatherRegionID" Type="int" />
+          <Property Name="EmissionsRegionID" Type="int" />
+        </EntityType>
+        <EntityType Name="WeatherDataPoints">
+          <Key>
+            <PropertyRef Name="WeatherRegionID" />
+            <PropertyRef Name="DateTimeUTC" />
+          </Key>
+          <Property Name="WeatherRegionID" Type="int" Nullable="false" />
+          <Property Name="DateTimeUTC" Type="datetime" Nullable="false" />
+          <Property Name="Temperature_Celcius" Type="float" />
+          <Property Name="DewPoint_Metric" Type="float" />
+          <Property Name="WindSpeed_Metric" Type="float" />
+          <Property Name="WindGust_Metric" Type="float" />
+          <Property Name="WindDirection_Degrees" Type="float" />
+          <Property Name="WindChill_Metric" Type="float" />
+          <Property Name="Visibility_Metric" Type="float" />
+          <Property Name="UVIndex" Type="float" />
+          <Property Name="Precipitation_Metric" Type="float" />
+          <Property Name="Snow_Metric" Type="float" />
+          <Property Name="Pressure_Metric" Type="float" />
+          <Property Name="Humidity_Percent" Type="float" />
+          <Property Name="ConditionDescription" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="IsForcastRow" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="WeatherRegion">
+          <Key>
+            <PropertyRef Name="WeatherRegionID" />
+          </Key>
+          <Property Name="WeatherRegionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FriendlyName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="TimeZoneUTCRelative" Type="datetimeoffset" Precision="7" Nullable="false" />
+          <Property Name="Latitude" Type="float" />
+          <Property Name="Longitude" Type="float" />
+          <Property Name="WeatherRegionWundergroundSubUrl" Type="nvarchar(max)" />
+        </EntityType>
+        <Association Name="FK_CarbonEmissionsDataPoints_EmissionsRegionID">
+          <End Role="EmissionsRegion" Type="Self.EmissionsRegion" Multiplicity="1" />
+          <End Role="CarbonEmissionsDataPoints" Type="Self.CarbonEmissionsDataPoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmissionsRegion">
+              <PropertyRef Name="EmissionsRegionID" />
+            </Principal>
+            <Dependent Role="CarbonEmissionsDataPoints">
+              <PropertyRef Name="EmissionsRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MarketDataPoints_MarketRegionID">
+          <End Role="MarketRegion" Type="Self.MarketRegion" Multiplicity="1" />
+          <End Role="MarketDataPoints" Type="Self.MarketDataPoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MarketRegion">
+              <PropertyRef Name="MarketRegionID" />
+            </Principal>
+            <Dependent Role="MarketDataPoints">
+              <PropertyRef Name="MarketRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MarketWeatherEmissionsRegionMapping_EmissionsRegionID">
+          <End Role="EmissionsRegion" Type="Self.EmissionsRegion" Multiplicity="0..1" />
+          <End Role="MarketWeatherEmissionsRegionMapping" Type="Self.MarketWeatherEmissionsRegionMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmissionsRegion">
+              <PropertyRef Name="EmissionsRegionID" />
+            </Principal>
+            <Dependent Role="MarketWeatherEmissionsRegionMapping">
+              <PropertyRef Name="EmissionsRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MarketWeatherEmissionsRegionMapping_MarketRegionID">
+          <End Role="MarketRegion" Type="Self.MarketRegion" Multiplicity="0..1" />
+          <End Role="MarketWeatherEmissionsRegionMapping" Type="Self.MarketWeatherEmissionsRegionMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MarketRegion">
+              <PropertyRef Name="MarketRegionID" />
+            </Principal>
+            <Dependent Role="MarketWeatherEmissionsRegionMapping">
+              <PropertyRef Name="MarketRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MarketWeatherEmissionsRegionMapping_WeatherRegionID">
+          <End Role="WeatherRegion" Type="Self.WeatherRegion" Multiplicity="0..1" />
+          <End Role="MarketWeatherEmissionsRegionMapping" Type="Self.MarketWeatherEmissionsRegionMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WeatherRegion">
+              <PropertyRef Name="WeatherRegionID" />
+            </Principal>
+            <Dependent Role="MarketWeatherEmissionsRegionMapping">
+              <PropertyRef Name="WeatherRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WeatherDataPoints_WeatherRegionID">
+          <End Role="WeatherRegion" Type="Self.WeatherRegion" Multiplicity="1" />
+          <End Role="WeatherDataPoints" Type="Self.WeatherDataPoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WeatherRegion">
+              <PropertyRef Name="WeatherRegionID" />
+            </Principal>
+            <Dependent Role="WeatherDataPoints">
+              <PropertyRef Name="WeatherRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SmartEnergyDbModelStoreContainer">
+          <EntitySet Name="CarbonEmissionsDataPoints" EntityType="Self.CarbonEmissionsDataPoints" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EmissionsRegion" EntityType="Self.EmissionsRegion" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MarketDataPoints" EntityType="Self.MarketDataPoints" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MarketRegion" EntityType="Self.MarketRegion" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MarketWeatherEmissionsRegionMapping" EntityType="Self.MarketWeatherEmissionsRegionMapping" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WeatherDataPoints" EntityType="Self.WeatherDataPoints" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WeatherRegion" EntityType="Self.WeatherRegion" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_CarbonEmissionsDataPoints_EmissionsRegionID" Association="Self.FK_CarbonEmissionsDataPoints_EmissionsRegionID">
+            <End Role="EmissionsRegion" EntitySet="EmissionsRegion" />
+            <End Role="CarbonEmissionsDataPoints" EntitySet="CarbonEmissionsDataPoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MarketDataPoints_MarketRegionID" Association="Self.FK_MarketDataPoints_MarketRegionID">
+            <End Role="MarketRegion" EntitySet="MarketRegion" />
+            <End Role="MarketDataPoints" EntitySet="MarketDataPoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MarketWeatherEmissionsRegionMapping_EmissionsRegionID" Association="Self.FK_MarketWeatherEmissionsRegionMapping_EmissionsRegionID">
+            <End Role="EmissionsRegion" EntitySet="EmissionsRegion" />
+            <End Role="MarketWeatherEmissionsRegionMapping" EntitySet="MarketWeatherEmissionsRegionMapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MarketWeatherEmissionsRegionMapping_MarketRegionID" Association="Self.FK_MarketWeatherEmissionsRegionMapping_MarketRegionID">
+            <End Role="MarketRegion" EntitySet="MarketRegion" />
+            <End Role="MarketWeatherEmissionsRegionMapping" EntitySet="MarketWeatherEmissionsRegionMapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MarketWeatherEmissionsRegionMapping_WeatherRegionID" Association="Self.FK_MarketWeatherEmissionsRegionMapping_WeatherRegionID">
+            <End Role="WeatherRegion" EntitySet="WeatherRegion" />
+            <End Role="MarketWeatherEmissionsRegionMapping" EntitySet="MarketWeatherEmissionsRegionMapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WeatherDataPoints_WeatherRegionID" Association="Self.FK_WeatherDataPoints_WeatherRegionID">
+            <End Role="WeatherRegion" EntitySet="WeatherRegion" />
+            <End Role="WeatherDataPoints" EntitySet="WeatherDataPoints" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SmartEnergyDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="CarbonEmissionsDataPoint">
+          <Key>
+            <PropertyRef Name="EmissionsRegionID" />
+            <PropertyRef Name="DateTimeUTC" />
+          </Key>
+          <Property Name="EmissionsRegionID" Type="Int32" Nullable="false" />
+          <Property Name="DateTimeUTC" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="SystemWideCO2Intensity_gCO2kWh" Type="Double" />
+          <Property Name="MarginalCO2Intensity_gCO2kWh" Type="Double" />
+          <NavigationProperty Name="EmissionsRegion" Relationship="Self.FK_CarbonEmissionsDataPoints_EmissionsRegionID" FromRole="CarbonEmissionsDataPoints" ToRole="EmissionsRegion" />
+          <Property Name="SystemWideCO2Intensity_IsForcast" Type="Boolean" Nullable="false" />
+          <Property Name="MarginalCO2Intensity_IsForcast" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EmissionsRegion">
+          <Key>
+            <PropertyRef Name="EmissionsRegionID" />
+          </Key>
+          <Property Name="EmissionsRegionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FriendlyName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TimeZoneUTCRelative" Type="DateTimeOffset" Nullable="false" Precision="7" />
+          <Property Name="Latitude" Type="Double" />
+          <Property Name="Longitude" Type="Double" />
+          <Property Name="EmissionsRegionWattTimeSubUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="CarbonEmissionsDataPoints" Relationship="Self.FK_CarbonEmissionsDataPoints_EmissionsRegionID" FromRole="EmissionsRegion" ToRole="CarbonEmissionsDataPoints" />
+          <NavigationProperty Name="MarketWeatherEmissionsRegionMappings" Relationship="Self.FK_MarketWeatherEmissionsRegionMapping_EmissionsRegionID" FromRole="EmissionsRegion" ToRole="MarketWeatherEmissionsRegionMapping" />
+        </EntityType>
+        <EntityType Name="MarketDataPoint">
+          <Key>
+            <PropertyRef Name="MarketRegionID" />
+            <PropertyRef Name="DateTimeUTC" />
+          </Key>
+          <Property Name="MarketRegionID" Type="Int32" Nullable="false" />
+          <Property Name="DateTimeUTC" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Price" Type="Double" />
+          <Property Name="DemandMW" Type="Double" />
+          <Property Name="RenewablesPercentage" Type="Double" />
+          <Property Name="WindMW" Type="Double" />
+          <Property Name="WindPercentage" Type="Double" />
+          <Property Name="SolarMW" Type="Double" />
+          <Property Name="SolarPercentage" Type="Double" />
+          <Property Name="CarbonPricePerKg" Type="Double" />
+          <NavigationProperty Name="MarketRegion" Relationship="Self.FK_MarketDataPoints_MarketRegionID" FromRole="MarketDataPoints" ToRole="MarketRegion" />
+          <Property Name="RenewablesMW" Type="Double" />
+          <Property Name="IsForcastRow" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MarketRegion">
+          <Key>
+            <PropertyRef Name="MarketRegionID" />
+          </Key>
+          <Property Name="MarketRegionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FriendlyName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TimeZoneUTCRelative" Type="DateTimeOffset" Precision="7" Nullable="false" />
+          <Property Name="Latitude" Type="Double" />
+          <Property Name="Longitude" Type="Double" />
+          <Property Name="CurrencyName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CurrencyValuePerUSD" Type="Double" />
+          <NavigationProperty Name="MarketDataPoints" Relationship="Self.FK_MarketDataPoints_MarketRegionID" FromRole="MarketRegion" ToRole="MarketDataPoints" />
+          <NavigationProperty Name="MarketWeatherEmissionsRegionMappings" Relationship="Self.FK_MarketWeatherEmissionsRegionMapping_MarketRegionID" FromRole="MarketRegion" ToRole="MarketWeatherEmissionsRegionMapping" />
+        </EntityType>
+        <EntityType Name="MarketWeatherEmissionsRegionMapping">
+          <Key>
+            <PropertyRef Name="RegionMappingID" />
+          </Key>
+          <Property Name="RegionMappingID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MarketRegionID" Type="Int32" />
+          <Property Name="WeatherRegionID" Type="Int32" />
+          <Property Name="EmissionsRegionID" Type="Int32" />
+          <NavigationProperty Name="EmissionsRegion" Relationship="Self.FK_MarketWeatherEmissionsRegionMapping_EmissionsRegionID" FromRole="MarketWeatherEmissionsRegionMapping" ToRole="EmissionsRegion" />
+          <NavigationProperty Name="MarketRegion" Relationship="Self.FK_MarketWeatherEmissionsRegionMapping_MarketRegionID" FromRole="MarketWeatherEmissionsRegionMapping" ToRole="MarketRegion" />
+          <NavigationProperty Name="WeatherRegion" Relationship="Self.FK_MarketWeatherEmissionsRegionMapping_WeatherRegionID" FromRole="MarketWeatherEmissionsRegionMapping" ToRole="WeatherRegion" />
+          <Property Name="FriendlyName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="WeatherDataPoint">
+          <Key>
+            <PropertyRef Name="WeatherRegionID" />
+            <PropertyRef Name="DateTimeUTC" />
+          </Key>
+          <Property Name="WeatherRegionID" Type="Int32" Nullable="false" />
+          <Property Name="DateTimeUTC" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Temperature_Celcius" Type="Double" />
+          <Property Name="DewPoint_Metric" Type="Double" />
+          <Property Name="WindSpeed_Metric" Type="Double" />
+          <Property Name="WindGust_Metric" Type="Double" />
+          <Property Name="WindDirection_Degrees" Type="Double" />
+          <Property Name="WindChill_Metric" Type="Double" />
+          <Property Name="Visibility_Metric" Type="Double" />
+          <Property Name="UVIndex" Type="Double" />
+          <Property Name="Precipitation_Metric" Type="Double" />
+          <Property Name="Snow_Metric" Type="Double" />
+          <Property Name="Pressure_Metric" Type="Double" />
+          <Property Name="Humidity_Percent" Type="Double" />
+          <Property Name="ConditionDescription" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="WeatherRegion" Relationship="Self.FK_WeatherDataPoints_WeatherRegionID" FromRole="WeatherDataPoints" ToRole="WeatherRegion" />
+          <Property Name="IsForcastRow" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="WeatherRegion">
+          <Key>
+            <PropertyRef Name="WeatherRegionID" />
+          </Key>
+          <Property Name="WeatherRegionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FriendlyName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TimeZoneUTCRelative" Type="DateTimeOffset" Nullable="false" Precision="7" />
+          <Property Name="Latitude" Type="Double" />
+          <Property Name="Longitude" Type="Double" />
+          <Property Name="WeatherRegionWundergroundSubUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="MarketWeatherEmissionsRegionMappings" Relationship="Self.FK_MarketWeatherEmissionsRegionMapping_WeatherRegionID" FromRole="WeatherRegion" ToRole="MarketWeatherEmissionsRegionMapping" />
+          <NavigationProperty Name="WeatherDataPoints" Relationship="Self.FK_WeatherDataPoints_WeatherRegionID" FromRole="WeatherRegion" ToRole="WeatherDataPoints" />
+        </EntityType>
+        <Association Name="FK_CarbonEmissionsDataPoints_EmissionsRegionID">
+          <End Role="EmissionsRegion" Type="Self.EmissionsRegion" Multiplicity="1" />
+          <End Role="CarbonEmissionsDataPoints" Type="Self.CarbonEmissionsDataPoint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmissionsRegion">
+              <PropertyRef Name="EmissionsRegionID" />
+            </Principal>
+            <Dependent Role="CarbonEmissionsDataPoints">
+              <PropertyRef Name="EmissionsRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MarketWeatherEmissionsRegionMapping_EmissionsRegionID">
+          <End Role="EmissionsRegion" Type="Self.EmissionsRegion" Multiplicity="0..1" />
+          <End Role="MarketWeatherEmissionsRegionMapping" Type="Self.MarketWeatherEmissionsRegionMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmissionsRegion">
+              <PropertyRef Name="EmissionsRegionID" />
+            </Principal>
+            <Dependent Role="MarketWeatherEmissionsRegionMapping">
+              <PropertyRef Name="EmissionsRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MarketDataPoints_MarketRegionID">
+          <End Role="MarketRegion" Type="Self.MarketRegion" Multiplicity="1" />
+          <End Role="MarketDataPoints" Type="Self.MarketDataPoint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MarketRegion">
+              <PropertyRef Name="MarketRegionID" />
+            </Principal>
+            <Dependent Role="MarketDataPoints">
+              <PropertyRef Name="MarketRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MarketWeatherEmissionsRegionMapping_MarketRegionID">
+          <End Role="MarketRegion" Type="Self.MarketRegion" Multiplicity="0..1" />
+          <End Role="MarketWeatherEmissionsRegionMapping" Type="Self.MarketWeatherEmissionsRegionMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MarketRegion">
+              <PropertyRef Name="MarketRegionID" />
+            </Principal>
+            <Dependent Role="MarketWeatherEmissionsRegionMapping">
+              <PropertyRef Name="MarketRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MarketWeatherEmissionsRegionMapping_WeatherRegionID">
+          <End Role="WeatherRegion" Type="Self.WeatherRegion" Multiplicity="0..1" />
+          <End Role="MarketWeatherEmissionsRegionMapping" Type="Self.MarketWeatherEmissionsRegionMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WeatherRegion">
+              <PropertyRef Name="WeatherRegionID" />
+            </Principal>
+            <Dependent Role="MarketWeatherEmissionsRegionMapping">
+              <PropertyRef Name="WeatherRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WeatherDataPoints_WeatherRegionID">
+          <End Role="WeatherRegion" Type="Self.WeatherRegion" Multiplicity="1" />
+          <End Role="WeatherDataPoints" Type="Self.WeatherDataPoint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WeatherRegion">
+              <PropertyRef Name="WeatherRegionID" />
+            </Principal>
+            <Dependent Role="WeatherDataPoints">
+              <PropertyRef Name="WeatherRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SQLAzureDatabaseEntityFrameworkConnectionString" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="CarbonEmissionsDataPoints" EntityType="Self.CarbonEmissionsDataPoint" />
+          <EntitySet Name="EmissionsRegions" EntityType="Self.EmissionsRegion" />
+          <EntitySet Name="MarketDataPoints" EntityType="Self.MarketDataPoint" />
+          <EntitySet Name="MarketRegions" EntityType="Self.MarketRegion" />
+          <EntitySet Name="MarketWeatherEmissionsRegionMappings" EntityType="Self.MarketWeatherEmissionsRegionMapping" />
+          <EntitySet Name="WeatherDataPoints" EntityType="Self.WeatherDataPoint" />
+          <EntitySet Name="WeatherRegions" EntityType="Self.WeatherRegion" />
+          <AssociationSet Name="FK_CarbonEmissionsDataPoints_EmissionsRegionID" Association="Self.FK_CarbonEmissionsDataPoints_EmissionsRegionID">
+            <End Role="EmissionsRegion" EntitySet="EmissionsRegions" />
+            <End Role="CarbonEmissionsDataPoints" EntitySet="CarbonEmissionsDataPoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MarketWeatherEmissionsRegionMapping_EmissionsRegionID" Association="Self.FK_MarketWeatherEmissionsRegionMapping_EmissionsRegionID">
+            <End Role="EmissionsRegion" EntitySet="EmissionsRegions" />
+            <End Role="MarketWeatherEmissionsRegionMapping" EntitySet="MarketWeatherEmissionsRegionMappings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MarketDataPoints_MarketRegionID" Association="Self.FK_MarketDataPoints_MarketRegionID">
+            <End Role="MarketRegion" EntitySet="MarketRegions" />
+            <End Role="MarketDataPoints" EntitySet="MarketDataPoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MarketWeatherEmissionsRegionMapping_MarketRegionID" Association="Self.FK_MarketWeatherEmissionsRegionMapping_MarketRegionID">
+            <End Role="MarketRegion" EntitySet="MarketRegions" />
+            <End Role="MarketWeatherEmissionsRegionMapping" EntitySet="MarketWeatherEmissionsRegionMappings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MarketWeatherEmissionsRegionMapping_WeatherRegionID" Association="Self.FK_MarketWeatherEmissionsRegionMapping_WeatherRegionID">
+            <End Role="WeatherRegion" EntitySet="WeatherRegions" />
+            <End Role="MarketWeatherEmissionsRegionMapping" EntitySet="MarketWeatherEmissionsRegionMappings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WeatherDataPoints_WeatherRegionID" Association="Self.FK_WeatherDataPoints_WeatherRegionID">
+            <End Role="WeatherRegion" EntitySet="WeatherRegions" />
+            <End Role="WeatherDataPoints" EntitySet="WeatherDataPoints" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SmartEnergyDbModelStoreContainer" CdmEntityContainer="SQLAzureDatabaseEntityFrameworkConnectionString">
+          <EntitySetMapping Name="CarbonEmissionsDataPoints">
+            <EntityTypeMapping TypeName="SmartEnergyDbModel.CarbonEmissionsDataPoint">
+              <MappingFragment StoreEntitySet="CarbonEmissionsDataPoints">
+                <ScalarProperty Name="MarginalCO2Intensity_IsForcast" ColumnName="MarginalCO2Intensity_IsForcast" />
+                <ScalarProperty Name="SystemWideCO2Intensity_IsForcast" ColumnName="SystemWideCO2Intensity_IsForcast" />
+                <ScalarProperty Name="EmissionsRegionID" ColumnName="EmissionsRegionID" />
+                <ScalarProperty Name="DateTimeUTC" ColumnName="DateTimeUTC" />
+                <ScalarProperty Name="SystemWideCO2Intensity_gCO2kWh" ColumnName="SystemWideCO2Intensity_gCO2kWh" />
+                <ScalarProperty Name="MarginalCO2Intensity_gCO2kWh" ColumnName="MarginalCO2Intensity_gCO2kWh" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmissionsRegions">
+            <EntityTypeMapping TypeName="SmartEnergyDbModel.EmissionsRegion">
+              <MappingFragment StoreEntitySet="EmissionsRegion">
+                <ScalarProperty Name="EmissionsRegionID" ColumnName="EmissionsRegionID" />
+                <ScalarProperty Name="FriendlyName" ColumnName="FriendlyName" />
+                <ScalarProperty Name="TimeZoneUTCRelative" ColumnName="TimeZoneUTCRelative" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="EmissionsRegionWattTimeSubUrl" ColumnName="EmissionsRegionWattTimeSubUrl" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MarketDataPoints">
+            <EntityTypeMapping TypeName="SmartEnergyDbModel.MarketDataPoint">
+              <MappingFragment StoreEntitySet="MarketDataPoints">
+                <ScalarProperty Name="IsForcastRow" ColumnName="IsForcastRow" />
+                <ScalarProperty Name="RenewablesMW" ColumnName="RenewablesMW" />
+                <ScalarProperty Name="MarketRegionID" ColumnName="MarketRegionID" />
+                <ScalarProperty Name="DateTimeUTC" ColumnName="DateTimeUTC" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="DemandMW" ColumnName="DemandMW" />
+                <ScalarProperty Name="RenewablesPercentage" ColumnName="RenewablesPercentage" />
+                <ScalarProperty Name="WindMW" ColumnName="WindMW" />
+                <ScalarProperty Name="WindPercentage" ColumnName="WindPercentage" />
+                <ScalarProperty Name="SolarMW" ColumnName="SolarMW" />
+                <ScalarProperty Name="SolarPercentage" ColumnName="SolarPercentage" />
+                <ScalarProperty Name="CarbonPricePerKg" ColumnName="CarbonPricePerKg" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MarketRegions">
+            <EntityTypeMapping TypeName="SmartEnergyDbModel.MarketRegion">
+              <MappingFragment StoreEntitySet="MarketRegion">
+                <ScalarProperty Name="MarketRegionID" ColumnName="MarketRegionID" />
+                <ScalarProperty Name="FriendlyName" ColumnName="FriendlyName" />
+                <ScalarProperty Name="TimeZoneUTCRelative" ColumnName="TimeZoneUTCRelative" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="CurrencyName" ColumnName="CurrencyName" />
+                <ScalarProperty Name="CurrencyValuePerUSD" ColumnName="CurrencyValuePerUSD" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MarketWeatherEmissionsRegionMappings">
+            <EntityTypeMapping TypeName="SmartEnergyDbModel.MarketWeatherEmissionsRegionMapping">
+              <MappingFragment StoreEntitySet="MarketWeatherEmissionsRegionMapping">
+                <ScalarProperty Name="FriendlyName" ColumnName="FriendlyName" />
+                <ScalarProperty Name="RegionMappingID" ColumnName="RegionMappingID" />
+                <ScalarProperty Name="MarketRegionID" ColumnName="MarketRegionID" />
+                <ScalarProperty Name="WeatherRegionID" ColumnName="WeatherRegionID" />
+                <ScalarProperty Name="EmissionsRegionID" ColumnName="EmissionsRegionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WeatherDataPoints">
+            <EntityTypeMapping TypeName="SmartEnergyDbModel.WeatherDataPoint">
+              <MappingFragment StoreEntitySet="WeatherDataPoints">
+                <ScalarProperty Name="ConditionDescription" ColumnName="ConditionDescription" />
+                <ScalarProperty Name="IsForcastRow" ColumnName="IsForcastRow" />
+                <ScalarProperty Name="WeatherRegionID" ColumnName="WeatherRegionID" />
+                <ScalarProperty Name="DateTimeUTC" ColumnName="DateTimeUTC" />
+                <ScalarProperty Name="Temperature_Celcius" ColumnName="Temperature_Celcius" />
+                <ScalarProperty Name="DewPoint_Metric" ColumnName="DewPoint_Metric" />
+                <ScalarProperty Name="WindSpeed_Metric" ColumnName="WindSpeed_Metric" />
+                <ScalarProperty Name="WindGust_Metric" ColumnName="WindGust_Metric" />
+                <ScalarProperty Name="WindDirection_Degrees" ColumnName="WindDirection_Degrees" />
+                <ScalarProperty Name="WindChill_Metric" ColumnName="WindChill_Metric" />
+                <ScalarProperty Name="Visibility_Metric" ColumnName="Visibility_Metric" />
+                <ScalarProperty Name="UVIndex" ColumnName="UVIndex" />
+                <ScalarProperty Name="Precipitation_Metric" ColumnName="Precipitation_Metric" />
+                <ScalarProperty Name="Snow_Metric" ColumnName="Snow_Metric" />
+                <ScalarProperty Name="Pressure_Metric" ColumnName="Pressure_Metric" />
+                <ScalarProperty Name="Humidity_Percent" ColumnName="Humidity_Percent" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WeatherRegions">
+            <EntityTypeMapping TypeName="SmartEnergyDbModel.WeatherRegion">
+              <MappingFragment StoreEntitySet="WeatherRegion">
+                <ScalarProperty Name="WeatherRegionID" ColumnName="WeatherRegionID" />
+                <ScalarProperty Name="FriendlyName" ColumnName="FriendlyName" />
+                <ScalarProperty Name="TimeZoneUTCRelative" ColumnName="TimeZoneUTCRelative" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="WeatherRegionWundergroundSubUrl" ColumnName="WeatherRegionWundergroundSubUrl" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

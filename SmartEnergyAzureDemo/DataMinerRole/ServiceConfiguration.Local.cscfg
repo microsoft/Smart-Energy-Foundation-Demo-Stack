@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="DataMinerRole" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
+  <Role name="DataMinerWorkerRole">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=**MyAzureStorageAccountName**;AccountKey=**MyAzureStorageAccountKey**" />
+
+      <!-- Entity Framework Connection String for the application's SQL Azure database-->
+      <Setting name="SQLAzureDatabaseEntityFrameworkConnectionString" value="metadata=res://*/SmartEnergyModel.csdl|res://*/SmartEnergyModel.ssdl|res://*/SmartEnergyModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=**MyAzureSQLServerName**.database.windows.net;initial catalog=**MyAzureSQLDatabaseName**;persist security info=True;user id=**MyAzureSQLUserName**@**MyAzureSQLServerName**;password=**MyAzureSQLPassword**;MultipleActiveResultSets=True;App=EntityFramework&quot;" />
+      <!-- End Entity Framework Connection String for the application's SQL Azure database-->
+
+      <!-- Settings for the Wunderground Weather API -->
+      <Setting name="WundergroundApiUrl" value="http://api.wunderground.com/api/" />
+      <Setting name="WundergroundApiKey" value="**MyWundergroundApiKey**" />
+      <!-- End Settings for the Wunderground Weather API -->
+
+      <!-- Settings for the WattTime Carbon Emissions API -->
+      <Setting name="WattTimeApiUrl" value="https://api.watttime.org/api/v1/" />
+      <Setting name="WattTimeApiKey" value="**MyWattTimeApiKey**" />
+      <!-- End Settings for the WattTime Carbon Emissions API -->
+
+      <!-- Settings for the Azure Storage Account used by the solution -->
+      <Setting name="AzureStorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=**MyAzureStorageAccountName**;AccountKey=**MyAzureStorageAccountKey**" />
+      <!-- End Settings for the Azure Storage Account used by the solution -->
+
+      <!-- Settings for the Azure Storage Scheduler Message Queue -->
+      <Setting name="SchedulerQueueName" value="dataminerschedulerprod" />
+      <!-- End Settings for the Azure Storage Scheduler Message Queue -->
+    </ConfigurationSettings>
+  </Role>
+</ServiceConfiguration>

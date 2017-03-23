@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ApiMinerConfigLayout>
+    <Regions>
+      
+       <Region friendlyName="US_PJM">
+         <EmissionsMiningRegion friendlyName="US_PJM">
+          <EmissionsWattTimeAbbreviation>PJM</EmissionsWattTimeAbbreviation>
+          <Latitude>40.348444276169</Latitude>
+          <Longitude>-74.6428556442261</Longitude>
+           <TimeZone>Eastern Standard Time</TimeZone>
+          <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
+          <ApiKey>**MyWattTimeApiKey**</ApiKey>
+           <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+           <MaxNumberOfCallsPerMinute>9</MaxNumberOfCallsPerMinute>
+        </EmissionsMiningRegion>
+
+         <WeatherMiningRegion friendlyName="US_PJM">
+           <weatherRegionWundergroundSubUrl>us/nj/princeton</weatherRegionWundergroundSubUrl>
+           <Latitude>40.348444276169</Latitude>
+           <Longitude>-74.6428556442261</Longitude>
+           <TimeZone>Eastern Standard Time</TimeZone>
+           <ApiUrl>http://api.wunderground.com/api/</ApiUrl>
+           <ApiKey>**MyWundergroundApiKey**</ApiKey>
+           <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+           <MaxNumberOfCallsPerMinute>9</MaxNumberOfCallsPerMinute>
+         </WeatherMiningRegion>
+       </Region>
+
+      <Region friendlyName="Ireland">
+        <WeatherMiningRegion friendlyName="Ireland">
+          <weatherRegionWundergroundSubUrl>ie/dublin</weatherRegionWundergroundSubUrl>
+          <Latitude>53.3498</Latitude>
+          <Longitude>-6.2603</Longitude>
+          <TimeZone>GMT Standard Time</TimeZone>
+          <ApiUrl>http://api.wunderground.com/api/</ApiUrl>
+          <ApiKey>**MyWundergroundApiKey**</ApiKey>
+          <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+          <MaxNumberOfCallsPerMinute>9</MaxNumberOfCallsPerMinute>
+        </WeatherMiningRegion>
+      </Region>
+    </Regions>
+  
+</ApiMinerConfigLayout>

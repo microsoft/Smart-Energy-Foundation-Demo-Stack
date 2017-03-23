@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="a38a7d76607747ff99a4efea498cd349" Name="Diagram1">
+        <EntityTypeShape EntityType="SmartEnergyDbModel.CarbonEmissionsDataPoint" Width="3.375" PointX="3" PointY="4.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="SmartEnergyDbModel.EmissionsRegion" Width="1.5" PointX="0.75" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="SmartEnergyDbModel.MarketDataPoint" Width="3.5" PointX="6" PointY="14.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="SmartEnergyDbModel.MarketRegion" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="SmartEnergyDbModel.MarketWeatherEmissionsRegionMapping" Width="2.75" PointX="9.375" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="SmartEnergyDbModel.WeatherDataPoint" Width="1.5" PointX="6" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="SmartEnergyDbModel.WeatherRegion" Width="1.5" PointX="3.75" PointY="8.25" IsExpanded="true" />
+        <AssociationConnector Association="SmartEnergyDbModel.FK_CarbonEmissionsDataPoints_EmissionsRegionID" ManuallyRouted="false" />
+        <AssociationConnector Association="SmartEnergyDbModel.FK_MarketWeatherEmissionsRegionMapping_EmissionsRegionID" ManuallyRouted="false" />
+        <AssociationConnector Association="SmartEnergyDbModel.FK_MarketDataPoints_MarketRegionID" ManuallyRouted="false" />
+        <AssociationConnector Association="SmartEnergyDbModel.FK_MarketWeatherEmissionsRegionMapping_MarketRegionID" ManuallyRouted="false" />
+        <AssociationConnector Association="SmartEnergyDbModel.FK_MarketWeatherEmissionsRegionMapping_WeatherRegionID" ManuallyRouted="false" />
+        <AssociationConnector Association="SmartEnergyDbModel.FK_WeatherDataPoints_WeatherRegionID" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
