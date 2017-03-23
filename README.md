@@ -3,7 +3,7 @@ Optimising energy consumption based on the real-time Marginal Emissions of an el
 
 This is a demonstration solution to show how data from several Web based APIs can be mined, visualised and acted upon in a Microsoft Azure solution. This solution collects real-time Carbon Emissions data from the WattTime API (https://api.watttime.org/), and global Weather data and weather forecasts from the Wunderground API (https://www.wunderground.com/). It then visualises this data over time to allow the user to understand the relationship between the two. It demonstrates the ability to collect related pieces of data into a single place to allow automation to act upon the conclusions extracted from it. For example, automating devices via the Azure IoT service to minimise net Carbon Emissions. 
 
-![Screenshot](Images\MainScreenshot.png)
+![Screenshot](Images/MainScreenshot.png)
 
 
 
@@ -27,10 +27,10 @@ When you have created the infrastructure and registered for the API keys, the de
 1. Clone the code repository locally and open the solution in Visual Studio
 2. Right click on the SmartEnergyDatabase project and click "Publish". Enter the details of your SQL Azure server and hit Publish. This will create the solution's database on your SQL Server, ready to accept data from the data miners. 
 3. Add the details of your Azure infrastructure and API keys to the following configuration locations: 
-	* ![ConfigurationLocations](Images\ConfigurationLocations.png)
+	* ![ConfigurationLocations](Images/ConfigurationLocations.png)
 		
 	* Open the Cloud Service configuration file ServiceConfiguration.Cloud.cscfg and ServiceConfiguration.Local.cscfg under the DataMinerRole project and configure the details of the services you created in that file as such: 
-		* ![ConfigurationFile](Images\ConfigurationFiles.png)
+		* ![ConfigurationFile](Images/ConfigurationFiles.png)
 		
 	* Add your API keys for Wunderground and WattTime to the ApiDataMinerConfigs.xml file in the DataMinerWorkerRole project. Optionally, tailor the regions you want to mine weather and emissions data for in the ApiDataMinerConfigs.xml file. See section Configuring the Data Miner to see how to do this.
 	Optionally, if you would like to run the individual methods using the Integration Tests method, update the app.config files in each Test project with the details of your services and API keys, A find and replace across the whole solution will do this quickly:
@@ -47,7 +47,7 @@ When you have created the infrastructure and registered for the API keys, the de
 
 # Configuring the Data Miner
 The DataMinerRole reads where it should mine Weather and Emissions data from in the ApiDataMinerConfigs.xml file in the DataMinerWorkerRole project. The XML file contains a series of <Region> elements, comprised of a <EmissionsMiningRegion> and a <WeatherMiningRegion>. A Region element can have one or both. Configure the details  of a region as such: 
-	* ![DataMinerConfigurationFile](Images\DataMinerConfigFile.png)
+	* ![DataMinerConfigurationFile](Images/DataMinerConfigFile.png)
 	
 
 # Data Sources
@@ -64,7 +64,7 @@ When using this solution to retrieve data from the WattTime API, you are bound b
 # Solution Layout
 The solution is laid out in folders for each layer in the stack: 
 
-![SolutionStackLayout](Images\SolutionStackLayout.png)
+![SolutionStackLayout](Images/SolutionStackLayout.png)
 
 
 * The Database Layer is a SQL Azure database
@@ -79,7 +79,7 @@ The solution is laid out in folders for each layer in the stack:
 # Monitoring the Solution Once it's Deployed
 The Miner Worker Roles automatically log their status as they operate to the SystemLogs table under the storage account configured for the solution. 
 
-![LoggingMessagesLocation](Images\LoggingMessagesLocation.png)
+![LoggingMessagesLocation](Images/LoggingMessagesLocation.png)
 
 
 
@@ -88,7 +88,7 @@ The solution has inbuilt throttling to ensure that it doesn't flood the APIs it'
 
 Before issuing any new call, the code checks this table to see how many calls have been issued in the last minute. If it has reached the limit of calls as configured in ApiDataMinerConfigs.xml, it will wait to issue the call until the number of calls in the last minute drops back below the maximum number specified. When this happens, you will see a line in the SystemLogs table indicating it: 
 
-![SelfThrottlingExample](Images\SelfThrottlingExample.png)
+![SelfThrottlingExample](Images/SelfThrottlingExample.png)
 
 
 
