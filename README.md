@@ -10,7 +10,7 @@ This is a demonstration solution to show how data from several Web based APIs ca
 A placeholder Data Miner is included, to allow for the addition of any other data sources to the solution. Hence, this stack can be extended for all sorts of uses, centred around energy efficiency and emissions, or otherwise. 
 
 # Licenses
-This code is licensed under the [MIT license](LICENSE.TXT).
+This code is licensed under the [MIT license](LICENSE).
 
 # Creating the Infrastructure on Azure
 To use this solution, users must first register for API keys with Wunderground and WattTIme. Both services have a certain amount of free usage allowed. The usage thresholds and commercial usage restrictions are outlined in the terms of use of both services and the user is responsible for adhering to these. 
