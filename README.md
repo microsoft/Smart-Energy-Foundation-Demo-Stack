@@ -43,7 +43,7 @@ When you have created the infrastructure and registered for the API keys, the de
 		* \*\*MyAzureStorageAccountName\*\*Replace with your Azure Storage Account Name
 		* \*\*MyAzureStorageAccountKey\*\*Replace with your Azure Storage Account Key
 4. Right click on the DataMinerRole project and hit Publish. Sign into your subscription, and publish the role to the Cloud Service you created. 
-5. To allow the Visualisation dashboard to visualise the data that the data miner has collected into your SQL Azure database, open App.R in the RVisualizationDashboard, and update the SQL Connection string to point to your SQL Azure database. Optionally, publish this R visualisation as a ShinyApp. 
+5. To allow the Visualisation dashboard to visualise the data that the data miner has collected into your SQL Azure database, open App.R in the RVisualizationDashboard, and update the SQL Connection string to point to your SQL Azure database. Optionally, publish this R visualisation as a ShinyApp. For the application to talk to your SQL Azure database from ShinyApps.io, you will need to whitelist the Shiny IP ranges on your SQL Azure server: 54.204.29.251, 54.204.34.9, 54.204.36.75 and 54.204.37.78
 
 # Configuring the Data Miner
 The DataMinerRole reads where it should mine Weather and Emissions data from in the ApiDataMinerConfigs.xml file in the DataMinerWorkerRole project. The XML file contains a series of <Region> elements, comprised of a <EmissionsMiningRegion> and a <WeatherMiningRegion>. A Region element can have one or both. Configure the details  of a region as such: 

@@ -17,7 +17,8 @@ library(RColorBrewer)
 #   2) Update the connectionString variable below to replace **MyAzureSQLDatabaseName** with the name of your SQL Azure Server, and fill in the database name, username and password
 #   3) Run the solution locally with the "local" connection string uncommented. The solution will launch a ShinyApp application which connects to your SQL Azure database and visualises the data
 #   4) To deploy the application to ShinyApps.io, uncomment the connection string commented as "Uncomment this line when deploying to Shiny" and publish. 
-#   5) Tailor to your own needs and data. 
+#   5) For the application to talk to your SQL Azure database from ShinyApps.io, you will need to whitelist the Shiny IP ranges on your SQL Azure server: 54.204.29.251, 54.204.34.9, 54.204.36.75 and 54.204.37.78
+#   6) Tailor to your own needs and data. 
 
 ui <- dashboardPage(
   dashboardHeader(title = "Smart Energy Dashboard"),
@@ -166,40 +167,49 @@ server <- function(input, output, session) {
     })
 
     ##Generate the data charts displaying time series data
-    #Time Series Price Data
-    emissionsSqlQuery <- sprintf("SELECT TOP (1000) [DateTimeUTC],[SystemWideCO2Intensity_gCO2kWh],[MarginalCO2Intensity_gCO2kWh] FROM [dbo].[CarbonEmissionsDataPoints] WHERE [EmissionsRegionID] = '%d' ORDER BY [DateTimeUTC] DESC", EmissionsRegionId)
-    dbResults <- sqlQuery(conn, emissionsSqlQuery)
-    dataset <- dbResults
-    datasetAsArray <- cbind(dataset)
+    #Time Series Emissions Data
+    GetEmissionsTimeSeriesDataForSelectedRegion <- reactive({
+         CurrentSelectedEmissionsRegionId = GetCurrentSelectedEmissionsRegionId()
+         emissionsSqlQuery <- sprintf("SELECT TOP (1000) [DateTimeUTC],[SystemWideCO2Intensity_gCO2kWh],[MarginalCO2Intensity_gCO2kWh] FROM [dbo].[CarbonEmissionsDataPoints] WHERE [EmissionsRegionID] = '%d' ORDER BY [DateTimeUTC] DESC", CurrentSelectedEmissionsRegionId)
+         conn <- odbcDriverConnect(connectionString)
+         dbResults <- sqlQuery(conn, emissionsSqlQuery)
+         dataset <- dbResults
+         datasetAsArray <- cbind(dataset)
+         emissionsArray <- datasetAsArray[, c("DateTimeUTC", "SystemWideCO2Intensity_gCO2kWh", "MarginalCO2Intensity_gCO2kWh")]
+         emissionsArrayAsXts <- xts(emissionsArray[, -1], order.by = emissionsArray[, 1])
+         return(emissionsArrayAsXts)
+     })
 
-    emissionsArray <- datasetAsArray[, c("DateTimeUTC", "SystemWideCO2Intensity_gCO2kWh", "MarginalCO2Intensity_gCO2kWh")]
-    emissionsArrayAsXts <- xts(emissionsArray[, -1], order.by = emissionsArray[, 1])
     output$EmissionsDataSeriesChart <- renderDygraph({
-    dygraph(emissionsArrayAsXts, main = "Marginal Carbon Emissions") %>%
+     dygraph(GetEmissionsTimeSeriesDataForSelectedRegion(), main = "Marginal Carbon Emissions") %>%
         dySeries("SystemWideCO2Intensity_gCO2kWh", label = "SystemWideCO2Intensity_gCO2kWh", fillGraph = TRUE) %>%
         dySeries("MarginalCO2Intensity_gCO2kWh", label = "MarginalCO2Intensity_gCO2kWh", drawPoints = TRUE, strokePattern = "dashed") %>%
         dyOptions(stackedGraph = FALSE) %>%
-    dyRangeSelector(height = 20)
-})
+     dyRangeSelector(height = 20)
+     })
 
     ##Time Series Weather Data
-    weatherSqlQuery <- sprintf("SELECT TOP (1000) [DateTimeUTC],[Temperature_Celcius] ,[DewPoint_Metric],[WindSpeed_Metric] FROM [dbo].[WeatherDataPoints] WHERE [WeatherRegionID] = '%d' ORDER BY [DateTimeUTC] DESC", WeatherRegionId)
-    dbweatherResults <- sqlQuery(conn, weatherSqlQuery)
-    weatherDataset <- dbweatherResults
-    weatherDatasetAsArray <- cbind(weatherDataset)
+    GetWeatherTimeSeriesDataForSelectedRegion <- reactive({
+         CurrentSelectedWeatherRegionId = GetCurrentSelectedWeatherRegionId()
+         weatherSqlQuery <- sprintf("SELECT TOP (1000) [DateTimeUTC],[Temperature_Celcius] ,[DewPoint_Metric],[WindSpeed_Metric] FROM [dbo].[WeatherDataPoints] WHERE [WeatherRegionID] = '%d' ORDER BY [DateTimeUTC] DESC", CurrentSelectedWeatherRegionId)
+         conn <- odbcDriverConnect(connectionString)
+         dbweatherResults <- sqlQuery(conn, weatherSqlQuery)
+         weatherDataset <- dbweatherResults
+         weatherDatasetAsArray <- cbind(weatherDataset)
+         weatherArray <- weatherDatasetAsArray[, c("DateTimeUTC", "Temperature_Celcius", "WindSpeed_Metric")]
+         weatherArrayAsXts <- xts(weatherArray[, -1], order.by = weatherArray[, 1])
+         return(weatherArrayAsXts)
+     })
 
-    weatherArray <- weatherDatasetAsArray[, c("DateTimeUTC", "Temperature_Celcius", "WindSpeed_Metric")]
-    weatherArrayAsXts <- xts(weatherArray[, -1], order.by = weatherArray[, 1])
     output$WeatherDataSeriesChart <- renderDygraph({
-    dygraph(weatherArrayAsXts, main = "Weather: Wind Speeds and Temperature") %>%
+     dygraph(GetWeatherTimeSeriesDataForSelectedRegion(), main = "Weather: Wind Speeds and Temperature") %>%
         dySeries("Temperature_Celcius", label = "Temperature (Celcius)", fillGraph = TRUE) %>%
         dySeries("WindSpeed_Metric", label = "WindSpeed Kmph", drawPoints = TRUE, strokePattern = "dashed") %>%
         dyOptions(stackedGraph = FALSE) %>%
         dyRangeSelector(height = 20)
-    })
+     })
 
     close(conn) # Close the connection
 }
 
 shinyApp(ui, server)
-
