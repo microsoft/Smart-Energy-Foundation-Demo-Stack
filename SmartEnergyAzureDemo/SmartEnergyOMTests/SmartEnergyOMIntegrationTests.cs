@@ -6,6 +6,7 @@
 namespace SmartEnergyOMTests
 {
     using System;
+    using System.Collections.Generic;
 
     using Microsoft.Azure;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -121,7 +122,7 @@ namespace SmartEnergyOMTests
         }
 
         [TestMethod]
-        public void TestFindCarbonEmissionsDataPoints()
+        public void TestFindCarbonEmissionsDataPoint()
         {
             // Arrange
             var emissionsRegionName = $"TestEmissionsRegionName_{Guid.NewGuid()}";
@@ -153,7 +154,7 @@ namespace SmartEnergyOMTests
 
             // Assert
             var retrievedEmissionsRegion =
-                this.objectModel.FindCarbonEmissionsDataPoints(emissionsRegion.EmissionsRegionID, dateTimeOfRow);
+                this.objectModel.FindCarbonEmissionsDataPoint(emissionsRegion.EmissionsRegionID, dateTimeOfRow);
             Assert.IsNotNull(retrievedEmissionsRegion);
             Assert.AreEqual(SystemWideCO2Intensity_gCO2kWh, retrievedEmissionsRegion.SystemWideCO2Intensity_gCO2kWh);
             Assert.AreEqual(MarginalCO2Intensity_gCO2kWh, retrievedEmissionsRegion.MarginalCO2Intensity_gCO2kWh);
@@ -163,6 +164,62 @@ namespace SmartEnergyOMTests
 
             // Clean Up 
             this.objectModel.DeleteCarbonEmissionsDataPoints(emissionsRegion.EmissionsRegionID, dateTimeOfRow);
+            this.objectModel.DeleteEmissionsRegion(emissionsRegionName);
+        }
+
+        [TestMethod]
+        public void TestFindCarbonEmissionsDataPoints()
+        {
+            // Arrange
+            var emissionsRegionName = $"TestEmissionsRegionName_{Guid.NewGuid()}";
+            const string regionAbbreviation = "PJM";
+            const double regionLatitude = 37.7749;
+            const double regionLongitude = 122.4194;
+            const string timeZone = "Eastern Standard Time";
+            const int numberOfDatapointsToAdd = 2;
+            var listOfPointsAddedForCleanup = new List<DateTime>();
+            
+            var random = new Random();
+            var emissionsRegion = this.objectModel.AddEmissionsRegion(
+                emissionsRegionName,
+                timeZone,
+                regionLatitude,
+                regionLongitude,
+                regionAbbreviation);
+
+            var startDateTime = DateTime.UtcNow;
+
+            // Add datapoints
+            for (var i = 0; i < numberOfDatapointsToAdd; i++)
+            {
+                var dateTimeOfRow = DateTime.UtcNow;
+                var SystemWideCO2Intensity_gCO2kWh = random.NextDouble();
+                var MarginalCO2Intensity_gCO2kWh = random.NextDouble();
+
+                this.objectModel.InsertOrUpdateCarbonEmissionsDataPoints(
+                    emissionsRegion.EmissionsRegionID,
+                    dateTimeOfRow,
+                    SystemWideCO2Intensity_gCO2kWh,
+                    true,
+                    MarginalCO2Intensity_gCO2kWh,
+                    true);
+                listOfPointsAddedForCleanup.Add(dateTimeOfRow);
+            }
+
+            var endDateTime = DateTime.UtcNow;
+
+            // Act
+            var retrievedEmissionsDatapoints =
+                 this.objectModel.FindCarbonEmissionsDataPoints(emissionsRegion.EmissionsRegionID, startDateTime, endDateTime);
+
+            // Assert
+            Assert.AreEqual(numberOfDatapointsToAdd, retrievedEmissionsDatapoints.Count);
+
+            // Clean Up 
+            foreach (var dateTimeOfAddedRow in listOfPointsAddedForCleanup)
+            {
+                this.objectModel.DeleteCarbonEmissionsDataPoints(emissionsRegion.EmissionsRegionID, dateTimeOfAddedRow);
+            }
             this.objectModel.DeleteEmissionsRegion(emissionsRegionName);
         }
 
@@ -215,7 +272,7 @@ namespace SmartEnergyOMTests
 
             // Assert
             var retrievedEmissionsRegion =
-                this.objectModel.FindCarbonEmissionsDataPoints(emissionsRegion.EmissionsRegionID, dateTimeOfRow);
+                this.objectModel.FindCarbonEmissionsDataPoint(emissionsRegion.EmissionsRegionID, dateTimeOfRow);
             Assert.IsNotNull(retrievedEmissionsRegion);
             Assert.AreEqual(SystemWideCO2Intensity_gCO2kWh, retrievedEmissionsRegion.SystemWideCO2Intensity_gCO2kWh);
             Assert.AreEqual(MarginalCO2Intensity_gCO2kWh, retrievedEmissionsRegion.MarginalCO2Intensity_gCO2kWh);
@@ -318,7 +375,7 @@ namespace SmartEnergyOMTests
 
             // Assert
             var retrievedEmissionsRegion =
-                this.objectModel.FindWeatherDataPoints(region.WeatherRegionID, dateTimeOfRow);
+                this.objectModel.FindWeatherDataPoint(region.WeatherRegionID, dateTimeOfRow);
             Assert.IsNotNull(retrievedEmissionsRegion);
             Assert.AreEqual(Temperature_Celcius, retrievedEmissionsRegion.Temperature_Celcius);
             Assert.AreEqual(DewPoint_Metric,retrievedEmissionsRegion.DewPoint_Metric);
@@ -420,7 +477,7 @@ namespace SmartEnergyOMTests
 
             // Assert
             var retrievedEmissionsRegion =
-                this.objectModel.FindMarketDataPoints(region.MarketRegionID, dateTimeOfRow);
+                this.objectModel.FindMarketDataPoint(region.MarketRegionID, dateTimeOfRow);
             Assert.IsNotNull(retrievedEmissionsRegion);
             Assert.AreEqual(Price, retrievedEmissionsRegion.Price);
             Assert.AreEqual(DemandMW, retrievedEmissionsRegion.DemandMW);

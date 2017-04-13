@@ -6,6 +6,7 @@
 namespace SmartEnergyOM
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Data.Entity.Infrastructure;
     using System.Linq;
@@ -368,7 +369,7 @@ namespace SmartEnergyOM
         /// <param name="EmissionsRegionID">EmissionsRegionID</param>
         /// <param name="dateTime">dateTime of the entry</param>
         /// <returns>An Emissions datapoint based on the RegionMappingID and datatime</returns>
-        public CarbonEmissionsDataPoint FindCarbonEmissionsDataPoints(int EmissionsRegionID, DateTime dateTime)
+        public CarbonEmissionsDataPoint FindCarbonEmissionsDataPoint(int EmissionsRegionID, DateTime dateTime)
         {
             using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
             {
@@ -385,12 +386,33 @@ namespace SmartEnergyOM
         }
 
         /// <summary>
+        /// Find Weather Emissions based on the WeatherRegionID between startDateTime and endDateTime
+        /// </summary>
+        /// <param name="EmissionsRegionID">EmissionsRegionID</param>
+        /// <param name="startDateTime">DateTime marking the start of the period to query for</param>
+        /// <param name="endDateTime">DateTime marking the end of the period to query for</param>
+        /// <returns>Emissions datapoints belonging the given EmissionsRegionID between startDateTime and endDateTime</returns>
+        public List<CarbonEmissionsDataPoint> FindCarbonEmissionsDataPoints(int EmissionsRegionID, DateTime startDateTime, DateTime endDateTime)
+        {
+            using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
+            {
+                var dbObject =
+                    dbModel.CarbonEmissionsDataPoints.Where(
+                        r =>
+                            r.EmissionsRegionID == EmissionsRegionID && r.DateTimeUTC > startDateTime
+                            && r.DateTimeUTC < endDateTime);
+
+                return dbObject.ToList();
+            }
+        }
+
+        /// <summary>
         /// Finds a Weather datapoint based on the WeatherRegionID and datatime
         /// </summary>
         /// <param name="WeatherRegionID">WeatherRegionID</param>
         /// <param name="dateTime">dateTime</param>
         /// <returns>A Weather datapoint based on the WeatherRegionID and datatime</returns>
-        public WeatherDataPoint FindWeatherDataPoints(int WeatherRegionID, DateTime dateTime)
+        public WeatherDataPoint FindWeatherDataPoint(int WeatherRegionID, DateTime dateTime)
         {
             using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
             {
@@ -407,12 +429,33 @@ namespace SmartEnergyOM
         }
 
         /// <summary>
+        /// Find Weather datapoints based on the WeatherRegionID between startDateTime and endDateTime
+        /// </summary>
+        /// <param name="WeatherRegionID">WeatherRegionID</param>
+        /// <param name="startDateTime">DateTime marking the start of the period to query for</param>
+        /// <param name="endDateTime">DateTime marking the end of the period to query for</param>
+        /// <returns>Weather datapoints belonging the given WeatherRegionID between startDateTime and endDateTime</returns>
+        public List<WeatherDataPoint> FindWeatherDataPoints(int WeatherRegionID, DateTime startDateTime, DateTime endDateTime)
+        {
+            using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
+            {
+                var dbObject =
+                    dbModel.WeatherDataPoints.Where(
+                        r =>
+                            r.WeatherRegionID == WeatherRegionID && r.DateTimeUTC > startDateTime
+                            && r.DateTimeUTC < endDateTime);
+
+                return dbObject.ToList();
+            }
+        }
+
+        /// <summary>
         /// Finds a Market datapoint based on the MarketRegionID and datatime
         /// </summary>
         /// <param name="MarketRegionID">MarketRegionID</param>
         /// <param name="dateTime">dateTime</param>
         /// <returns>A  Market datapoint based on the MarketRegionID and datatime</returns>
-        public MarketDataPoint FindMarketDataPoints(int MarketRegionID, DateTime dateTime)
+        public MarketDataPoint FindMarketDataPoint(int MarketRegionID, DateTime dateTime)
         {
             using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
             {
@@ -425,6 +468,27 @@ namespace SmartEnergyOM
                             && r.DateTimeUTC.Second == dateTime.Second);
 
                 return dbObject;
+            }
+        }
+
+        /// <summary>
+        /// Find Market datapoints based on the MarketRegionID between startDateTime and endDateTime
+        /// </summary>
+        /// <param name="MarketRegionID">MarketRegionID</param>
+        /// <param name="startDateTime">DateTime marking the start of the period to query for</param>
+        /// <param name="endDateTime">DateTime marking the end of the period to query for</param>
+        /// <returns>Weather datapoints belonging the given MarketRegionID between startDateTime and endDateTime</returns>
+        public List<MarketDataPoint> FindMarketDataPoints(int MarketRegionID, DateTime startDateTime, DateTime endDateTime)
+        {
+            using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
+            {
+                var dbObject =
+                    dbModel.MarketDataPoints.Where(
+                        r =>
+                            r.MarketRegionID == MarketRegionID && r.DateTimeUTC > startDateTime
+                            && r.DateTimeUTC < endDateTime);
+
+                return dbObject.ToList();
             }
         }
 

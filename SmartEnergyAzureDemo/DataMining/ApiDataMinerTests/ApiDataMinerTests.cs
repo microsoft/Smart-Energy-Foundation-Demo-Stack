@@ -84,7 +84,7 @@ namespace ApiDataMinerTests
             {
                 foreach (var result in results)
                 {
-                    var dataPoint = _objectModel.FindWeatherDataPoints(regionId, result.observationDateTime);
+                    var dataPoint = _objectModel.FindWeatherDataPoint(regionId, result.observationDateTime);
                     Assert.IsNotNull(dataPoint);
                 }
             }
@@ -161,7 +161,7 @@ namespace ApiDataMinerTests
                 {
                     foreach (var result in results)
                     {
-                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoints(regionId, result.timestamp);
+                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.timestamp);
                         Assert.IsNotNull(dataPoint);
                     }
                 }
@@ -243,7 +243,7 @@ namespace ApiDataMinerTests
                 {
                     foreach (var result in results)
                     {
-                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoints(regionId, result.timestamp);
+                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.timestamp);
                         Assert.IsNotNull(dataPoint);
                     }
                 }
@@ -322,7 +322,7 @@ namespace ApiDataMinerTests
                 {
                     foreach (var result in marginalCarbonResults)
                     {
-                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoints(regionId, result.timestamp);
+                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.timestamp);
                         Assert.IsNotNull(dataPoint);
                     }
                 }
@@ -339,7 +339,7 @@ namespace ApiDataMinerTests
                 {
                     foreach (var result in systemWideResults)
                     {
-                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoints(regionId, result.timestamp);
+                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.timestamp);
                         Assert.IsNotNull(dataPoint);
                     }
                 }
@@ -406,7 +406,7 @@ namespace ApiDataMinerTests
                 {
                     if (result.marginal_carbon.value != null)
                     {
-                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoints(regionId, result.timestamp);
+                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.timestamp);
                         Assert.IsNotNull(dataPoint);
                         Assert.AreEqual(
                             wattTimeInteraction.ConvertLbsPerMWhTo_GCo2PerkWh((double)result.marginal_carbon.value),
@@ -471,7 +471,7 @@ namespace ApiDataMinerTests
                         {
                             foreach (var result in results)
                             {
-                                var dataPoint = _objectModel.FindCarbonEmissionsDataPoints(regionId, result.timestamp);
+                                var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.timestamp);
                                 Assert.IsNotNull(dataPoint);
                             }
                         }
@@ -513,7 +513,7 @@ namespace ApiDataMinerTests
                         {
                             foreach (var result in results)
                             {
-                                var dataPoint = _objectModel.FindWeatherDataPoints(
+                                var dataPoint = _objectModel.FindWeatherDataPoint(
                                     regionId,
                                     result.observationDateTime);
                                 Assert.IsNotNull(dataPoint);
