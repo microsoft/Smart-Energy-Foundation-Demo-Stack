@@ -52,7 +52,7 @@ The solution is laid out in folders for each layer in the stack:
 # Configuring the Data Miner / Updating  the Regions Mined
 ### Customising the regions mined
 The DataMinerFunction reads where it should mine Weather and Emissions data from in the ApiDataMinerConfigs.xml file in the DataMinerFunction project. The XML file contains a series of <Region> elements, comprised of a \<EmissionsMiningRegion\> and a \<WeatherMiningRegion\>. A Region element can have one or both. Configure the details  of a region as such: 
-	* ![DataMinerConfigurationFile](Images/DataMinerConfigFile.png)
+	* ![DataMinerConfigurationFile](Images/ConfigurationLocations.png)
 
 You can update the regions being mined in two places: 
 A) Directly in the running Azure Function: 
