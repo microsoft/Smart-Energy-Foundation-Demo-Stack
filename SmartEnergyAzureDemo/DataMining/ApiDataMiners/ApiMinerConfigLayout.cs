@@ -1,7 +1,13 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+﻿
+// --------------------------------------------------------------------------------------------------------------------
 // This code is published under the The MIT License (MIT). See LICENSE.TXT for details. 
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ApiDataMiners
 {
@@ -98,9 +104,11 @@ namespace ApiDataMiners
 
         private double longitudeField;
 
+        private string miningMethodField;
+
         private string timeZoneField;
 
-        private string ApiUrlField;
+        private string apiUrlField;
 
         private string apiKeyField;
 
@@ -146,6 +154,19 @@ namespace ApiDataMiners
         }
 
         /// <remarks/>
+        public string MiningMethod
+        {
+            get
+            {
+                return this.miningMethodField;
+            }
+            set
+            {
+                this.miningMethodField = value;
+            }
+        }
+
+        /// <remarks/>
         public string TimeZone
         {
             get
@@ -163,11 +184,11 @@ namespace ApiDataMiners
         {
             get
             {
-                return this.ApiUrlField;
+                return this.apiUrlField;
             }
             set
             {
-                this.ApiUrlField = value;
+                this.apiUrlField = value;
             }
         }
 
@@ -211,6 +232,8 @@ namespace ApiDataMiners
         private double latitudeField;
 
         private double longitudeField;
+
+        private string miningMethodField;
 
         private string timeZoneField;
 
@@ -260,6 +283,19 @@ namespace ApiDataMiners
             set
             {
                 this.longitudeField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string MiningMethod
+        {
+            get
+            {
+                return this.miningMethodField;
+            }
+            set
+            {
+                this.miningMethodField = value;
             }
         }
 

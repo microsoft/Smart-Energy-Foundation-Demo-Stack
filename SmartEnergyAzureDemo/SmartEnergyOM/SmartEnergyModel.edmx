@@ -13,9 +13,9 @@
           <Property Name="EmissionsRegionID" Type="int" Nullable="false" />
           <Property Name="DateTimeUTC" Type="datetime" Nullable="false" />
           <Property Name="SystemWideCO2Intensity_gCO2kWh" Type="float" />
-          <Property Name="SystemWideCO2Intensity_IsForcast" Type="bit" Nullable="false" />
+          <Property Name="SystemWideCO2Intensity_Forcast_gCO2kWh" Type="float" />
           <Property Name="MarginalCO2Intensity_gCO2kWh" Type="float" />
-          <Property Name="MarginalCO2Intensity_IsForcast" Type="bit" Nullable="false" />
+          <Property Name="MarginalCO2Intensity_Forcast_gCO2kWh" Type="float" />
         </EntityType>
         <EntityType Name="EmissionsRegion">
           <Key>
@@ -87,7 +87,7 @@
           <Property Name="Snow_Metric" Type="float" />
           <Property Name="Pressure_Metric" Type="float" />
           <Property Name="Humidity_Percent" Type="float" />
-          <Property Name="ConditionDescription" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ConditionDescription" Type="nvarchar(max)" />
           <Property Name="IsForcastRow" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="WeatherRegion">
@@ -220,8 +220,8 @@
           <Property Name="SystemWideCO2Intensity_gCO2kWh" Type="Double" />
           <Property Name="MarginalCO2Intensity_gCO2kWh" Type="Double" />
           <NavigationProperty Name="EmissionsRegion" Relationship="Self.FK_CarbonEmissionsDataPoints_EmissionsRegionID" FromRole="CarbonEmissionsDataPoints" ToRole="EmissionsRegion" />
-          <Property Name="SystemWideCO2Intensity_IsForcast" Type="Boolean" Nullable="false" />
-          <Property Name="MarginalCO2Intensity_IsForcast" Type="Boolean" Nullable="false" />
+          <Property Name="SystemWideCO2Intensity_Forcast_gCO2kWh" Type="Double" />
+          <Property Name="MarginalCO2Intensity_Forcast_gCO2kWh" Type="Double" />
         </EntityType>
         <EntityType Name="EmissionsRegion">
           <Key>
@@ -301,7 +301,7 @@
           <Property Name="Snow_Metric" Type="Double" />
           <Property Name="Pressure_Metric" Type="Double" />
           <Property Name="Humidity_Percent" Type="Double" />
-          <Property Name="ConditionDescription" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="ConditionDescription" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
           <NavigationProperty Name="WeatherRegion" Relationship="Self.FK_WeatherDataPoints_WeatherRegionID" FromRole="WeatherDataPoints" ToRole="WeatherRegion" />
           <Property Name="IsForcastRow" Type="Boolean" Nullable="false" />
         </EntityType>
@@ -432,8 +432,8 @@
           <EntitySetMapping Name="CarbonEmissionsDataPoints">
             <EntityTypeMapping TypeName="SmartEnergyDbModel.CarbonEmissionsDataPoint">
               <MappingFragment StoreEntitySet="CarbonEmissionsDataPoints">
-                <ScalarProperty Name="MarginalCO2Intensity_IsForcast" ColumnName="MarginalCO2Intensity_IsForcast" />
-                <ScalarProperty Name="SystemWideCO2Intensity_IsForcast" ColumnName="SystemWideCO2Intensity_IsForcast" />
+                <ScalarProperty Name="MarginalCO2Intensity_Forcast_gCO2kWh" ColumnName="MarginalCO2Intensity_Forcast_gCO2kWh" />
+                <ScalarProperty Name="SystemWideCO2Intensity_Forcast_gCO2kWh" ColumnName="SystemWideCO2Intensity_Forcast_gCO2kWh" />
                 <ScalarProperty Name="EmissionsRegionID" ColumnName="EmissionsRegionID" />
                 <ScalarProperty Name="DateTimeUTC" ColumnName="DateTimeUTC" />
                 <ScalarProperty Name="SystemWideCO2Intensity_gCO2kWh" ColumnName="SystemWideCO2Intensity_gCO2kWh" />

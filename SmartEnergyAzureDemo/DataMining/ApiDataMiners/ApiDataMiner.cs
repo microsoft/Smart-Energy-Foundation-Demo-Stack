@@ -33,7 +33,9 @@ namespace ApiDataMiners
         /// Parse a settings file and kick off data miners with those settings
         /// </summary>
         /// <param name="ConfigPath"></param>
-        public void ParseMinerSettingsFileAndMineData(string ConfigPath)
+        /// <param name="wattTimeApiKeyOverride">Optional wattTimeApiKey to Override what's in the MinerConfigXML File</param>
+        /// <param name="wundergroundApiKeyOverride">Optional WundergroundApiKey to Override what's in the MinerConfigXML File</param>
+        public void ParseMinerSettingsFileAndMineData(string ConfigPath, string wattTimeApiKeyOverride = null, string wundergroundApiKeyOverride = null)
         {
             using (var streamReader = new StreamReader(ConfigPath))
             {
@@ -42,7 +44,7 @@ namespace ApiDataMiners
 
                 foreach (var minerConfig in minerConfigs.Regions)
                 {
-                    this.MineRegionData(minerConfig);
+                    this.MineRegionData(minerConfig, wattTimeApiKeyOverride, wundergroundApiKeyOverride);
                 }
             }
         }
@@ -51,13 +53,16 @@ namespace ApiDataMiners
         /// Take a config element containing the data for a region to be mined, mine the data and save it in the database
         /// </summary>
         /// <param name="regionConfiguration"></param>
-        public void MineRegionData(ApiMinerConfigLayoutRegion regionConfiguration)
+        /// <param name="wattTimeApiKeyOverride">Optional wattTimeApiKey to Override what's in the MinerConfigXML File</param>
+        /// <param name="wundergroundApiKeyOverride">Optional WundergroundApiKey to Override what's in the MinerConfigXML File</param>
+        public void MineRegionData(ApiMinerConfigLayoutRegion regionConfiguration, string wattTimeApiKeyOverride = null,
+            string wundergroundApiKeyOverride = null)
         {
             var regionGroupingName = regionConfiguration.friendlyName;
 
             using (new TimedOperation(
-                                         $"Beginning Mining of all data for Region {regionGroupingName}",
-                                         "ApiDataMiner.MineRegionData()"))
+                $"Beginning Mining of all data for Region {regionGroupingName}",
+                "ApiDataMiner.MineRegionData()"))
             {
 
                 // Mine the regions emissions if an emissions node was supplied
@@ -74,9 +79,10 @@ namespace ApiDataMiners
                         var timeZone = regionConfiguration.EmissionsMiningRegion.TimeZone;
                         var regionLat = regionConfiguration.EmissionsMiningRegion.Latitude;
                         var regionLong = regionConfiguration.EmissionsMiningRegion.Longitude;
-                        var regionWattTimeName = regionConfiguration.EmissionsMiningRegion.EmissionsWattTimeAbbreviation;
+                        var regionWattTimeName =
+                            regionConfiguration.EmissionsMiningRegion.EmissionsWattTimeAbbreviation;
                         var wattTimeApiUrl = regionConfiguration.EmissionsMiningRegion.ApiUrl;
-                        var wattTimeApiKey = regionConfiguration.EmissionsMiningRegion.ApiKey;
+                        var wattTimeApiKey = wattTimeApiKeyOverride ?? regionConfiguration.EmissionsMiningRegion.ApiKey;
                         var selfThrottlingMethod = regionConfiguration.WeatherMiningRegion.SelfThrottlingMethod;
                         var maxNumberOfCallsPerMinute =
                             regionConfiguration.WeatherMiningRegion.MaxNumberOfCallsPerMinute;
@@ -85,37 +91,51 @@ namespace ApiDataMiners
                         var forecastStartDateTime = DateTime.UtcNow.AddDays(-2);
                         var forecastEndDateTime = DateTime.UtcNow.AddDays(10);
 
-                        using (var _objectModel = new SmartEnergyOM(this.DatabaseConnectionString))
+                        if (!string.IsNullOrEmpty(wattTimeApiKey) && !wattTimeApiKey.Equals("none"))
                         {
-                            emissionsRegionId =
-                                _objectModel.AddEmissionsRegion(friendlyName, timeZone, regionLat, regionLong)
-                                    .EmissionsRegionID;
+                            Logger.Information(
+                                $"About to add Emissions Region and Mine Carbon Emissions Data for {regionWattTimeName} from WattTime URL {wattTimeApiUrl} from {historicStartDateTime} to {historicEndDateTime} for historic data and insert them into the database",
+                                "ApiDataMiner.MineRegionData()");
 
-                            CarbonEmissionsMiner carbonEmissionsMiner = new CarbonEmissionsMiner(
-                                                                            wattTimeApiUrl,
-                                                                            wattTimeApiKey,
-                                                                            selfThrottlingMethod,
-                                                                            this.DatabaseConnectionString,
-                                                                            maxNumberOfCallsPerMinute);
+                            using (var _objectModel = new SmartEnergyOM(this.DatabaseConnectionString))
+                            {
+                                emissionsRegionId =
+                                    _objectModel.AddEmissionsRegion(friendlyName, timeZone, regionLat, regionLong,
+                                            regionWattTimeName)
+                                        .EmissionsRegionID;
 
-                            // Mine Recent Actual Data
-                            carbonEmissionsMiner.MineHistoricCarbonResults(
-                                historicStartDateTime,
-                                historicEndDateTime,
-                                regionWattTimeName,
-                                (int)emissionsRegionId);
+                                CarbonEmissionsMiner carbonEmissionsMiner = new CarbonEmissionsMiner(
+                                    wattTimeApiUrl,
+                                    wattTimeApiKey,
+                                    selfThrottlingMethod,
+                                    this.DatabaseConnectionString,
+                                    maxNumberOfCallsPerMinute);
 
-                            // Mine Forecast Data
-                            carbonEmissionsMiner.MineForecastMarginalCarbonResults(
-                                forecastStartDateTime,
-                                forecastEndDateTime,
-                                regionWattTimeName,
-                                (int)emissionsRegionId);
+                                // Mine Recent Actual Data
+                                carbonEmissionsMiner.MineHistoricCarbonResults(
+                                    historicStartDateTime,
+                                    historicEndDateTime,
+                                    regionWattTimeName,
+                                    (int) emissionsRegionId);
+
+                                // Mine Forecast Data
+                                carbonEmissionsMiner.MineForecastMarginalCarbonResults(
+                                    forecastStartDateTime,
+                                    forecastEndDateTime,
+                                    regionWattTimeName,
+                                    (int) emissionsRegionId);
+                            }
+                        }
+                        else
+                        {
+                            Logger.Information(
+                                $"No WattTime Api Key was specified. Skipping this region for Emissions.",
+                                "RunAsync()");
                         }
                     }
                 }
 
-                // Mine the regions emissions if an emissions node was supplied
+                // Mine the regions weather if a weather node was supplied
                 int? weatherRegionId = null;
                 if (regionConfiguration.WeatherMiningRegion != null)
                 {
@@ -126,49 +146,85 @@ namespace ApiDataMiners
                             $"Beginning Mining of weather data for Region {friendlyName}",
                             "ApiDataMiner.MineRegionData()"))
                     {
-                        
+
                         var timeZone = regionConfiguration.WeatherMiningRegion.TimeZone;
                         var regionLat = regionConfiguration.WeatherMiningRegion.Latitude;
                         var regionLong = regionConfiguration.WeatherMiningRegion.Longitude;
                         var weatherRegionWundergroundSubUrl =
                             regionConfiguration.WeatherMiningRegion.weatherRegionWundergroundSubUrl;
                         var wundergroundApiUrl = regionConfiguration.WeatherMiningRegion.ApiUrl;
-                        var wundergroundApiKey = regionConfiguration.WeatherMiningRegion.ApiKey;
+                        var wundergroundApiKey =
+                            wundergroundApiKeyOverride ?? regionConfiguration.WeatherMiningRegion.ApiKey;
                         var selfThrottlingMethod = regionConfiguration.WeatherMiningRegion.SelfThrottlingMethod;
                         var maxNumberOfCallsPerMinute =
                             regionConfiguration.WeatherMiningRegion.MaxNumberOfCallsPerMinute;
                         var historicStartDateTime = DateTime.UtcNow.AddDays(-1);
                         var historicEndDateTime = DateTime.UtcNow.AddDays(1);
 
-                        using (var _objectModel = new SmartEnergyOM(this.DatabaseConnectionString))
+                        if (!string.IsNullOrEmpty(wundergroundApiKey) && !wundergroundApiKey.Equals("none"))
                         {
-                            weatherRegionId =
-                                _objectModel.AddWeatherRegion(
-                                    friendlyName,
-                                    timeZone,
-                                    regionLat,
-                                    regionLong,
-                                    weatherRegionWundergroundSubUrl).WeatherRegionID;
+                            Logger.Information(
+                                $"About to add Emissions Region and Mine Carbon Emissions Data for {friendlyName} from Wunderground URL {weatherRegionWundergroundSubUrl} from {historicStartDateTime} to {historicEndDateTime} for historic data and insert them into the database",
+                                "ApiDataMiner.MineRegionData()");
+
+                            using (var _objectModel = new SmartEnergyOM(this.DatabaseConnectionString))
+                            {
+                                weatherRegionId =
+                                    _objectModel.AddWeatherRegion(
+                                        friendlyName,
+                                        timeZone,
+                                        regionLat,
+                                        regionLong,
+                                        weatherRegionWundergroundSubUrl).WeatherRegionID;
 
 
-                            WeatherDataMiner weatherDataMiner = new WeatherDataMiner(
-                                                                    wundergroundApiUrl,
-                                                                    wundergroundApiKey,
-                                                                    selfThrottlingMethod,
-                                                                    this.DatabaseConnectionString,
-                                                                    maxNumberOfCallsPerMinute);
+                                WeatherDataMiner weatherDataMiner = new WeatherDataMiner(
+                                    wundergroundApiUrl,
+                                    wundergroundApiKey,
+                                    selfThrottlingMethod,
+                                    this.DatabaseConnectionString,
+                                    maxNumberOfCallsPerMinute);
 
-                            // Mine Recent Actual Data
-                            weatherDataMiner.MineHistoricWeatherValues(
-                                historicStartDateTime,
-                                historicEndDateTime,
-                                weatherRegionWundergroundSubUrl,
-                                (int)weatherRegionId);
+                                switch (regionConfiguration.WeatherMiningRegion.MiningMethod)
+                                {
+                                    case "GPS":
+                                        // Mine Recent Actual Data
+                                        weatherDataMiner.MineHistoricWeatherValues(
+                                            historicStartDateTime,
+                                            historicEndDateTime,
+                                            regionLat,
+                                            regionLong,
+                                            (int) weatherRegionId);
 
-                            // Mine Forecast Data
-                            weatherDataMiner.MineTenDayHourlyForecastWeatherValues(
-                                weatherRegionWundergroundSubUrl,
-                                (int)weatherRegionId);
+                                        // Mine Forecast Data
+                                        weatherDataMiner.MineTenDayHourlyForecastWeatherValues(
+                                            regionLat,
+                                            regionLong,
+                                            (int) weatherRegionId);
+                                        break;
+
+                                    case "WundergroundPageSubUrl":
+                                    default:
+                                        // Mine Recent Actual Data
+                                        weatherDataMiner.MineHistoricWeatherValues(
+                                            historicStartDateTime,
+                                            historicEndDateTime,
+                                            weatherRegionWundergroundSubUrl,
+                                            (int) weatherRegionId);
+
+                                        // Mine Forecast Data
+                                        weatherDataMiner.MineTenDayHourlyForecastWeatherValues(
+                                            weatherRegionWundergroundSubUrl,
+                                            (int) weatherRegionId);
+                                        break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Logger.Information(
+                                $"No Wunderground Api Key was specified. Skipping this region for Weather.",
+                                "RunAsync()");
                         }
                     }
                 }

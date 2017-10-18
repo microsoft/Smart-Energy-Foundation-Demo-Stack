@@ -12,7 +12,7 @@ namespace SmartEnergyOM
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
-    
+
     public partial class SmartEnergyDatabase : DbContext
     {
         public SmartEnergyDatabase()

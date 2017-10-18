@@ -2,7 +2,6 @@
 // This code is published under the The MIT License (MIT). See LICENSE.TXT for details. 
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace ApiInteraction
 {
     using System;

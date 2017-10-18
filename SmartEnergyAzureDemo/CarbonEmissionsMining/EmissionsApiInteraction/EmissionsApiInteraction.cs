@@ -3,12 +3,12 @@
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace EmissionsApiInteraction
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
     using ApiInteraction;
     using ApiInteraction.Helper;
 

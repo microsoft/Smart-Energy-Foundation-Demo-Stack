@@ -2,15 +2,19 @@
 // This code is published under the The MIT License (MIT). See LICENSE.TXT for details. 
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace WeatherApiInteraction
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+
     using ApiInteraction;
     using ApiInteraction.Helper;
 
     using WeatherApiInteraction.WundergroundHistoricDataClasses;
+    using WeatherApiInteraction.WundergroundTenDayHourlyForecastDataClasses;
+
+    using RootObject = WeatherApiInteraction.WundergroundHistoricDataClasses.RootObject;
 
     /// <summary>
     /// Class which provides methods to retrieve data from the Wunderground Weather API (https://www.wunderground.com/). Requires the caller to register 
@@ -87,6 +91,86 @@ namespace WeatherApiInteraction
         }
 
         /// <summary>
+        /// Retrieve historic weather datapoints from the Wunderground Api
+        /// </summary>
+        /// <param name="wunderGroundUrl">The Url of the Wunderground API</param>
+        /// <param name="gpsLat">GPS Latitude</param>
+        /// <param name="gpsLong">GPS Longtitude</param>
+        /// <param name="wundergroundApiKey">The Wunderground API Key</param>
+        /// <param name="startDateTime">startDateTime</param>
+        /// <param name="endDateTime">endDateTime</param>
+        /// <param name="timeout">Optional Timeout value for the call</param>
+        /// <returns>Historic weather datapoints from the Wunderground Api</returns>
+        public List<Observation> GetHistoricWeatherData(
+            string wunderGroundUrl,
+            double gpsLat,
+            double gpsLong,
+            string wundergroundApiKey,
+            DateTime startDateTime,
+            DateTime? endDateTime = null,
+            TimeSpan? timeout = null)
+        {
+            const string SubUrl = "history_";
+            var currentDateTime = startDateTime;
+            DateTime queryFinishDateTime = endDateTime ?? DateTime.UtcNow;
+            var fullObservationsList = new List<Observation>();
+            string queryDateString = $"{currentDateTime:yyyyMMdd}";
+            var webApiHelper = new WebApiSerializerHelper<RootObject>();
+
+            // First, get the closest weather station to the given GPS Coordinates
+            var gpsResponse = this.ExecuteWundergroundGpsLookupApiCall<GpsLookupClasses.RootObject>(wunderGroundUrl, gpsLat, gpsLong, wundergroundApiKey, timeout);
+            string closestWeatherStationId = null;
+
+            foreach (var nearbyStation in gpsResponse.location.nearby_weather_stations.pws.station)
+            {
+                closestWeatherStationId = $"pws:{nearbyStation.id}";
+                var apiQueryUrl =
+                    $"{wunderGroundUrl}{wundergroundApiKey}/{SubUrl}{queryDateString}/q/{closestWeatherStationId}.json";
+
+                var response = this.apiInteractionHelper.ExecuteThrottledApiCall<WundergroundHistoricDataClasses.RootObject>(
+                        timeout,
+                        webApiHelper,
+                        apiQueryUrl,
+                        null,
+                        wundergroundApiKey, 
+                        this.apiNameForThrottlingRecords);
+
+                fullObservationsList.AddRange(response.history.observations);
+
+                if (fullObservationsList.Count > 0)
+                {
+                    // This weather station does indeed have historic observations. We will use this one. 
+                    currentDateTime = currentDateTime.AddDays(1);
+                    break;
+                }
+            }
+
+            // Continue through all required dates with the weather station identified above
+            while (currentDateTime.Date <= queryFinishDateTime)
+            {
+                queryDateString = $"{currentDateTime:yyyyMMdd}";
+                var apiQueryUrl =
+                    $"{wunderGroundUrl}{wundergroundApiKey}/{SubUrl}{queryDateString}/q/{closestWeatherStationId}.json";
+
+                var response =
+                    this.apiInteractionHelper.ExecuteThrottledApiCall<WundergroundHistoricDataClasses.RootObject>(
+                        timeout,
+                        webApiHelper,
+                        apiQueryUrl,
+                        null,
+                        wundergroundApiKey, 
+                        this.apiNameForThrottlingRecords);
+
+                fullObservationsList.AddRange(response.history.observations);
+                currentDateTime = currentDateTime.AddDays(1);
+            }
+
+            var processedObservationsList = this.AddConcreteDateTimeToHistoricWeatherDatapointList(fullObservationsList);
+
+            return processedObservationsList;
+        }
+
+        /// <summary>
         /// Retrieve forecast weather datapoints from the Wunderground Api
         /// </summary>
         /// <param name="wunderGroundUrl">The Url of the Wunderground API</param>
@@ -129,6 +213,41 @@ namespace WeatherApiInteraction
             var response = this.ExecuteWunderApiCall<WundergroundTenDayHourlyForecastDataClasses.RootObject>(wunderGroundUrl, regionSubUrl, wundergroundApiKey, timeout, SubUrl);
 
             var processedObservationsList = this.AddConcreteDateTimeToTenDayForecastList(response.hourly_forecast);
+            return processedObservationsList;
+        }
+
+        /// <summary>
+        /// Retrieve forecast weather datapoints from the Wunderground Api
+        /// </summary>
+        /// <param name="wunderGroundUrl">The Url of the Wunderground API</param>
+        /// <param name="regionSubUrl">Sub Url of the region on the Wunderground weather API e.g. CA/San_Francisco</param>
+        /// <param name="wundergroundApiKey">The Wunderground API Key</param>
+        /// <param name="timeout">Optional Timeout value for the call</param>
+        /// <returns>Forecast weather datapoints from the Wunderground Api</returns>
+        public List<WundergroundTenDayHourlyForecastDataClasses.HourlyForecast> GetTenDayHourlyForecastWeatherData(
+            string wunderGroundUrl,
+            double gpsLat,
+            double gpsLong,
+            string wundergroundApiKey,
+            TimeSpan? timeout = null)
+        {
+            const string SubUrl = "hourly10day";
+
+            var gpsResponse = this.ExecuteWundergroundGpsLookupApiCall<GpsLookupClasses.RootObject>(wunderGroundUrl, gpsLat, gpsLong, wundergroundApiKey, timeout);
+           
+            List<HourlyForecast> processedObservationsList = new List<HourlyForecast>();
+            foreach (var nearbyStation in gpsResponse.location.nearby_weather_stations.pws.station)
+            {
+                var weatherstationIdQueryString = $"pws:{nearbyStation.id}";
+                var response = this.ExecuteWunderApiCall<WundergroundTenDayHourlyForecastDataClasses.RootObject>(wunderGroundUrl, weatherstationIdQueryString, wundergroundApiKey, timeout, SubUrl);
+                processedObservationsList = this.AddConcreteDateTimeToTenDayForecastList(response.hourly_forecast);
+
+                if (processedObservationsList.Count > 0)
+                {
+                    break;
+                }
+            }
+            
             return processedObservationsList;
         }
 
@@ -223,6 +342,30 @@ namespace WeatherApiInteraction
             var response = this.apiInteractionHelper.ExecuteThrottledApiCall(timeout, webApiHelper, apiQueryUrl, null, wundergroundApiKey, apiNameForThrottlingRecords);
             return response;
         }
+
+        /// <summary>
+        /// Execute the given call against the Wunderground API with the response serialized into type T
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="wunderGroundUrl"></param>
+        /// <param name="gpsLat"></param>
+        /// <param name="gpsLong"></param>
+        /// <param name="wundergroundApiKey"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        private T ExecuteWundergroundGpsLookupApiCall<T>(
+            string wunderGroundUrl,
+            double gpsLat,
+            double gpsLong,
+            string wundergroundApiKey,
+            TimeSpan? timeout)
+        {
+            var apiQueryUrl = $"{wunderGroundUrl}{wundergroundApiKey}/geolookup/q/{gpsLat},{gpsLong}.json";
+            var webApiHelper = new WebApiSerializerHelper<T>();
+            var response = this.apiInteractionHelper.ExecuteThrottledApiCall(timeout, webApiHelper, apiQueryUrl, null, wundergroundApiKey, apiNameForThrottlingRecords);
+            return response;
+        }
         #endregion
     }
 }
+

@@ -25,6 +25,8 @@
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
     <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+    <PermissionSet>SAFE</PermissionSet>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -74,5 +76,8 @@
     <Build Include="dbo\Views\MostRecentWeatherDataPointForEachRegion.sql" />
     <Build Include="dbo\Views\MostRecentMarketDataPointForEachRegion.sql" />
     <Build Include="dbo\Views\MostRecentEmissionsDataPointForEachRegion.sql" />
+    <Build Include="dbo\Views\ProcessedRealTimeEmissionsDataPointsForRender.sql" />
+    <Build Include="dbo\Views\ProcessedEmissionsDataPointsForRender.sql" />
+    <Build Include="dbo\Views\ProcessedAverageEmissionsDataPointsForRender.sql" />
   </ItemGroup>
 </Project>

@@ -3,14 +3,14 @@
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace EmissionsApiInteractionTests
 {
-    using System;
-
     using EmissionsApiInteraction;
 
     using Microsoft.Azure;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class EmissionsApiInteractionTests
@@ -57,7 +57,7 @@ namespace EmissionsApiInteractionTests
             EmissionsApiInteraction emissionsApiInteraction = new EmissionsApiInteraction(selfThrottlingMethod, maxNumberOfCallsPerMinute);
 
             // Act
-            var pointsReturned = emissionsApiInteraction.GetGenerationMixAndSystemWideEmissionsResults(this.wattTimeApiUrl, regionAbbreviation, DateTime.Now.AddDays(-25), DateTime.Now.AddDays(20), null, wattTimeApiKey);
+            var pointsReturned = emissionsApiInteraction.GetGenerationMixAndSystemWideEmissionsResults(this.wattTimeApiUrl, regionAbbreviation, DateTime.Now.AddDays(-15), DateTime.Now.AddDays(2), null, wattTimeApiKey);
 
             // Assert
             Assert.IsTrue(pointsReturned.Count > 0);

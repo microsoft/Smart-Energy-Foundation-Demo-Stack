@@ -3,10 +3,14 @@
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace ApiDataMiners
 {
-    using System;
-
     using CentralLogger;
 
     using EmissionsApiInteraction;
@@ -73,6 +77,10 @@ namespace ApiDataMiners
 
             try
             {
+                Logger.Information(
+                    $"Mining Historic Marginal Carbon Results for {regionWattTimeName} from WattTime URL {this.wattTimeApiUrl}.",
+                    "CarbonEmissionsMiner.MineHistoricMarginalCarbonResults()");
+
                 var results = this.wattTimeEmissionsInteraction.GetObservedMarginalCarbonResults(
                     wattTimeApiUrl,
                     regionWattTimeName,
@@ -106,9 +114,9 @@ namespace ApiDataMiners
                                 regionId,
                                 dateTime,
                                 null,
-                                false,
+                                null,
                                 marginalCarbonMetric,
-                                false);
+                                null);
                         }
                     }
                 }
@@ -141,6 +149,9 @@ namespace ApiDataMiners
 
             try
             {
+                Logger.Information(
+                    $"Mining Forecast Marginal Carbon Results for {regionWattTimeName} from WattTime URL {this.wattTimeApiUrl}.",
+                    "CarbonEmissionsMiner.MineForecastMarginalCarbonResults()");
 
                 var results = this.wattTimeEmissionsInteraction.GetForecastMarginalCarbonResults(
                     wattTimeApiUrl,
@@ -175,9 +186,9 @@ namespace ApiDataMiners
                                 regionId,
                                 dateTime,
                                 null,
-                                false,
-                                marginalCarbonMetric,
-                                true);
+                                null,
+                                null,
+                                marginalCarbonMetric);
                         }
                     }
                 }
@@ -210,6 +221,10 @@ namespace ApiDataMiners
 
             try
             {
+                Logger.Information(
+                    $"Mining Historic SystemWide Carbon Results for {regionWattTimeName} from WattTime URL {this.wattTimeApiUrl}.",
+                    "CarbonEmissionsMiner.MineHistoricSystemWideCarbonResults()");
+
                 var results =
                     this.wattTimeEmissionsInteraction.GetGenerationMixAndSystemWideEmissionsResults(
                         this.wattTimeApiUrl,
@@ -245,9 +260,9 @@ namespace ApiDataMiners
                                 regionId,
                                 dateTime,
                                 systemWideCarbonMetric,
-                                false,
                                 null,
-                                false);
+                                null,
+                                null);
                         }
                     }
                 }

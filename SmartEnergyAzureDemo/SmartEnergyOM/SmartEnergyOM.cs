@@ -3,13 +3,21 @@
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using SmartEnergyOM;
+
 namespace SmartEnergyOM
 {
-    using System;
-    using System.Collections.Generic;
     using System.Data;
+    using System.Data.Entity;
+    using System.Data.Entity.Core.EntityClient;
     using System.Data.Entity.Infrastructure;
-    using System.Linq;
+    using System.Data.Entity.Migrations;
 
     /// <summary>
     /// A class which allows storing and retrieving data from the underlying database
@@ -36,25 +44,23 @@ namespace SmartEnergyOM
         #endregion
 
         #region Add Methods
-        
+
         /// <summary>
         /// Add a WeatherRegion
         /// </summary>
         /// <param name="friendlyName">Region's Friendly Name</param>
-        /// <param name="timeZone">.NET Timezone Name (from the list https://msdn.microsoft.com/en-us/library/ms912391(v=winembedded.11).aspx</param>)
+        /// <param name="utcTimeOffset">The location's UTC DateTime Offset</param>
         /// <param name="latitude">Latitude</param>
         /// <param name="longitude">Longitude</param>
         /// <param name="weatherRegionWundergroundSubUrl">Sub Url of the region on the Wunderground weather API e.g. CA/San_Francisco</param>
         /// <returns>Object representing row created in the database</returns>
         public WeatherRegion AddWeatherRegion(
             string friendlyName,
-            string timeZone,
+            DateTimeOffset utcTimeOffset,
             double? latitude = null,
             double? longitude = null,
             string weatherRegionWundergroundSubUrl = null)
         {
-            var utcTimeOffset = ConvertTimezoneNameToUtcDateTimeOffset(timeZone);
-
             using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
             {
                 //First check if the region already exists
@@ -83,23 +89,42 @@ namespace SmartEnergyOM
         }
 
         /// <summary>
-        /// Add an EmissionsRegion
+        /// Add a WeatherRegion
         /// </summary>
         /// <param name="friendlyName">Region's Friendly Name</param>
         /// <param name="timeZone">.NET Timezone Name (from the list https://msdn.microsoft.com/en-us/library/ms912391(v=winembedded.11).aspx</param>)
+        /// <param name="latitude">Latitude</param>
+        /// <param name="longitude">Longitude</param>
+        /// <param name="weatherRegionWundergroundSubUrl">Sub Url of the region on the Wunderground weather API e.g. CA/San_Francisco</param>
+        /// <returns>Object representing row created in the database</returns>
+        public WeatherRegion AddWeatherRegion(
+            string friendlyName,
+            string timeZone,
+            double? latitude = null,
+            double? longitude = null,
+            string weatherRegionWundergroundSubUrl = null)
+        {
+            var utcTimeOffset = ConvertTimezoneNameToUtcDateTimeOffset(timeZone);
+
+            return this.AddWeatherRegion(friendlyName, utcTimeOffset, latitude, longitude, weatherRegionWundergroundSubUrl);
+        }
+
+        /// <summary>
+        /// Add an EmissionsRegion
+        /// </summary>
+        /// <param name="friendlyName">Region's Friendly Name</param>
+        /// <param name="utcTimeOffset">The location's UTC DateTime Offset</param>
         /// <param name="latitude">Latitude</param>
         /// <param name="longitude">Longitude</param>
         /// <param name="emissionsRegionWundergroundSubUrl"></param>
         /// <returns>Object representing row created in the database</returns>
         public EmissionsRegion AddEmissionsRegion(
             string friendlyName,
-            string timeZone,
+            DateTimeOffset utcTimeOffset,
             double? latitude = null,
             double? longitude = null,
             string emissionsRegionWundergroundSubUrl = null)
         {
-            var utcTimeOffset = ConvertTimezoneNameToUtcDateTimeOffset(timeZone);
-
             using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
             {
                 //First check if the region already exists
@@ -125,6 +150,27 @@ namespace SmartEnergyOM
                 EmissionsRegion = this.FindEmissionsRegion(friendlyName);
                 return EmissionsRegion;
             }
+        }
+
+        /// <summary>
+        /// Add an EmissionsRegion
+        /// </summary>
+        /// <param name="friendlyName">Region's Friendly Name</param>
+        /// <param name="timeZone">.NET Timezone Name (from the list https://msdn.microsoft.com/en-us/library/ms912391(v=winembedded.11).aspx</param>)
+        /// <param name="latitude">Latitude</param>
+        /// <param name="longitude">Longitude</param>
+        /// <param name="emissionsRegionWundergroundSubUrl"></param>
+        /// <returns>Object representing row created in the database</returns>
+        public EmissionsRegion AddEmissionsRegion(
+            string friendlyName,
+            string timeZone,
+            double? latitude = null,
+            double? longitude = null,
+            string emissionsRegionWundergroundSubUrl = null)
+        {
+            var utcTimeOffset = ConvertTimezoneNameToUtcDateTimeOffset(timeZone);
+
+            return this.AddEmissionsRegion(friendlyName, utcTimeOffset, latitude, longitude, emissionsRegionWundergroundSubUrl);
         }
 
         /// <summary>
@@ -273,6 +319,20 @@ namespace SmartEnergyOM
         }
 
         /// <summary>
+        /// Finds all Market regions available in the database
+        /// </summary>
+        /// <returns>Friendly names of all available regions</returns>
+        public List<string> FindAllMarketRegions()
+        {
+            using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
+            {
+                var dbObject =
+                    dbModel.MarketRegions;
+                return dbObject.Select(f => f.FriendlyName).ToList();
+            }
+        }
+
+        /// <summary>
         /// Finds a Weather region based on the friendlyName
         /// </summary>
         /// <param name="friendlyName">Name of the region to find</param>
@@ -302,10 +362,24 @@ namespace SmartEnergyOM
         }
 
         /// <summary>
+        /// Finds all Weather regions available in the database
+        /// </summary>
+        /// <returns>WeatherRegion for the specified region</returns>
+        public List<string> FindAllWeatherRegions()
+        {
+            using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
+            {
+                var dbObject =
+                    dbModel.WeatherRegions;
+                return dbObject.Select(f => f.FriendlyName).ToList();
+            }
+        }
+
+        /// <summary>
         /// Finds an Emissions region based on the friendlyName
         /// </summary>
         /// <param name="friendlyName">Name of the region to find</param>
-        /// <returns>EmissionsRegion for the specified region</returns>
+        /// <returns>Friendly names of all available regions</returns>
         public EmissionsRegion FindEmissionsRegion(string friendlyName)
         {
             using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
@@ -333,6 +407,34 @@ namespace SmartEnergyOM
         }
 
         /// <summary>
+        /// Finds all Emissions regions available in the database
+        /// </summary>
+        /// <returns>Friendly names of all available regions</returns>
+        public List<string> FindAllEmissionsRegions()
+        {
+            using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
+            {
+                var dbObject =
+                    dbModel.EmissionsRegions;
+                return dbObject.Select(f => f.FriendlyName).ToList();
+            }
+        }
+
+        /// <summary>
+        /// Finds all Emissions regions available in the database and return as EmissionsRegion objects
+        /// </summary>
+        /// <returns>Emissions database objects of all available regions</returns>
+        public List<EmissionsRegion> FindAllEmissionsRegionsAsEmissionsRegionObjects()
+        {
+            using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
+            {
+                var dbObject =
+                    dbModel.EmissionsRegions;
+                return dbObject.ToList();
+            }
+        }
+
+        /// <summary>
         /// Finds an MarketWeatherEmissionsRegionMapping based on the friendlyName
         /// </summary>
         /// <param name="friendlyName">ID of the object to return</param>
@@ -353,7 +455,7 @@ namespace SmartEnergyOM
         /// </summary>
         /// <param name="regionMappingId">ID of the object to return</param>
         /// <returns>MarketWeatherEmissionsRegionMapping for the specified region</returns>
-        public MarketWeatherEmissionsRegionMapping FindEMarketWeatherEmissionsRegionMapping(int regionMappingId)
+        public MarketWeatherEmissionsRegionMapping FindMarketWeatherEmissionsRegionMapping(int regionMappingId)
         {
             using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
             {
@@ -504,15 +606,14 @@ namespace SmartEnergyOM
         /// <param name="ForecastSystemWideCO2Intensity_gCO2kWh"></param>
         /// <param name="MarginalCO2Intensity_gCO2kWh"></param>
         /// <param name="ForecastMarginalCO2Intensity_gCO2kWh"></param>
-        /// <param name="IsForcastRow"></param>
         /// <param name="maxNumberOfRetries">Maximum number of retries to attempt if exceptions are encountered with the database</param>
         public void InsertOrUpdateCarbonEmissionsDataPoints(
            int EmissionsRegionID,
            DateTime dateTime,
            double? SystemWideCO2Intensity_gCO2kWh = null,
-           bool SystemWideCO2Intensity_IsForcast = false,
+           double? SystemWideCO2Intensity_Forcast_gCO2kWh = null,
            double? MarginalCO2Intensity_gCO2kWh = null,
-           bool MarginalCO2Intensity_IsForcast = false,
+           double? MarginalCO2Intensity_Forcast_gCO2kWh = null,
            int maxNumberOfRetries = 3)
         {
             var updatedSuccessfully = false;
@@ -542,9 +643,9 @@ namespace SmartEnergyOM
                                 EmissionsRegionID = regionEntity.EmissionsRegionID,
                                 DateTimeUTC = dateTime,
                                 SystemWideCO2Intensity_gCO2kWh = SystemWideCO2Intensity_gCO2kWh,
-                                SystemWideCO2Intensity_IsForcast = SystemWideCO2Intensity_IsForcast,
+                                SystemWideCO2Intensity_Forcast_gCO2kWh = SystemWideCO2Intensity_Forcast_gCO2kWh,
                                 MarginalCO2Intensity_gCO2kWh = MarginalCO2Intensity_gCO2kWh,
-                                MarginalCO2Intensity_IsForcast = MarginalCO2Intensity_IsForcast,
+                                MarginalCO2Intensity_Forcast_gCO2kWh = MarginalCO2Intensity_Forcast_gCO2kWh,
                             });
                     }
                     else
@@ -554,12 +655,18 @@ namespace SmartEnergyOM
                         {
                             existingEntryForThisDateTime.SystemWideCO2Intensity_gCO2kWh = SystemWideCO2Intensity_gCO2kWh;
                         }
-                        existingEntryForThisDateTime.SystemWideCO2Intensity_IsForcast = SystemWideCO2Intensity_IsForcast;
+                        if (SystemWideCO2Intensity_Forcast_gCO2kWh != null)
+                        {
+                            existingEntryForThisDateTime.SystemWideCO2Intensity_Forcast_gCO2kWh = SystemWideCO2Intensity_Forcast_gCO2kWh;
+                        }
                         if (MarginalCO2Intensity_gCO2kWh != null)
                         {
                             existingEntryForThisDateTime.MarginalCO2Intensity_gCO2kWh = MarginalCO2Intensity_gCO2kWh;
                         }
-                        existingEntryForThisDateTime.MarginalCO2Intensity_IsForcast = MarginalCO2Intensity_IsForcast;
+                        if (MarginalCO2Intensity_Forcast_gCO2kWh != null)
+                        {
+                            existingEntryForThisDateTime.MarginalCO2Intensity_Forcast_gCO2kWh = MarginalCO2Intensity_Forcast_gCO2kWh;
+                        }
                     }
 
                     if (SaveChangesWithRetry(maxNumberOfRetries, dbModel, ref numberOfAttemptsMade)) return;

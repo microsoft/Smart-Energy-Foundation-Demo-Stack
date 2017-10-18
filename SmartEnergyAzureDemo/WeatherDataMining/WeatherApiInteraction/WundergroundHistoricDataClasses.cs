@@ -1,13 +1,8 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// This code is published under the The MIT License (MIT). See LICENSE.TXT for details. 
-// Copyright(c) Microsoft and Contributors
-// --------------------------------------------------------------------------------------------------------------------
+﻿using System;
+using System.Collections.Generic;
 
 namespace WeatherApiInteraction.WundergroundHistoricDataClasses
 {
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
     /// Represents the JSON structure of the result returned from http://api.wunderground.com/api/
     /// </summary>

@@ -1,0 +1,11 @@
+name: PrincetonEmissionsDashboard
+title:
+account: smartutility
+server: shinyapps.io
+appId: 183599
+bundleId: 840515
+url: https://smartutility.shinyapps.io/PrincetonEmissionsDashboard/
+when: 1495718886.51754
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: RVisualizationDashboard.rproj|RVisualizationDashboard.rxproj

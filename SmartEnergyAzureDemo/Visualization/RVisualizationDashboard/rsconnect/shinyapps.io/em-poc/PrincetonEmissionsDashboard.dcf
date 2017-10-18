@@ -1,0 +1,11 @@
+name: PrincetonEmissionsDashboard
+title:
+account: em-poc
+server: shinyapps.io
+appId: 183654
+bundleId: 840749
+url: https://em-poc.shinyapps.io/PrincetonEmissionsDashboard/
+when: 1495730309.68116
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: RVisualizationDashboard.rproj|RVisualizationDashboard.rxproj

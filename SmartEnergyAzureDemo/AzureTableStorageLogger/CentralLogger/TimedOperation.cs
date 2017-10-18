@@ -2,12 +2,14 @@
 // This code is published under the The MIT License (MIT). See LICENSE.TXT for details. 
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CentralLogger
 {
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
     /// A class which logs the time it was created and disposed to allow the timing of any block of code
     /// </summary>

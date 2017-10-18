@@ -13,7 +13,7 @@
     [Snow_Metric]           FLOAT (53)     NULL,
     [Pressure_Metric]       FLOAT (53)     NULL,
     [Humidity_Percent]      FLOAT (53)     NULL,
-    [ConditionDescription]  NVARCHAR (MAX) NOT NULL,
+    [ConditionDescription]  NVARCHAR (MAX) NULL,
     [IsForcastRow]          BIT            NOT NULL,
     CONSTRAINT [PK_WeatherDataPoints] PRIMARY KEY CLUSTERED ([WeatherRegionID] ASC, [DateTimeUTC] ASC),
     CONSTRAINT [FK_WeatherDataPoints_WeatherRegionID] FOREIGN KEY ([WeatherRegionID]) REFERENCES [dbo].[WeatherRegion] ([WeatherRegionID])

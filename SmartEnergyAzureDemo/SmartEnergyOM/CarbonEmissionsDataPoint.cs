@@ -18,8 +18,8 @@ namespace SmartEnergyOM
         public System.DateTime DateTimeUTC { get; set; }
         public Nullable<double> SystemWideCO2Intensity_gCO2kWh { get; set; }
         public Nullable<double> MarginalCO2Intensity_gCO2kWh { get; set; }
-        public bool SystemWideCO2Intensity_IsForcast { get; set; }
-        public bool MarginalCO2Intensity_IsForcast { get; set; }
+        public Nullable<double> SystemWideCO2Intensity_Forcast_gCO2kWh { get; set; }
+        public Nullable<double> MarginalCO2Intensity_Forcast_gCO2kWh { get; set; }
     
         public virtual EmissionsRegion EmissionsRegion { get; set; }
     }

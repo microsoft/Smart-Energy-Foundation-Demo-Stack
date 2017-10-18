@@ -1,8 +1,3 @@
-#-------------------------------------------------------------------------------------
-#This code is published under The MIT License(MIT). See LICENSE.TXT for details.
-# Copyright(c) Microsoft and Contributors
-#-------------------------------------------------------------------------------------
-
 library(shiny)
 library(leaflet)
 library(shinydashboard)
@@ -14,11 +9,10 @@ library(RColorBrewer)
 # *** Usage Instructions: 
 #   1) Deploy the SmartEnergyDatabase in this solution a SQL Azure Server in your Azure Subscription. 
 #      If you don't have a SQL Azure Server yet, create one as per https://docs.microsoft.com/en-us/azure/sql-database/sql-database-get-started
-#   2) Update the connectionString variable below to replace **MyAzureSQLDatabaseName** with the name of your SQL Azure Server, and fill in the database name, username and password
+#   2) Update the connectionString variable below to replace **YourSqlAzureServerName** with the name of your SQL Azure Server, and fill in the database name, username and password
 #   3) Run the solution locally with the "local" connection string uncommented. The solution will launch a ShinyApp application which connects to your SQL Azure database and visualises the data
 #   4) To deploy the application to ShinyApps.io, uncomment the connection string commented as "Uncomment this line when deploying to Shiny" and publish. 
-#   5) For the application to talk to your SQL Azure database from ShinyApps.io, you will need to whitelist the Shiny IP ranges on your SQL Azure server: 54.204.29.251, 54.204.34.9, 54.204.36.75 and 54.204.37.78
-#   6) Tailor to your own needs and data. 
+#   5) Tailor to your own needs and data. 
 
 ui <- dashboardPage(
   dashboardHeader(title = "Smart Energy Dashboard"),
@@ -48,17 +42,17 @@ ui <- dashboardPage(
 server <- function(input, output, session) {
     
     ##The Connection Stirngs: These need to be different depending on whether you are running the application locally, or deploying to ShinyApps. 
-    #Uncomment this line when deploying to Shiny    
-    #connectionString <- 'Driver=FreeTDS;TDS_Version=8.0;Server=**MyAzureSQLServerName**.database.windows.net,1433;Database=**MyAzureSQLDatabaseName**;Uid=**MyAzureSQLUserName**@**MyAzureSQLServerName**;Pwd=**MyAzureSQLPassword**;Encrypt=yes;'
+    #Uncomment this line when deploying to Shiny
+    connectionString <- 'Driver=FreeTDS;TDS_Version=8.0;Server=**MyAzureSQLServerName**.database.windows.net,1433;Database=**MyAzureSQLDatabaseName**;Uid=**MyAzureSQLServerName**;Pwd=**MyAzureSQLPassword**;Encrypt=yes;'
     #Uncomment this line when running Locally
-    connectionString <- 'Driver=SQL Server Native Client 11.0;Server=**MyAzureSQLServerName**.database.windows.net,1433;Database=**MyAzureSQLDatabaseName**;Uid=**MyAzureSQLUserName**@**MyAzureSQLServerName**;Pwd=**MyAzureSQLPassword**;Encrypt=yes;'
+    #connectionString <- 'Driver=SQL Server Native Client 11.0;Server=**MyAzureSQLServerName**.database.windows.net,1433;Database=**MyAzureSQLDatabaseName**;Uid=**MyAzureSQLServerName**;Pwd=**MyAzureSQLPassword**;Encrypt=yes;'
     conn <- odbcDriverConnect(connectionString)
 
     #Hardcoding some variables to demonstrate data binding from SQL Azure in R. Tailor to your own solution. See the sample SQL Azure database to see the data these relate to. 
-    defaultRegionMappingID <- 5
+    defaultRegionMappingID <- 0
     regionId <- defaultRegionMappingID
-    EmissionsRegionId <- 5
-    WeatherRegionId <- 1
+    EmissionsRegionId <- 0
+    WeatherRegionId <- 0
     regionName <- "US_PJM"
 
     #Populate the drop down menu with regions available in the database
@@ -169,47 +163,48 @@ server <- function(input, output, session) {
     ##Generate the data charts displaying time series data
     #Time Series Emissions Data
     GetEmissionsTimeSeriesDataForSelectedRegion <- reactive({
-         CurrentSelectedEmissionsRegionId = GetCurrentSelectedEmissionsRegionId()
-         emissionsSqlQuery <- sprintf("SELECT TOP (1000) [DateTimeUTC],[SystemWideCO2Intensity_gCO2kWh],[MarginalCO2Intensity_gCO2kWh] FROM [dbo].[CarbonEmissionsDataPoints] WHERE [EmissionsRegionID] = '%d' ORDER BY [DateTimeUTC] DESC", CurrentSelectedEmissionsRegionId)
-         conn <- odbcDriverConnect(connectionString)
-         dbResults <- sqlQuery(conn, emissionsSqlQuery)
-         dataset <- dbResults
-         datasetAsArray <- cbind(dataset)
-         emissionsArray <- datasetAsArray[, c("DateTimeUTC", "SystemWideCO2Intensity_gCO2kWh", "MarginalCO2Intensity_gCO2kWh")]
-         emissionsArrayAsXts <- xts(emissionsArray[, -1], order.by = emissionsArray[, 1])
-         return(emissionsArrayAsXts)
-     })
+        CurrentSelectedEmissionsRegionId = GetCurrentSelectedEmissionsRegionId()
+        emissionsSqlQuery <- sprintf("SELECT TOP (1000) [DateTimeUTC],[SystemWideCO2Intensity_gCO2kWh],[MarginalCO2Intensity_gCO2kWh] FROM [dbo].[CarbonEmissionsDataPoints] WHERE [EmissionsRegionID] = '%d' ORDER BY [DateTimeUTC] DESC", CurrentSelectedEmissionsRegionId)
+        conn <- odbcDriverConnect(connectionString)
+        dbResults <- sqlQuery(conn, emissionsSqlQuery)
+        dataset <- dbResults
+        datasetAsArray <- cbind(dataset)
+        emissionsArray <- datasetAsArray[, c("DateTimeUTC", "SystemWideCO2Intensity_gCO2kWh", "MarginalCO2Intensity_gCO2kWh")]
+        emissionsArrayAsXts <- xts(emissionsArray[, -1], order.by = emissionsArray[, 1])
+        return(emissionsArrayAsXts)
+    })
 
     output$EmissionsDataSeriesChart <- renderDygraph({
-     dygraph(GetEmissionsTimeSeriesDataForSelectedRegion(), main = "Marginal Carbon Emissions") %>%
+    dygraph(GetEmissionsTimeSeriesDataForSelectedRegion(), main = "Marginal Carbon Emissions") %>%
         dySeries("SystemWideCO2Intensity_gCO2kWh", label = "SystemWideCO2Intensity_gCO2kWh", fillGraph = TRUE) %>%
         dySeries("MarginalCO2Intensity_gCO2kWh", label = "MarginalCO2Intensity_gCO2kWh", drawPoints = TRUE, strokePattern = "dashed") %>%
         dyOptions(stackedGraph = FALSE) %>%
-     dyRangeSelector(height = 20)
-     })
+    dyRangeSelector(height = 20)
+})
 
     ##Time Series Weather Data
     GetWeatherTimeSeriesDataForSelectedRegion <- reactive({
-         CurrentSelectedWeatherRegionId = GetCurrentSelectedWeatherRegionId()
-         weatherSqlQuery <- sprintf("SELECT TOP (1000) [DateTimeUTC],[Temperature_Celcius] ,[DewPoint_Metric],[WindSpeed_Metric] FROM [dbo].[WeatherDataPoints] WHERE [WeatherRegionID] = '%d' ORDER BY [DateTimeUTC] DESC", CurrentSelectedWeatherRegionId)
-         conn <- odbcDriverConnect(connectionString)
-         dbweatherResults <- sqlQuery(conn, weatherSqlQuery)
-         weatherDataset <- dbweatherResults
-         weatherDatasetAsArray <- cbind(weatherDataset)
-         weatherArray <- weatherDatasetAsArray[, c("DateTimeUTC", "Temperature_Celcius", "WindSpeed_Metric")]
-         weatherArrayAsXts <- xts(weatherArray[, -1], order.by = weatherArray[, 1])
-         return(weatherArrayAsXts)
-     })
+        CurrentSelectedWeatherRegionId = GetCurrentSelectedWeatherRegionId()
+        weatherSqlQuery <- sprintf("SELECT TOP (1000) [DateTimeUTC],[Temperature_Celcius] ,[DewPoint_Metric],[WindSpeed_Metric] FROM [dbo].[WeatherDataPoints] WHERE [WeatherRegionID] = '%d' ORDER BY [DateTimeUTC] DESC", CurrentSelectedWeatherRegionId)
+        conn <- odbcDriverConnect(connectionString)
+        dbweatherResults <- sqlQuery(conn, weatherSqlQuery)
+        weatherDataset <- dbweatherResults
+        weatherDatasetAsArray <- cbind(weatherDataset)
+        weatherArray <- weatherDatasetAsArray[, c("DateTimeUTC", "Temperature_Celcius", "WindSpeed_Metric")]
+        weatherArrayAsXts <- xts(weatherArray[, -1], order.by = weatherArray[, 1])
+        return(weatherArrayAsXts)
+    })
 
     output$WeatherDataSeriesChart <- renderDygraph({
-     dygraph(GetWeatherTimeSeriesDataForSelectedRegion(), main = "Weather: Wind Speeds and Temperature") %>%
+    dygraph(GetWeatherTimeSeriesDataForSelectedRegion(), main = "Weather: Wind Speeds and Temperature") %>%
         dySeries("Temperature_Celcius", label = "Temperature (Celcius)", fillGraph = TRUE) %>%
         dySeries("WindSpeed_Metric", label = "WindSpeed Kmph", drawPoints = TRUE, strokePattern = "dashed") %>%
         dyOptions(stackedGraph = FALSE) %>%
         dyRangeSelector(height = 20)
-     })
+    })
 
     close(conn) # Close the connection
 }
 
 shinyApp(ui, server)
+

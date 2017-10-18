@@ -2,12 +2,14 @@
 // This code is published under the The MIT License (MIT). See LICENSE.TXT for details. 
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace EmissionsApiInteraction
 {
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
     /// Represents the JSON structure of the result returned from https://api.watttime.org/api/v1/datapoints/ 
     /// </summary>

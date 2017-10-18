@@ -1,0 +1,11 @@
+name: RVisualizationDashboard
+title:
+account: smartutility
+server: shinyapps.io
+appId: 183595
+bundleId: 840508
+url: https://smartutility.shinyapps.io/RVisualizationDashboard/
+when: 1495718521.05217
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: RVisualizationDashboard.rproj|RVisualizationDashboard.rxproj

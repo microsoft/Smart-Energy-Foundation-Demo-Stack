@@ -3,44 +3,45 @@
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace ApiDataMinerTests
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Xml.Serialization;
 
     using ApiDataMiners;
 
+    using ApiInteraction;
+
     using EmissionsApiInteraction;
 
     using Microsoft.Azure;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     using SmartEnergyOM;
 
     using WeatherApiInteraction;
+    using WeatherApiInteraction.WundergroundTenDayHourlyForecastDataClasses;
 
-    /// <summary>
-    /// These test methods demonstrate how to use individual data mining methods. 
-    /// </summary>
     [TestClass]
     public class ApiDataMinerTests
     {
         private string databaseConnectionString = CloudConfigurationManager.GetSetting("SQLAzureDatabaseEntityFrameworkConnectionString");
         
         [TestMethod]
-        public void TestMineHistoricWeatherValues()
+        public void TestMineHistoricWeatherValues_ByWundergroundLocationName()
         {
             // Arrange 
-            var regionSubUrl = "us/nj/princeton";
-            string smartGridRegionName = "PJM";
-            var timeZone = "Eastern Standard Time";
-            var regionLat = 40.348444276169;
-            var regionLong = -74.6428556442261;
+            var regionSubUrl = "Norway/Kristiansand";
+            var smartGridRegionName = "Norway_Kristiansand";
+            var timeZone = "Central European Standard Time";
+            var regionLat = 58.24158635676374;
+            var regionLong = 8.096923830624974;
 
-            var startDateTime = DateTime.Now.AddDays(-3);
-            var endDateTime = DateTime.Now.AddDays(-1);
+            var startDateTime = new DateTime(2017, 1, 1); // DateTime.Now.AddDays(-10);
+            var endDateTime = new DateTime(2017, 2, 1); // var startDateTime = DateTime.Now.AddDays(-1);
 
             var wundergroundApiUrl = CloudConfigurationManager.GetSetting("WundergroundApiUrl");
             var wundergroundApiKey = CloudConfigurationManager.GetSetting("WundergroundApiKey");
@@ -51,7 +52,7 @@ namespace ApiDataMinerTests
             using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
             {
                 regionId =
-                    _objectModel.AddWeatherRegion(smartGridRegionName, timeZone, regionLat, regionLong).WeatherRegionID;
+                    _objectModel.AddWeatherRegion(smartGridRegionName, timeZone, regionLat, regionLong, regionSubUrl).WeatherRegionID;
             }
 
 
@@ -79,7 +80,6 @@ namespace ApiDataMinerTests
                 wundergroundApiKey,
                 startDateTime,
                 endDateTime);
-
             using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
             {
                 foreach (var result in results)
@@ -91,27 +91,71 @@ namespace ApiDataMinerTests
         }
 
         [TestMethod]
+        public void TestMineHistoricWeatherValues_ByGPS()
+        {
+            // Arrange 
+            var startDateTime = new DateTime(2017, 1, 1); // DateTime.Now.AddDays(-10);
+            var endDateTime = new DateTime(2017, 1, 2); // var startDateTime = DateTime.Now.AddDays(-1);
+            
+            var latitude = 58.279231;
+            var longtitude = 6.892410;
+            var smartGridRegionName = "Norway_Oye";
+            var timeZone = "Central European Standard Time";
+
+            var wundergroundApiUrl = CloudConfigurationManager.GetSetting("WundergroundApiUrl");
+            var wundergroundApiKey = CloudConfigurationManager.GetSetting("WundergroundApiKey");
+            var selfThrottlingMethod = "AzureTableStorageCallRecollection";
+            var maxNumberOfCallsPerMinute = 5;
+
+            int regionId;
+            using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
+            {
+                regionId =
+                    _objectModel.AddWeatherRegion(smartGridRegionName, timeZone, latitude, longtitude, null).WeatherRegionID;
+            }
+
+            var wundergroundWeatherInteraction =
+                new WundergroundWeatherInteraction(
+                    selfThrottlingMethod,
+                    maxNumberOfCallsPerMinute);
+
+            WeatherDataMiner weatherDataMiner = new WeatherDataMiner(   
+                                                    wundergroundApiUrl,
+                                                    wundergroundApiKey,
+                                                    selfThrottlingMethod,
+                                                    databaseConnectionString,
+                                                    maxNumberOfCallsPerMinute,
+                                                    wundergroundWeatherInteraction);
+
+            // Act
+            weatherDataMiner.MineHistoricWeatherValues(startDateTime, endDateTime, latitude, longtitude, regionId);
+
+            // Assert
+        }
+
+        [TestMethod]
         public void TestMineHistoricMarginalCarbonResults()
         {
             // Arrange 
             var startDateTime = DateTime.Now.AddDays(-10);
-            var endDateTime =  DateTime.Now.AddDays(-9);
+            var endDateTime =  DateTime.Now.AddDays(-1);
 
             var wattTimeApiUrl = CloudConfigurationManager.GetSetting("WattTimeApiUrl");
             var wattTimeApiKey = CloudConfigurationManager.GetSetting("WattTimeApiKey");
             var selfThrottlingMethod = "AzureTableStorageCallRecollection";
             var maxNumberOfCallsPerMinute = 9;
 
-            List<WattTimeBalancingAuthorityInformation> regionsToMine =
-                new List<WattTimeBalancingAuthorityInformation>
-                    {
-                        new WattTimeBalancingAuthorityInformation(
-                            "PJM",
-                            "US_PJM",
-                            "Eastern Standard Time",
-                            40.348444276169,
-                            -74.6428556442261)
-                    };
+            List<WattTimeBalancingAuthorityInformation> regionsToMine = new List<WattTimeBalancingAuthorityInformation>();
+
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PSEI", "US_PugetSoundEnergy", "Pacific Standard Time", 47.68009593341535, -122.11638450372567));
+
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("BPA", "US_BPA", "Pacific Standard Time", 40.348444276169, -74.6428556442261));
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("CAISO", "US_CAISO", "Pacific Standard Time", 41.7324, -123.409423));
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("ERCOT", "US_ERCOT", "Central Standard Time", 32.79878236662912, -96.77856445062508));
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("ISONE", "US_ISONewEngland", "Eastern Standard Time", 42.70864591994315, -72.16918945062508));
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("MISO", "US_UpperMidwestISO", "Central Standard Time", 41.91853269857261, -93.55193137872567));
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PJM", "US_PJM", "Eastern Standard Time", 40.348444276169, -74.6428556442261));
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("SPP", "US_SouthwesternPublicServiceISO", "Eastern Standard Time", 34.41133502036136, -103.19243430841317));
 
             foreach (var region in regionsToMine)
             {
@@ -172,25 +216,17 @@ namespace ApiDataMinerTests
         public void TestMineHistoricSystemWideCarbonResults()
         {
             // Arrange 
-
-            var startDateTime = DateTime.Now.AddDays(-10);
-            var endDateTime = DateTime.Now.AddDays(-5);
+            var startDateTime = new DateTime(2016, 1, 1); // DateTime.Now.AddDays(-10);
+            var endDateTime = new DateTime(2017, 1, 3); // var startDateTime = DateTime.Now.AddDays(-1);
 
             var wattTimeApiUrl = CloudConfigurationManager.GetSetting("WattTimeApiUrl");
             var wattTimeApiKey = CloudConfigurationManager.GetSetting("WattTimeApiKey");
             var selfThrottlingMethod = "AzureTableStorageCallRecollection";
             var maxNumberOfCallsPerMinute = 9;
 
-            List<WattTimeBalancingAuthorityInformation> regionsToMine =
-                new List<WattTimeBalancingAuthorityInformation>
-                    {
-                        new WattTimeBalancingAuthorityInformation(
-                            "PJM",
-                            "US_PJM",
-                            "Eastern Standard Time",
-                            40.348444276169,
-                            -74.6428556442261)
-                    };
+            List<WattTimeBalancingAuthorityInformation> regionsToMine = new List<WattTimeBalancingAuthorityInformation>();
+            
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("ERCOT", "US_ERCOT", "Central Standard Time", 32.79878236662912, -96.77856445062508));
 
             foreach (var region in regionsToMine)
             {
@@ -198,17 +234,14 @@ namespace ApiDataMinerTests
                 using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
                 {
                     regionId =
-                        _objectModel.AddEmissionsRegion(
-                            region.smartGridRegionName,
-                            region.timeZone,
-                            region.regionLat,
-                            region.regionLong).EmissionsRegionID;
+                        _objectModel.AddEmissionsRegion(region.smartGridRegionName, region.timeZone, region.regionLat, region.regionLong)
+                            .EmissionsRegionID;
 
                     _objectModel.AddMarketWeatherEmissionsRegionMapping(
-                        region.smartGridRegionName,
-                        null,
-                        null,
-                        regionId);
+                    region.smartGridRegionName,
+                    null,
+                    null,
+                    regionId);
                 }
 
 
@@ -255,24 +288,27 @@ namespace ApiDataMinerTests
         {
             // Arrange 
 
-            var startDateTime = DateTime.Now.AddDays(-10);
-            var endDateTime = DateTime.Now.AddDays(-9);
+            var startDateTime = new DateTime(2016, 7, 1); // DateTime.Now.AddDays(-10);
+            var endDateTime = new DateTime(2016, 10, 1); // var startDateTime = DateTime.Now.AddDays(-1);
 
             var wattTimeApiUrl = CloudConfigurationManager.GetSetting("WattTimeApiUrl");
             var wattTimeApiKey = CloudConfigurationManager.GetSetting("WattTimeApiKey");
             var selfThrottlingMethod = "AzureTableStorageCallRecollection";
-            var maxNumberOfCallsPerMinute = 20;
+            var maxNumberOfCallsPerMinute = 200;
 
-            List<WattTimeBalancingAuthorityInformation> regionsToMine =
-                new List<WattTimeBalancingAuthorityInformation>
-                    {
-                        new WattTimeBalancingAuthorityInformation(
-                            "PJM",
-                            "US_PJM",
-                            "Eastern Standard Time",
-                            40.348444276169,
-                            -74.6428556442261)
-                    };
+
+            List<WattTimeBalancingAuthorityInformation> regionsToMine = new List<WattTimeBalancingAuthorityInformation>();
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PJM", "US_PJM", "Eastern Standard Time", 40.348444276169, -74.6428556442261));
+
+            //regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PSEI", "US_PugetSoundEnergy", "Pacific Standard Time", 47.68009593341535, -122.11638450372567));
+
+            //regionsToMine.Add(new WattTimeBalancingAuthorityInformation("BPA", "US_BPA", "Pacific Standard Time", 40.348444276169, -74.6428556442261));
+            //regionsToMine.Add(new WattTimeBalancingAuthorityInformation("CAISO", "US_CAISO", "Pacific Standard Time", 41.7324, -123.409423));
+            //regionsToMine.Add(new WattTimeBalancingAuthorityInformation("ERCOT", "US_ERCOT", "Central Standard Time", 32.79878236662912, -96.77856445062508));
+            //regionsToMine.Add(new WattTimeBalancingAuthorityInformation("ISONE", "US_ISONewEngland", "Eastern Standard Time", 42.70864591994315, -72.16918945062508));
+            //regionsToMine.Add(new WattTimeBalancingAuthorityInformation("MISO", "US_UpperMidwestISO", "Central Standard Time", 41.91853269857261, -93.55193137872567));
+            //regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PJM", "US_PJM", "Eastern Standard Time", 40.348444276169, -74.6428556442261));
+            //regionsToMine.Add(new WattTimeBalancingAuthorityInformation("SPP", "US_SouthwesternPublicServiceISO", "Eastern Standard Time", 34.41133502036136, -103.19243430841317));
 
             foreach (var region in regionsToMine)
             {
@@ -495,11 +531,30 @@ namespace ApiDataMinerTests
                         var wundergroundWeatherInteraction = new WundergroundWeatherInteraction(
                                                                  selfThrottlingMethod,
                                                                  maxNumberOfCallsPerMinute);
-                        var results =
-                            wundergroundWeatherInteraction.GetTenDayHourlyForecastWeatherData(
-                                wundergroundApiUrl,
-                                weatherRegionWundergroundSubUrl,
-                                wundergroundApiKey);
+                        List<HourlyForecast> results = new List<HourlyForecast>();
+
+                        switch (regionConfiguration.WeatherMiningRegion.MiningMethod)
+                        {
+                            case "GPS":
+                                results =
+                               wundergroundWeatherInteraction.GetTenDayHourlyForecastWeatherData(
+                                   wundergroundApiUrl,
+                                   regionConfiguration.WeatherMiningRegion.Latitude,
+                                   regionConfiguration.WeatherMiningRegion.Longitude,
+                                   wundergroundApiKey);
+                                break;
+
+                            case "WundergroundPageSubUrl":
+                            default:
+                                results =
+                                   wundergroundWeatherInteraction.GetTenDayHourlyForecastWeatherData(
+                                       wundergroundApiUrl,
+                                       weatherRegionWundergroundSubUrl,
+                                       wundergroundApiKey);
+                                break;
+                        }
+
+                       
 
                         int regionId;
                         using (var _objectModel = new SmartEnergyOM(databaseConnectionString))

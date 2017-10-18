@@ -3,13 +3,14 @@
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace SmartEnergyOMTests
 {
-    using System;
     using System.Collections.Generic;
 
     using Microsoft.Azure;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     using SmartEnergyOM;
 
@@ -53,6 +54,31 @@ namespace SmartEnergyOMTests
 
             // Clean Up
             this.objectModel.DeleteEmissionsRegion(emissionsRegionName);
+        }
+
+        [TestMethod]
+        public void TestAddMarketWeatherEmissionsRegionMapping()
+        {
+            // Arrange
+            var FriendlyName = $"US_PJM_{Guid.NewGuid()}";
+            var MarketRegionId = 1;
+            var WeatherRegionId = 1;
+            var EmissionsRegionId = 5;
+
+            // Act
+            var RegionMapping = this.objectModel.AddMarketWeatherEmissionsRegionMapping(
+                FriendlyName,
+                MarketRegionId,
+                WeatherRegionId,
+                EmissionsRegionId);
+
+            // Assert
+            var retrievedMarketRegion = this.objectModel.FindMarketWeatherEmissionsRegionMapping(RegionMapping.RegionMappingID);
+            Assert.IsNotNull(retrievedMarketRegion);
+            Assert.AreEqual(retrievedMarketRegion.FriendlyName, FriendlyName);
+            Assert.AreEqual(retrievedMarketRegion.MarketRegionID, MarketRegionId);
+            Assert.AreEqual(retrievedMarketRegion.WeatherRegionID, WeatherRegionId);
+            Assert.AreEqual(retrievedMarketRegion.EmissionsRegionID, EmissionsRegionId);
         }
 
         [TestMethod]
@@ -134,7 +160,9 @@ namespace SmartEnergyOMTests
             var random = new Random();
 
             var SystemWideCO2Intensity_gCO2kWh = random.NextDouble();
+            var SystemWideCO2Intensity_Forcast_gCO2kWh = random.NextDouble();
             var MarginalCO2Intensity_gCO2kWh = random.NextDouble();
+            var MarginalCO2Intensity_Forcast_gCO2kWh = random.NextDouble();
 
             var emissionsRegion = this.objectModel.AddEmissionsRegion(
                 emissionsRegionName,
@@ -148,16 +176,18 @@ namespace SmartEnergyOMTests
                 emissionsRegion.EmissionsRegionID,
                 dateTimeOfRow,
                 SystemWideCO2Intensity_gCO2kWh,
-                true,
+                SystemWideCO2Intensity_Forcast_gCO2kWh,
                 MarginalCO2Intensity_gCO2kWh,
-                true);
+                MarginalCO2Intensity_Forcast_gCO2kWh);
 
             // Assert
             var retrievedEmissionsRegion =
                 this.objectModel.FindCarbonEmissionsDataPoint(emissionsRegion.EmissionsRegionID, dateTimeOfRow);
             Assert.IsNotNull(retrievedEmissionsRegion);
             Assert.AreEqual(SystemWideCO2Intensity_gCO2kWh, retrievedEmissionsRegion.SystemWideCO2Intensity_gCO2kWh);
+            Assert.AreEqual(SystemWideCO2Intensity_Forcast_gCO2kWh, retrievedEmissionsRegion.SystemWideCO2Intensity_Forcast_gCO2kWh);
             Assert.AreEqual(MarginalCO2Intensity_gCO2kWh, retrievedEmissionsRegion.MarginalCO2Intensity_gCO2kWh);
+            Assert.AreEqual(MarginalCO2Intensity_Forcast_gCO2kWh, retrievedEmissionsRegion.MarginalCO2Intensity_Forcast_gCO2kWh);
             Assert.AreEqual(dateTimeOfRow.Date, retrievedEmissionsRegion.DateTimeUTC.Date);
             Assert.AreEqual(dateTimeOfRow.Hour, retrievedEmissionsRegion.DateTimeUTC.Hour);
             Assert.AreEqual(dateTimeOfRow.Second, retrievedEmissionsRegion.DateTimeUTC.Second);
@@ -178,7 +208,7 @@ namespace SmartEnergyOMTests
             const string timeZone = "Eastern Standard Time";
             const int numberOfDatapointsToAdd = 2;
             var listOfPointsAddedForCleanup = new List<DateTime>();
-            
+
             var random = new Random();
             var emissionsRegion = this.objectModel.AddEmissionsRegion(
                 emissionsRegionName,
@@ -194,15 +224,17 @@ namespace SmartEnergyOMTests
             {
                 var dateTimeOfRow = DateTime.UtcNow;
                 var SystemWideCO2Intensity_gCO2kWh = random.NextDouble();
+                var SystemWideCO2Intensity_Forcast_gCO2kWh = random.NextDouble();
                 var MarginalCO2Intensity_gCO2kWh = random.NextDouble();
+                var MarginalCO2Intensity_Forcast_gCO2kWh = random.NextDouble();
 
                 this.objectModel.InsertOrUpdateCarbonEmissionsDataPoints(
                     emissionsRegion.EmissionsRegionID,
                     dateTimeOfRow,
                     SystemWideCO2Intensity_gCO2kWh,
-                    true,
+                    SystemWideCO2Intensity_Forcast_gCO2kWh,
                     MarginalCO2Intensity_gCO2kWh,
-                    true);
+                    MarginalCO2Intensity_Forcast_gCO2kWh);
                 listOfPointsAddedForCleanup.Add(dateTimeOfRow);
             }
 
@@ -252,10 +284,9 @@ namespace SmartEnergyOMTests
                 emissionsRegion.EmissionsRegionID,
                 dateTimeOfRow,
                 SystemWideCO2Intensity_gCO2kWh,
-                true,
+                ForecastSystemWideCO2Intensity_gCO2kWh,
                 MarginalCO2Intensity_gCO2kWh,
-                true,
-                10);
+                ForecastMarginalCO2Intensity_gCO2kWh);
 
             // Act
             SystemWideCO2Intensity_gCO2kWh = random.NextDouble();
@@ -265,10 +296,9 @@ namespace SmartEnergyOMTests
                 emissionsRegion.EmissionsRegionID,
                 dateTimeOfRow,
                 SystemWideCO2Intensity_gCO2kWh,
-                true,
+                ForecastSystemWideCO2Intensity_gCO2kWh,
                 MarginalCO2Intensity_gCO2kWh,
-                true,
-                10);
+                ForecastMarginalCO2Intensity_gCO2kWh);
 
             // Assert
             var retrievedEmissionsRegion =
@@ -336,8 +366,7 @@ namespace SmartEnergyOMTests
                 Pressure_Metric,
                 Humidity_Percent,
                 ConditionDescription,
-                IsForecastRow,
-                10);
+                IsForecastRow);
 
             // Act
             Temperature_Celcius = random.NextDouble();
@@ -370,8 +399,7 @@ namespace SmartEnergyOMTests
                 Pressure_Metric,
                 Humidity_Percent,
                 ConditionDescription,
-                IsForecastRow,
-                10);
+                IsForecastRow);
 
             // Assert
             var retrievedEmissionsRegion =
@@ -446,8 +474,7 @@ namespace SmartEnergyOMTests
                 SolarMW,
                 SolarPercentage,
                 CarbonPricePerKg,
-                IsForecastRow,
-                10);
+                IsForecastRow);
 
             // Act
             Price = random.NextDouble();
@@ -472,8 +499,7 @@ namespace SmartEnergyOMTests
                 SolarMW,
                 SolarPercentage,
                 CarbonPricePerKg,
-                IsForecastRow,
-                10);
+                IsForecastRow);
 
             // Assert
             var retrievedEmissionsRegion =

@@ -2,12 +2,11 @@
 // This code is published under the The MIT License (MIT). See LICENSE.TXT for details. 
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
 
 namespace CentralLogger
 {
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
     /// Class to hold details of a message to be logged to the underlying logging system
     /// </summary>

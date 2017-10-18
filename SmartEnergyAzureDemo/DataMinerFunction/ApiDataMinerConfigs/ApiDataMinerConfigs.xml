@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ApiMinerConfigLayout>
+  <Regions>
+    <Region friendlyName="US_PJM">
+      <EmissionsMiningRegion friendlyName="US_PJM">
+        <EmissionsWattTimeAbbreviation>PJM</EmissionsWattTimeAbbreviation>
+        <Latitude>40.348444276169</Latitude>
+        <Longitude>-74.6428556442261</Longitude>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+      </EmissionsMiningRegion>
+
+      <WeatherMiningRegion friendlyName="US_PJM">
+        <weatherRegionWundergroundSubUrl>us/nj/princeton</weatherRegionWundergroundSubUrl>
+        <Latitude>40.348444276169</Latitude>
+        <Longitude>-74.6428556442261</Longitude>
+        <MiningMethod>WundergroundPageSubUrl</MiningMethod>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>http://api.wunderground.com/api/</ApiUrl>
+        <ApiKey>**MyWundergroundApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>3</MaxNumberOfCallsPerMinute>
+      </WeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="US_CAISO">
+      <EmissionsMiningRegion friendlyName="US_CAISO">
+        <EmissionsWattTimeAbbreviation>CAISO</EmissionsWattTimeAbbreviation>
+        <Latitude>41.7324</Latitude>
+        <Longitude>-123.409423</Longitude>
+        <TimeZone>Pacific Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+      </EmissionsMiningRegion>
+
+      <WeatherMiningRegion friendlyName="US_CAISO">
+        <weatherRegionWundergroundSubUrl>us/ca/san_francisco</weatherRegionWundergroundSubUrl>
+        <Latitude>41.7324</Latitude>
+        <Longitude>-123.409423</Longitude>
+        <MiningMethod>WundergroundPageSubUrl</MiningMethod>
+        <TimeZone>Pacific Standard Time</TimeZone>
+        <ApiUrl>http://api.wunderground.com/api/</ApiUrl>
+        <ApiKey>**MyWundergroundApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>4</MaxNumberOfCallsPerMinute>
+      </WeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="US_UpperMidwestISO">
+      <EmissionsMiningRegion friendlyName="US_UpperMidwestISO">
+        <EmissionsWattTimeAbbreviation>MISO</EmissionsWattTimeAbbreviation>
+        <Latitude>41.91853269857261</Latitude>
+        <Longitude>-93.55193137872567</Longitude>
+        <TimeZone>Central Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+      </EmissionsMiningRegion>
+
+      <WeatherMiningRegion friendlyName="US_UpperMidwestISO">
+        <weatherRegionWundergroundSubUrl>us/mo/saint_louis</weatherRegionWundergroundSubUrl>
+        <Latitude>41.91853269857261</Latitude>
+        <Longitude>-93.55193137872567</Longitude>
+        <MiningMethod>WundergroundPageSubUrl</MiningMethod>
+        <TimeZone>Central Standard Time</TimeZone>
+        <ApiUrl>http://api.wunderground.com/api/</ApiUrl>
+        <ApiKey>**MyWundergroundApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>4</MaxNumberOfCallsPerMinute>
+      </WeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="US_PugetSoundEnergy">
+      <EmissionsMiningRegion friendlyName="US_PugetSoundEnergy">
+        <EmissionsWattTimeAbbreviation>PSEI</EmissionsWattTimeAbbreviation>
+        <Latitude>47.68009593341535</Latitude>
+        <Longitude>-122.11638450372567</Longitude>
+        <TimeZone>Pacific Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+      </EmissionsMiningRegion>
+
+      <WeatherMiningRegion friendlyName="US_PugetSoundEnergy">
+        <weatherRegionWundergroundSubUrl>us/wa/redmond</weatherRegionWundergroundSubUrl>
+        <Latitude>47.68009593341535</Latitude>
+        <Longitude>-122.11638450372567</Longitude>
+        <MiningMethod>WundergroundPageSubUrl</MiningMethod>
+        <TimeZone>Pacific Standard Time</TimeZone>
+        <ApiUrl>http://api.wunderground.com/api/</ApiUrl>
+        <ApiKey>**MyWundergroundApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>4</MaxNumberOfCallsPerMinute>
+      </WeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="US_ERCOT">
+      <EmissionsMiningRegion friendlyName="US_ERCOT">
+        <EmissionsWattTimeAbbreviation>ERCOT</EmissionsWattTimeAbbreviation>
+        <Latitude>31.076386442248403</Latitude>
+        <Longitude>-96.92138671375</Longitude>
+        <TimeZone>Central Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+      </EmissionsMiningRegion>
+
+      <WeatherMiningRegion friendlyName="US_ERCOT">
+        <weatherRegionWundergroundSubUrl>us/tx/austin</weatherRegionWundergroundSubUrl>
+        <Latitude>31.076386442248403</Latitude>
+        <Longitude>-96.92138671375</Longitude>
+        <MiningMethod>WundergroundPageSubUrl</MiningMethod>
+        <TimeZone>Central Standard Time</TimeZone>
+        <ApiUrl>http://api.wunderground.com/api/</ApiUrl>
+        <ApiKey>**MyWundergroundApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>4</MaxNumberOfCallsPerMinute>
+      </WeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="US_ISONewEngland">
+      <EmissionsMiningRegion friendlyName="US_ISONewEngland">
+        <EmissionsWattTimeAbbreviation>ISONE</EmissionsWattTimeAbbreviation>
+        <Latitude>42.70864591994315</Latitude>
+        <Longitude>-72.16918945062508</Longitude>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+      </EmissionsMiningRegion>
+
+      <WeatherMiningRegion friendlyName="US_ISONewEngland">
+        <weatherRegionWundergroundSubUrl>us/nd/new_england</weatherRegionWundergroundSubUrl>
+        <Latitude>42.70864591994315</Latitude>
+        <Longitude>-72.16918945062508</Longitude>
+        <MiningMethod>WundergroundPageSubUrl</MiningMethod>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>http://api.wunderground.com/api/</ApiUrl>
+        <ApiKey>**MyWundergroundApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>4</MaxNumberOfCallsPerMinute>
+      </WeatherMiningRegion>
+    </Region>
+
+  </Regions>
+</ApiMinerConfigLayout>

@@ -2,17 +2,16 @@
 // This code is published under the The MIT License (MIT). See LICENSE.TXT for details. 
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CentralLoggerIntegrationTests
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
 
     using CentralLogger;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class LoggerTests
