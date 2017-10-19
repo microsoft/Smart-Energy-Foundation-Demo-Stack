@@ -21,7 +21,7 @@ This code is licensed under the [MIT license](LICENSE).
 To use this solution, users must first register for API keys with Wunderground and WattTime. Both services have a certain amount of free usage allowed. The usage thresholds and commercial usage restrictions are outlined in the terms of use of both services and the user is responsible for adhering to these. So the steps to getting started: 
 
 1. If you don't already have it, download Visual Studio from https://www.visualstudio.com/
-2. If you don't already have an Azure subscription, sign up for a free trial of Azure at https://azure.microsoft.com/en-us/free . 
+2. If you don't already have an Azure subscription, sign up for a free trial of Azure at https://azure.microsoft.com/en-us/free
 2. Register for a WattTime Carbon Emissions Data API Key here: https://api.watttime.org/accounts/register/
 3. Register for a Wunderground Weather Data API Key here: https://www.wunderground.com/weather/api/
 
