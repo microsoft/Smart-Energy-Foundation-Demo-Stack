@@ -55,11 +55,12 @@ The DataMinerFunction reads where it should mine Weather and Emissions data from
 	* ![DataMinerConfigurationFile](Images/ConfigurationLocations.png)
 
 You can update the regions being mined in two places: 
+
 A) Directly in the running Azure Function: 
-	1. Opening the Resource group in the Azure Portal
-	2. Hit the Azure Function and hit App Service Editor
-	3. You'll see the ApiDataMinerConfigs.xml files listed in the ApiDataMinerConfigs folder under the wwroot
-	4. You can update the content of the XML file and the updated contents will be picked up by the miner Azure Function the next time it runs. 
+1. Opening the Resource group in the Azure Portal
+2. Hit the Azure Function and hit App Service Editor
+3. You'll see the ApiDataMinerConfigs.xml files listed in the ApiDataMinerConfigs folder under the wwroot
+4. You can update the content of the XML file and the updated contents will be picked up by the miner Azure Function the next time it runs. 
 
 B) In the Visual Studio Solution: by updating the ApiDataMinerConfigs.xml XML file in the Azure Function project, before publishing the function to the Azure Function running on your Azure subscription
 
