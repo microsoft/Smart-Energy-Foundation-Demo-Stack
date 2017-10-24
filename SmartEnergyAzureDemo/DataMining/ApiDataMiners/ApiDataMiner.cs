@@ -82,7 +82,15 @@ namespace ApiDataMiners
                         var regionWattTimeName =
                             regionConfiguration.EmissionsMiningRegion.EmissionsWattTimeAbbreviation;
                         var wattTimeApiUrl = regionConfiguration.EmissionsMiningRegion.ApiUrl;
-                        var wattTimeApiKey = wattTimeApiKeyOverride ?? regionConfiguration.EmissionsMiningRegion.ApiKey;
+                        string wattTimeApiKey = null;
+                        if (string.IsNullOrEmpty(wattTimeApiKeyOverride) || wattTimeApiKeyOverride.Equals("none"))
+                        {
+                            wattTimeApiKey = regionConfiguration.EmissionsMiningRegion.ApiKey;
+                        }
+                        else
+                        {
+                            wattTimeApiKey = wattTimeApiKeyOverride;
+                        }
                         var selfThrottlingMethod = regionConfiguration.WeatherMiningRegion.SelfThrottlingMethod;
                         var maxNumberOfCallsPerMinute =
                             regionConfiguration.WeatherMiningRegion.MaxNumberOfCallsPerMinute;
@@ -153,8 +161,15 @@ namespace ApiDataMiners
                         var weatherRegionWundergroundSubUrl =
                             regionConfiguration.WeatherMiningRegion.weatherRegionWundergroundSubUrl;
                         var wundergroundApiUrl = regionConfiguration.WeatherMiningRegion.ApiUrl;
-                        var wundergroundApiKey =
-                            wundergroundApiKeyOverride ?? regionConfiguration.WeatherMiningRegion.ApiKey;
+                        string wundergroundApiKey = null;
+                        if (string.IsNullOrEmpty(wundergroundApiKeyOverride) || wundergroundApiKeyOverride.Equals("none"))
+                        {
+                            wundergroundApiKey = regionConfiguration.WeatherMiningRegion.ApiKey;
+                        }
+                        else
+                        {
+                            wundergroundApiKey = wundergroundApiKeyOverride;
+                        }
                         var selfThrottlingMethod = regionConfiguration.WeatherMiningRegion.SelfThrottlingMethod;
                         var maxNumberOfCallsPerMinute =
                             regionConfiguration.WeatherMiningRegion.MaxNumberOfCallsPerMinute;
