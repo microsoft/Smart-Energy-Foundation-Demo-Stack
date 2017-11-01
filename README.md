@@ -1,5 +1,5 @@
 # Welcome to the Azure Carbon Emissions Data Platform
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.svg)](https://start.cortanaintelligence.com/Deployments/new/smartenergyemissions) <-- Click here to deploy the solution to your Azure subscription with a single click.
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.svg)](https://gallery.cortanaintelligence.com/Solution/Carbon-Emissions-Data-Platform-2) <-- Click here to deploy the solution to your Azure subscription with a single click.
 
 # Overview
 Optimising energy consumption based on the real-time Marginal Emissions of an electricity market can substantially reduce the consumer's Carbon Emissions [[1](http://ieeexplore.ieee.org/document/6128960/?reload=true)]. 
@@ -26,7 +26,7 @@ To use this solution, users must first register for API keys with Wunderground a
 3. Register for a Wunderground Weather Data API Key here: https://www.wunderground.com/weather/api/
 
 # Deploying the Solution
-You can deploy the solution automatically to your Azure Subscription [here](https://start.cortanaintelligence.com/Deployments/new/smartenergyemissions). That solution will automatically create the infrastructure on your Azure subscription. You can then customise the solution using the code in this project and deploy that updated version to update your running copy of the platform. 
+You can deploy the solution automatically to your Azure Subscription [here](https://gallery.cortanaintelligence.com/Solution/Carbon-Emissions-Data-Platform-2). That solution will automatically create the infrastructure on your Azure subscription. You can then customise the solution using the code in this project and deploy that updated version to update your running copy of the platform. 
 
 # Customising the Solution and your Infrastructure
 ## Components
@@ -91,7 +91,7 @@ If the solution is deployed from here, the Data Miner Azure Function is automati
 ![AzureFunctionSettings](Images/AzureFunctionSettings.png)
 
 # Manually Creating the Infrastructure on Azure
-You can deploy the solution automatically to your Azure Subscription [here](https://start.cortanaintelligence.com/Deployments/new/smartenergyemissions) and that will create all required infrastructure automatically. However, if you want to create the infrastructure and deploy it manually, you can with the following steps: First register for API keys with Wunderground and WattTIme. Both services have a certain amount of free usage allowed. The usage thresholds and commercial usage restrictions are outlined in the terms of use of both services and the user is responsible for adhering to these. 
+You can deploy the solution automatically to your Azure Subscription [here](https://gallery.cortanaintelligence.com/Solution/Carbon-Emissions-Data-Platform-2) and that will create all required infrastructure automatically. However, if you want to create the infrastructure and deploy it manually, you can with the following steps: First register for API keys with Wunderground and WattTIme. Both services have a certain amount of free usage allowed. The usage thresholds and commercial usage restrictions are outlined in the terms of use of both services and the user is responsible for adhering to these. 
 Next, create the infrastructure on your Azure subscription for it to run on. You will need:
 * A SQL Azure Server and Database
 * An Azure Storage account
@@ -117,17 +117,16 @@ When you have created the infrastructure and registered for the API keys, the de
 4. Right click on the DataMinerFunction project and hit Publish. Sign into your subscription, and publish the Function to the Azure Function you created. 
 
 ## Custom Visualisation 
-The Automated Deployment (You can deploy the solution automatically to your Azure Subscription [here](https://start.cortanaintelligence.com/Deployments/new/smartenergyemissions)) automatically deploys a PowerBI dashboard which displays the data the solution is mining. You also have the option of deploying an R ShinyApp as the visualisation if you so wish. The ShinyApp Dashboard looks like this: 
+The Automated Deployment (You can deploy the solution automatically to your Azure Subscription [here](https://gallery.cortanaintelligence.com/Solution/Carbon-Emissions-Data-Platform-2)) automatically deploys a PowerBI dashboard which displays the data the solution is mining. You also have the option of deploying an R ShinyApp as the visualisation if you so wish. The ShinyApp Dashboard looks like this: 
 ![Screenshot](Images/MainScreenshot.png)
  The app.R file contains R code that can be deployed as a ShinyApp for free to ShinyApps.io (https://www.shinyapps.io/). To publish it, download RStudio (or your R editor of choice), open the App.R file in the RVisualizationDashboard folder, update the SQL Connection string to point to your SQL Azure database and hit the publish button, entering your ShinyApps.io account details. For the application to talk to your SQL Azure database from ShinyApps.io, you will need to whitelist the Shiny IP ranges on your SQL Azure server: 54.204.29.251, 54.204.34.9, 54.204.36.75 and 54.204.37.78
 	* ![PublishingVisualisationDashboardFromRStudio](Images/PublishingVisualisationDashboardFromRStudio.png)
 
 ## Updating the PowerBI Visualisation 
-If you deploy the solution automatically to your Azure Subscription from [here](https://start.cortanaintelligence.com/Deployments/new/smartenergyemissions), a PowerBI dashboard is automatically created and deployed in your Azure subscription which displays the resources in the data in your database. If you would like to customise that PowerBI Dashboard, the PBIX file is checked into this Visual Studio solution, under the 08.Visualization folder. 
+If you deploy the solution automatically to your Azure Subscription from [here](https://gallery.cortanaintelligence.com/Solution/Carbon-Emissions-Data-Platform-2), a PowerBI dashboard is automatically created and deployed in your Azure subscription which displays the resources in the data in your database. If you would like to customise that PowerBI Dashboard, the PBIX file is checked into this Visual Studio solution, under the 08.Visualization folder. 
 
 ### Updating the period for which data is displayed
 The PowerBI dashboard pulls data from the SQL Azure Database using views to make the query as fast as possible. These Views can be viewed, and updated, from the Visual Studio Solution in the SmartEnergyDatabase project. For example, the default period for the charting of emissions data is the most recent 14 days of data. This is set in the [ProcessedEmissionsDataPointsForRender] view, and can be updated from there. 
 
 # Contributing
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
