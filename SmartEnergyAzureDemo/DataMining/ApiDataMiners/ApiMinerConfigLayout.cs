@@ -114,6 +114,8 @@ namespace ApiDataMiners
 
         private string friendlyNameField;
 
+        private string selfThrottlingMethodField;
+
         /// <remarks/>
         public string EmissionsWattTimeAbbreviation
         {
@@ -176,6 +178,19 @@ namespace ApiDataMiners
             set
             {
                 this.timeZoneField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string SelfThrottlingMethod
+        {
+            get
+            {
+                return this.selfThrottlingMethodField;
+            }
+            set
+            {
+                this.selfThrottlingMethodField = value;
             }
         }
 
