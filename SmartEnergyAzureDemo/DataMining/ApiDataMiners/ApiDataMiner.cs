@@ -91,9 +91,9 @@ namespace ApiDataMiners
                         {
                             wattTimeApiKey = wattTimeApiKeyOverride;
                         }
-                        var selfThrottlingMethod = regionConfiguration.WeatherMiningRegion.SelfThrottlingMethod;
+                        var selfThrottlingMethod = regionConfiguration.EmissionsMiningRegion.SelfThrottlingMethod;
                         var maxNumberOfCallsPerMinute =
-                            regionConfiguration.WeatherMiningRegion.MaxNumberOfCallsPerMinute;
+                            regionConfiguration.EmissionsMiningRegion.MaxNumberOfCallsPerMinute;
                         var historicStartDateTime = DateTime.UtcNow.AddDays(-15);
                         var historicEndDateTime = DateTime.UtcNow.AddDays(1);
                         var forecastStartDateTime = DateTime.UtcNow.AddDays(-2);

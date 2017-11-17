@@ -116,6 +116,8 @@ namespace ApiDataMiners
 
         private string selfThrottlingMethodField;
 
+        private byte maxNumberOfCallsPerMinuteField;
+
         /// <remarks/>
         public string EmissionsWattTimeAbbreviation
         {
@@ -191,6 +193,19 @@ namespace ApiDataMiners
             set
             {
                 this.selfThrottlingMethodField = value;
+            }
+        }
+
+        /// <remarks/>
+        public byte MaxNumberOfCallsPerMinute
+        {
+            get
+            {
+                return this.maxNumberOfCallsPerMinuteField;
+            }
+            set
+            {
+                this.maxNumberOfCallsPerMinuteField = value;
             }
         }
 
