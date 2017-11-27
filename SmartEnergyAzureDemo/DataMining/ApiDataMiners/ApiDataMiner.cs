@@ -170,7 +170,7 @@ namespace ApiDataMiners
                         {
                             wundergroundApiKey = wundergroundApiKeyOverride;
                         }
-                        var selfThrottlingMethod = regionConfiguration.EmissionsMiningRegion.SelfThrottlingMethod;
+                        var selfThrottlingMethod = regionConfiguration.WeatherMiningRegion.SelfThrottlingMethod;
                         var maxNumberOfCallsPerMinute =
                             regionConfiguration.WeatherMiningRegion.MaxNumberOfCallsPerMinute;
                         var historicStartDateTime = DateTime.UtcNow.AddDays(-1);
