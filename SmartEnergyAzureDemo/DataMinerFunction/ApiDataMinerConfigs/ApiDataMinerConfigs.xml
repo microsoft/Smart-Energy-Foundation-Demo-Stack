@@ -149,6 +149,55 @@
         <MaxNumberOfCallsPerMinute>4</MaxNumberOfCallsPerMinute>
       </WeatherMiningRegion>
     </Region>
+    
+  	<Region friendlyName="Norway">
+      <EmissionsMiningRegion friendlyName="Norway">
+        <EmissionsWattTimeAbbreviation>NO</EmissionsWattTimeAbbreviation>
+        <Latitude>58.279231</Latitude>
+        <Longitude>6.892410</Longitude>
+        <TimeZone>Central European Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+      </EmissionsMiningRegion>
+
+      <WeatherMiningRegion friendlyName="Norway_Kristiansand">
+        <weatherRegionWundergroundSubUrl>no/kristiansand</weatherRegionWundergroundSubUrl>
+        <Latitude>58.24158635676374</Latitude>
+        <Longitude>8.096923830624974</Longitude>
+        <TimeZone>Central European Standard Time</TimeZone>
+        <ApiUrl>http://api.wunderground.com/api/</ApiUrl>
+        <ApiKey>**MyWundergroundApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>4</MaxNumberOfCallsPerMinute>
+      </WeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="France">
+      <EmissionsMiningRegion friendlyName="France">
+        <EmissionsWattTimeAbbreviation>FR</EmissionsWattTimeAbbreviation>
+        <Latitude>48.856614</Latitude>
+        <Longitude>2.3522219</Longitude>
+        <TimeZone>Central European Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+      </EmissionsMiningRegion>
+
+      <WeatherMiningRegion friendlyName="France_Paris">
+        <weatherRegionWundergroundSubUrl></weatherRegionWundergroundSubUrl>
+        <Latitude>48.856614</Latitude>
+        <Longitude>2.3522219</Longitude>
+        <TimeZone>Central European Standard Time</TimeZone>
+        <MiningMethod>GPS</MiningMethod>
+        <ApiUrl>http://api.wunderground.com/api/</ApiUrl>
+        <ApiKey>**MyWundergroundApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>4</MaxNumberOfCallsPerMinute>
+      </WeatherMiningRegion>
+    </Region>
 
   </Regions>
 </ApiMinerConfigLayout>

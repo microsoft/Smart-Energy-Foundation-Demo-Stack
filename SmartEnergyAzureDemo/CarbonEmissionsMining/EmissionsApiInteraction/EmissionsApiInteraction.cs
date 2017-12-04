@@ -116,7 +116,21 @@ namespace EmissionsApiInteraction
                 customParams = customUrlParams.StartsWith("&") ? $"{customParams}{customUrlParams}" : $"{customParams}&{customUrlParams}";
             }
 
-            return GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, startDateTime, endDateTime, timeout, wattTimeApiKey, customParams);
+            // First check for the most granular results available
+            var fiveMinuteMarginalResults = GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, startDateTime, endDateTime, timeout, wattTimeApiKey, customParams);
+            if (fiveMinuteMarginalResults.Any())
+            {
+                return fiveMinuteMarginalResults;
+            }
+
+            // There were no 5 minute Marginal results, try for hourly Marginal Values
+            customParams = "&market=RTHR";
+            if (customUrlParams != null)
+            {
+                customParams = customUrlParams.StartsWith("&") ? $"{customParams}{customUrlParams}" : $"{customParams}&{customUrlParams}";
+            }
+            var hourlyMarginalResults = GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, startDateTime, endDateTime, timeout, wattTimeApiKey, customParams);
+            return hourlyMarginalResults;
         }
 
         /// <summary>
