@@ -224,6 +224,32 @@
         <MaxNumberOfCallsPerMinute>4</MaxNumberOfCallsPerMinute>
       </WeatherMiningRegion>
     </Region>
+    
+    <Region friendlyName="UK">
+      <EmissionsMiningRegion friendlyName="UK">
+        <EmissionsWattTimeAbbreviation>National Grid</EmissionsWattTimeAbbreviation>
+        <Latitude>51.5073509</Latitude>
+        <Longitude>-0.12775829999998223</Longitude>
+        <TimeZone>GMT Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+
+      <WeatherMiningRegion friendlyName="UK_London">
+        <weatherRegionWundergroundSubUrl>gb/london</weatherRegionWundergroundSubUrl>
+        <Latitude>51.5073509</Latitude>
+        <Longitude>-0.12775829999998223</Longitude>
+        <MiningMethod>WundergroundPageSubUrl</MiningMethod>
+        <TimeZone>GMT Standard Time</TimeZone>
+        <ApiUrl>http://api.wunderground.com/api/</ApiUrl>
+        <ApiKey>**MyWundergroundApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>4</MaxNumberOfCallsPerMinute>
+      </WeatherMiningRegion>
+    </Region>
 
   </Regions>
 </ApiMinerConfigLayout>
