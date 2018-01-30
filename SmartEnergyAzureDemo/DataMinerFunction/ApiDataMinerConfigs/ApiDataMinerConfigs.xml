@@ -198,6 +198,32 @@
         <MaxNumberOfCallsPerMinute>4</MaxNumberOfCallsPerMinute>
       </WeatherMiningRegion>
     </Region>
+    
+    <Region friendlyName="Ireland">
+      <EmissionsMiningRegion friendlyName="Ireland">
+        <EmissionsWattTimeAbbreviation>IE</EmissionsWattTimeAbbreviation>
+        <Latitude>53.3498</Latitude>
+        <Longitude>-6.2603</Longitude>
+        <TimeZone>GMT Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+
+      <WeatherMiningRegion friendlyName="Ireland">
+        <weatherRegionWundergroundSubUrl>ie/dublin</weatherRegionWundergroundSubUrl>
+        <Latitude>53.3498</Latitude>
+        <Longitude>-6.2603</Longitude>
+        <MiningMethod>WundergroundPageSubUrl</MiningMethod>
+        <TimeZone>GMT Standard Time</TimeZone>
+        <ApiUrl>http://api.wunderground.com/api/</ApiUrl>
+        <ApiKey>**MyWundergroundApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>4</MaxNumberOfCallsPerMinute>
+      </WeatherMiningRegion>
+    </Region>
 
   </Regions>
 </ApiMinerConfigLayout>
