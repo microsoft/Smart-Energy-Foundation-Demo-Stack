@@ -6,6 +6,8 @@
 namespace ApiInteraction.Helper
 {
     using System;
+    using System.IO;
+    using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
@@ -55,6 +57,49 @@ namespace ApiInteraction.Helper
                 var responseAsString = await response.Content.ReadAsStringAsync();
                 var responseAsConcreteType = JsonConvert.DeserializeObject<T>(responseAsString);
                 return responseAsConcreteType;
+            }
+        }
+
+        /// <summary>
+        /// Run a HTTP call with the given Bearer Auth Token, and serialize the result into the given type T
+        /// </summary>
+        /// <typeparam name="T">Type T</typeparam>
+        /// <param name="baseUrl">Base URL</param>
+        /// <param name="subUrl">Sub URL</param>
+        /// <param name="bearerAuthToken">Bearer Auth Token for the API</param>
+        /// <param name="timeout">Optional Timeout value for the HTTP call. Null will default the timeout value to 5 minutes</param>
+        /// <returns></returns>
+        public async Task<T> GetHttpResponseContentAsType<T>(string baseUrl, string subUrl, string bearerAuthToken, TimeSpan? timeout = null)
+        {            
+            var fullUrl = $"{baseUrl}{subUrl}";
+            string responseAsString = string.Empty;
+
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(fullUrl);
+
+            if (timeout != null)
+            {
+                httpWebRequest.Timeout = timeout.Value.Milliseconds;
+            }
+            else
+            {
+                //default to a 5 minute timeout
+                httpWebRequest.Timeout = 300000;
+            }
+
+            httpWebRequest.Method = "GET";
+            httpWebRequest.Headers.Add("Authorization", "Bearer " + bearerAuthToken);
+
+            using (HttpWebResponse response = (HttpWebResponse)httpWebRequest.GetResponse())
+            {
+                using (Stream stream = response.GetResponseStream())
+                {
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        responseAsString = reader.ReadToEnd();
+                    }
+                    var responseAsConcreteType = JsonConvert.DeserializeObject<T>(responseAsString);
+                    return responseAsConcreteType;
+                }
             }
         }
     }

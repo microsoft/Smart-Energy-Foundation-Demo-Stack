@@ -18,6 +18,7 @@ namespace SmartEnergyOM
         public EmissionsRegion()
         {
             this.CarbonEmissionsDataPoints = new HashSet<CarbonEmissionsDataPoint>();
+            this.CarbonEmissionsRelativeMeritDataPoints = new HashSet<CarbonEmissionsRelativeMeritDataPoint>();
             this.MarketWeatherEmissionsRegionMappings = new HashSet<MarketWeatherEmissionsRegionMapping>();
         }
     
@@ -30,6 +31,8 @@ namespace SmartEnergyOM
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CarbonEmissionsDataPoint> CarbonEmissionsDataPoints { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CarbonEmissionsRelativeMeritDataPoint> CarbonEmissionsRelativeMeritDataPoints { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MarketWeatherEmissionsRegionMapping> MarketWeatherEmissionsRegionMappings { get; set; }
     }

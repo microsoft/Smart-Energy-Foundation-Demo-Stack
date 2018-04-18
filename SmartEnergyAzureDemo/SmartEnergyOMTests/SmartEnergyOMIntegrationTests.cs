@@ -523,6 +523,58 @@ namespace SmartEnergyOMTests
             // Clean Up 
             this.objectModel.DeleteMarketDataPoints(region.MarketRegionID, dateTimeOfRow);
             this.objectModel.DeleteMarketRegion(regionName);
+        }       
+
+        [TestMethod]
+        public void TestUpdateCarbonEmissionsRelativeMeritDataPoints()
+        {
+            // Arrange
+            var emissionsRegionName = $"TestEmissionsRegionName_{Guid.NewGuid()}";
+            const string regionAbbreviation = "PJM";
+            const double regionLatitude = 37.7749;
+            const double regionLongitude = 122.4194;
+            const string timeZone = "Eastern Standard Time";
+            var dateTimeOfRow = DateTime.UtcNow;
+            var random = new Random();
+
+            var EmissionsRelativeMerit = random.NextDouble();
+            var ForecastEmissionsRelativeMerit = random.NextDouble();
+
+            //First insert a datapoint that will be updated
+            var emissionsRegion = this.objectModel.AddEmissionsRegion(
+                emissionsRegionName,
+                timeZone,
+                regionLatitude,
+                regionLongitude,
+                regionAbbreviation);
+
+            this.objectModel.InsertOrUpdateCarbonEmissionsRelativeMeritDataPoints(
+                emissionsRegion.EmissionsRegionID,
+                dateTimeOfRow,
+                EmissionsRelativeMerit,
+                ForecastEmissionsRelativeMerit);
+
+            // Act
+            EmissionsRelativeMerit = random.NextDouble();
+            ForecastEmissionsRelativeMerit = random.NextDouble();
+
+            this.objectModel.InsertOrUpdateCarbonEmissionsRelativeMeritDataPoints(
+                emissionsRegion.EmissionsRegionID,
+                dateTimeOfRow,
+                EmissionsRelativeMerit,
+                ForecastEmissionsRelativeMerit);
+
+            // Assert
+            var retrievedDataPoints =
+                this.objectModel.FindCarbonEmissionsRelativeMeritDataPoints(emissionsRegion.EmissionsRegionID, dateTimeOfRow.AddSeconds(-1), dateTimeOfRow.AddSeconds(1));
+            var firstItem = retrievedDataPoints[0];
+            Assert.IsNotNull(retrievedDataPoints);
+            Assert.AreEqual(EmissionsRelativeMerit, firstItem.EmissionsRelativeMerit);
+            Assert.AreEqual(ForecastEmissionsRelativeMerit, firstItem.EmissionsRelativeMerit_Forcast);           
+
+            // Clean Up 
+            this.objectModel.DeleteCarbonEmissionsDataPoints(emissionsRegion.EmissionsRegionID, dateTimeOfRow);
+            this.objectModel.DeleteEmissionsRegion(emissionsRegionName);
         }
 
         [TestCleanup]

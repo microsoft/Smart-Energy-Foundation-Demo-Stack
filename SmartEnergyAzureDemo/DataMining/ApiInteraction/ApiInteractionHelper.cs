@@ -76,40 +76,31 @@ namespace ApiInteraction
             WebApiSerializerHelper<T> webApiHelper,
             string apiQueryUrl, string urlParameters, string apiKey = null, string apiName = null)
         {
-            switch (_selfThrottlingMethod)
-            {
-                case SelfThrottlingMethod.InMemoryCallRecollection:
-                    // Check if we have hit our limit for number of calls to the API
-                    while (!this.VerifyInMemoryThrottledCallCanProceed())
-                    {
-                        Logger.Information($"Delaying issueing call to {apiName} API to ensure API throttling isn't exceeded at {DateTime.UtcNow}", "ApiInteractionHelper: ExecuteThrottledApiCall()");
-                        Thread.Sleep(500);
-                    }
-
-                    // Add this call to the call tracker
-                    this.recentApiCalls.Add(DateTime.UtcNow);
-                    break;
-
-                case SelfThrottlingMethod.AzureTableStorageCallRecollection:
-                    // Check if we have hit our limit for number of calls to the API
-                    while (!this.VerifyAzureTableStorageThrottledCallCanProceed(apiKey, apiName))
-                    {
-                        Logger.Information($"Delaying issueing call to {apiName} API to ensure API throttling isn't exceeded at {DateTime.UtcNow}", "ApiInteractionHelper: ExecuteThrottledApiCall()");
-                        Thread.Sleep(500);
-                    }
-
-                    // Add this call to the call tracker
-                    AzureTableStorageHelper.LogApiCallToTableStorage(new ApiCallRecordTableEntity(apiKey, apiName));
-                    break;
-
-                case SelfThrottlingMethod.None:
-                default:
-                    // Apply no throttling - proceed with call
-                    break;
-
-            }
+            ExecuteSelfThrottlingPolicy(apiKey, apiName);
 
             var response = webApiHelper.GetHttpResponseContentAsType<T>(apiQueryUrl, urlParameters, timeout, apiKey).Result;
+            return response;
+        }        
+
+        /// <summary>
+        /// Make a call to an API with the given details, and apply the specified self-throttling method
+        /// </summary>
+        /// <typeparam name="T">Type to desearalize the data returned into</typeparam>
+        /// <param name="timeout">Optional time to give up after</param>
+        /// <param name="webApiHelper">WebApiSerializerHelper of a given type</param>
+        /// <param name="apiQueryUrl">URL of the API</param>
+        /// <param name="urlParameters">Optional paramaters for the API call</param>
+        /// <param name="apiKey">Optional APIKey for the API</param>
+        /// <param name="apiName">Optional Name of the API for logging</param>
+        /// <returns>Results of the API call, desearilized into the given object type</returns>
+        public T ExecuteThrottledApiCallWithBearerAuthToken<T>(
+            TimeSpan? timeout,
+            WebApiSerializerHelper<T> webApiHelper,
+            string apiQueryUrl, string urlParameters, string bearerAuthToken = null, string apiName = null)
+        {
+            ExecuteSelfThrottlingPolicy(bearerAuthToken, apiName);
+
+            var response = webApiHelper.GetHttpResponseContentAsType<T>(apiQueryUrl, urlParameters, bearerAuthToken, timeout).Result;
             return response;
         }
 
@@ -132,6 +123,48 @@ namespace ApiInteraction
             else
             {
                 return true;
+            }
+        }
+
+        /// <summary>
+        /// Assess the self-set quota policy and number of recent calls made, and ensure that we don't exceed that number. This thread
+        /// blocks if the limit set has been reached, until it is back under the required threshold
+        /// </summary>
+        /// <param name="identifierForThrottlingRecords">Identifier to use to track API calls to monitor calls against threshold</param>
+        /// <param name="apiName">Name of the API against which calls are being monitored</param>
+        private void ExecuteSelfThrottlingPolicy(string identifierForThrottlingRecords, string apiName)
+        {
+            switch (_selfThrottlingMethod)
+            {
+                case SelfThrottlingMethod.InMemoryCallRecollection:
+                    // Check if we have hit our limit for number of calls to the API
+                    while (!this.VerifyInMemoryThrottledCallCanProceed())
+                    {
+                        Logger.Information($"Delaying issueing call to {apiName} API to ensure API throttling isn't exceeded at {DateTime.UtcNow}", "ApiInteractionHelper: ExecuteThrottledApiCall()");
+                        Thread.Sleep(500);
+                    }
+
+                    // Add this call to the call tracker
+                    this.recentApiCalls.Add(DateTime.UtcNow);
+                    break;
+
+                case SelfThrottlingMethod.AzureTableStorageCallRecollection:
+                    // Check if we have hit our limit for number of calls to the API
+                    while (!this.VerifyAzureTableStorageThrottledCallCanProceed(identifierForThrottlingRecords, apiName))
+                    {
+                        Logger.Information($"Delaying issueing call to {apiName} API to ensure API throttling isn't exceeded at {DateTime.UtcNow}", "ApiInteractionHelper: ExecuteThrottledApiCall()");
+                        Thread.Sleep(500);
+                    }
+
+                    // Add this call to the call tracker
+                    AzureTableStorageHelper.LogApiCallToTableStorage(new ApiCallRecordTableEntity(identifierForThrottlingRecords, apiName));
+                    break;
+
+                case SelfThrottlingMethod.None:
+                default:
+                    // Apply no throttling - proceed with call
+                    break;
+
             }
         }
 

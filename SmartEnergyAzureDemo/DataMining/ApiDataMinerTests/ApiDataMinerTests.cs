@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ApiDataMinerTests
@@ -142,6 +143,11 @@ namespace ApiDataMinerTests
 
             var wattTimeApiUrl = CloudConfigurationManager.GetSetting("WattTimeApiUrl");
             var wattTimeApiKey = CloudConfigurationManager.GetSetting("WattTimeApiKey");
+            string wattTimeApiV2Url = CloudConfigurationManager.GetSetting("WattTimeApiV2Url");
+            string WattTimeUsername = CloudConfigurationManager.GetSetting("WattTimeUsername");
+            string WattTimePassword = CloudConfigurationManager.GetSetting("WattTimePassword");
+            string WattTimeEmail = CloudConfigurationManager.GetSetting("WattTimeEmail");
+            string WattTimeOrganization = CloudConfigurationManager.GetSetting("WattTimeOrganization");
             var selfThrottlingMethod = "AzureTableStorageCallRecollection";
             var maxNumberOfCallsPerMinute = 9;
 
@@ -179,6 +185,11 @@ namespace ApiDataMinerTests
                 CarbonEmissionsMiner carbonEmissionsMiner = new CarbonEmissionsMiner(
                                                                 wattTimeApiUrl,
                                                                 wattTimeApiKey,
+                                                                wattTimeApiV2Url,
+                                                                WattTimeUsername,
+                                                                WattTimePassword,
+                                                                WattTimeEmail,
+                                                                WattTimeOrganization,
                                                                 selfThrottlingMethod,
                                                                 databaseConnectionString,
                                                                 maxNumberOfCallsPerMinute,
@@ -216,11 +227,16 @@ namespace ApiDataMinerTests
         public void TestMineHistoricSystemWideCarbonResults()
         {
             // Arrange 
-            var startDateTime = new DateTime(2016, 1, 1); // DateTime.Now.AddDays(-10);
-            var endDateTime = new DateTime(2017, 1, 3); // var startDateTime = DateTime.Now.AddDays(-1);
+            var startDateTime =  DateTime.Now.AddDays(-10);
+            var endDateTime = DateTime.Now.AddDays(-1);
 
             var wattTimeApiUrl = CloudConfigurationManager.GetSetting("WattTimeApiUrl");
             var wattTimeApiKey = CloudConfigurationManager.GetSetting("WattTimeApiKey");
+            string wattTimeApiV2Url = CloudConfigurationManager.GetSetting("WattTimeApiV2Url");
+            string WattTimeUsername = CloudConfigurationManager.GetSetting("WattTimeUsername");
+            string WattTimePassword = CloudConfigurationManager.GetSetting("WattTimePassword");
+            string WattTimeEmail = CloudConfigurationManager.GetSetting("WattTimeEmail");
+            string WattTimeOrganization = CloudConfigurationManager.GetSetting("WattTimeOrganization");
             var selfThrottlingMethod = "AzureTableStorageCallRecollection";
             var maxNumberOfCallsPerMinute = 9;
 
@@ -250,6 +266,11 @@ namespace ApiDataMinerTests
                 CarbonEmissionsMiner carbonEmissionsMiner = new CarbonEmissionsMiner(
                                                                 wattTimeApiUrl,
                                                                 wattTimeApiKey,
+                                                                wattTimeApiV2Url,
+                                                                WattTimeUsername,
+                                                                WattTimePassword,
+                                                                WattTimeEmail,
+                                                                WattTimeOrganization,
                                                                 selfThrottlingMethod,
                                                                 databaseConnectionString,
                                                                 maxNumberOfCallsPerMinute,
@@ -287,12 +308,16 @@ namespace ApiDataMinerTests
         public void TestMineHistoricCarbonResults()
         {
             // Arrange 
-
-            var startDateTime = new DateTime(2016, 7, 1); // DateTime.Now.AddDays(-10);
-            var endDateTime = new DateTime(2016, 10, 1); // var startDateTime = DateTime.Now.AddDays(-1);
+            var startDateTime = DateTime.Now.AddDays(-10);
+            var endDateTime = DateTime.Now.AddDays(-1);
 
             var wattTimeApiUrl = CloudConfigurationManager.GetSetting("WattTimeApiUrl");
             var wattTimeApiKey = CloudConfigurationManager.GetSetting("WattTimeApiKey");
+            string wattTimeApiV2Url = CloudConfigurationManager.GetSetting("WattTimeApiV2Url");
+            string WattTimeUsername = CloudConfigurationManager.GetSetting("WattTimeUsername");
+            string WattTimePassword = CloudConfigurationManager.GetSetting("WattTimePassword");
+            string WattTimeEmail = CloudConfigurationManager.GetSetting("WattTimeEmail");
+            string WattTimeOrganization = CloudConfigurationManager.GetSetting("WattTimeOrganization");
             var selfThrottlingMethod = "AzureTableStorageCallRecollection";
             var maxNumberOfCallsPerMinute = 200;
 
@@ -332,6 +357,11 @@ namespace ApiDataMinerTests
                 CarbonEmissionsMiner carbonEmissionsMiner = new CarbonEmissionsMiner(
                                                                 wattTimeApiUrl,
                                                                 wattTimeApiKey,
+                                                                wattTimeApiV2Url,
+                                                                WattTimeUsername,
+                                                                WattTimePassword,
+                                                                WattTimeEmail,
+                                                                WattTimeOrganization,
                                                                 selfThrottlingMethod,
                                                                 databaseConnectionString,
                                                                 maxNumberOfCallsPerMinute,
@@ -383,6 +413,136 @@ namespace ApiDataMinerTests
         }
 
         [TestMethod]
+        public void TestCalculateHistoricRelativeMeritDataResults()
+        {
+            // Arrange 
+            var regionWattTimeName = "PJM";
+            var smartGridRegionName = "US_PJM";
+
+            var startDateTime = DateTime.UtcNow.AddDays(-10);
+            var endDateTime = DateTime.UtcNow.AddDays(-9);
+
+            var wattTimeApiUrl = CloudConfigurationManager.GetSetting("WattTimeApiUrl");
+            var wattTimeApiKey = CloudConfigurationManager.GetSetting("WattTimeApiKey");
+            string wattTimeApiV2Url = CloudConfigurationManager.GetSetting("WattTimeApiV2Url");
+            string WattTimeUsername = CloudConfigurationManager.GetSetting("WattTimeUsername");
+            string WattTimePassword = CloudConfigurationManager.GetSetting("WattTimePassword");
+            string WattTimeEmail = CloudConfigurationManager.GetSetting("WattTimeEmail");
+            string WattTimeOrganization = CloudConfigurationManager.GetSetting("WattTimeOrganization");
+            var selfThrottlingMethod = "AzureTableStorageCallRecollection";
+            var maxNumberOfCallsPerMinute = 200;
+
+            var wattTimeInteraction = new EmissionsApiInteraction(selfThrottlingMethod, maxNumberOfCallsPerMinute);
+
+            var carbonEmissionsMiner = new CarbonEmissionsMiner(
+                wattTimeApiUrl,
+                wattTimeApiKey,
+                wattTimeApiV2Url,
+                WattTimeUsername,
+                WattTimePassword,
+                WattTimeEmail,
+                WattTimeOrganization,
+                selfThrottlingMethod,
+                databaseConnectionString,
+                maxNumberOfCallsPerMinute,
+                wattTimeInteraction);
+
+            int regionId;
+            using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
+            {
+                regionId = _objectModel.FindEmissionsRegion(smartGridRegionName).EmissionsRegionID;
+            }
+            Assert.IsNotNull(regionId, "Couldn't find specified emissions region in the database");
+
+            // Act
+            var results = carbonEmissionsMiner.CalculateHistoricRelativeMeritDataResults(
+                regionId,
+                startDateTime,
+                endDateTime
+            );
+
+            // Assert
+            foreach (var item in results)
+            {
+                if (item.EmissionsRelativeMerit != null)
+                {
+                    Assert.IsTrue(item.EmissionsRelativeMerit >= 0, "item.EmissionsRelativeMerit >= 0");
+                    Assert.IsTrue(item.EmissionsRelativeMerit <= 1, "item.EmissionsRelativeMerit <= 1");
+                }
+                if (item.EmissionsRelativeMerit_Forcast != null)
+                {
+                    Assert.IsTrue(item.EmissionsRelativeMerit_Forcast >= 0, "item.EmissionsRelativeMerit_Forcast >= 0");
+                    Assert.IsTrue(item.EmissionsRelativeMerit_Forcast <= 1, "item.EmissionsRelativeMerit_Forcast <= 1");
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestMineOrCalculateCarbonEmissionsRelativeMerit_CustomInternalCalculation()
+        {
+            // Arrange 
+            var regionWattTimeName = "PJM";
+            var smartGridRegionName = "US_PJM";
+
+            var startDateTime = DateTime.UtcNow.AddDays(-10);
+            var endDateTime = DateTime.UtcNow.AddDays(-9);
+
+            var wattTimeApiUrl = CloudConfigurationManager.GetSetting("WattTimeApiUrl");
+            var wattTimeApiKey = CloudConfigurationManager.GetSetting("WattTimeApiKey");
+            string wattTimeApiV2Url = CloudConfigurationManager.GetSetting("WattTimeApiV2Url");
+            string WattTimeUsername = CloudConfigurationManager.GetSetting("WattTimeUsername");
+            string WattTimePassword = CloudConfigurationManager.GetSetting("WattTimePassword");
+            string WattTimeEmail = CloudConfigurationManager.GetSetting("WattTimeEmail");
+            string WattTimeOrganization = CloudConfigurationManager.GetSetting("WattTimeOrganization");
+            var selfThrottlingMethod = "AzureTableStorageCallRecollection";
+            var maxNumberOfCallsPerMinute = 200;
+
+            var wattTimeInteraction = new EmissionsApiInteraction(selfThrottlingMethod, maxNumberOfCallsPerMinute);
+
+            CarbonEmissionsMiner carbonEmissionsMiner = new CarbonEmissionsMiner(
+                                                            wattTimeApiUrl,
+                                                            wattTimeApiKey,
+                                                            wattTimeApiV2Url,
+                                                            WattTimeUsername,
+                                                            WattTimePassword,
+                                                            WattTimeEmail,
+                                                            WattTimeOrganization,
+                                                            selfThrottlingMethod,
+                                                            databaseConnectionString,
+                                                            maxNumberOfCallsPerMinute,
+                                                            wattTimeInteraction,
+                                                            "CustomInternalCalculation");
+
+            int regionId;
+            using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
+            {
+                regionId = _objectModel.FindEmissionsRegion(smartGridRegionName).EmissionsRegionID;
+            }
+            Assert.IsNotNull(regionId, "Couldn't find specified emissions region in the database");
+
+            // Act
+            carbonEmissionsMiner.MineOrCalculateCarbonEmissionsRelativeMerit(
+                regionWattTimeName,
+                regionId);
+
+            // Assert
+            // Verify that each data point has been recorded in the database            
+            var results = carbonEmissionsMiner.CalculateHistoricRelativeMeritDataResults(
+                            regionId,
+                            startDateTime,
+                            endDateTime);
+
+            foreach (var result in results)
+            {
+                using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
+                {
+                    var dataPoint = _objectModel.FindCarbonEmissionsRelativeMeritDataPoints(regionId, result.Timestamp.AddMinutes(-5), result.Timestamp.AddMinutes(15));
+                    Assert.IsNotNull(dataPoint);
+                }
+            }
+        }
+
+        [TestMethod]
         public void TestMineForecastMarginalCarbonResults()
         {
             // Arrange 
@@ -397,6 +557,11 @@ namespace ApiDataMinerTests
 
             var wattTimeApiUrl = CloudConfigurationManager.GetSetting("WattTimeApiUrl");
             var wattTimeApiKey = CloudConfigurationManager.GetSetting("WattTimeApiKey");
+            string wattTimeApiV2Url = CloudConfigurationManager.GetSetting("WattTimeApiV2Url");
+            string WattTimeUsername = CloudConfigurationManager.GetSetting("WattTimeUsername");
+            string WattTimePassword = CloudConfigurationManager.GetSetting("WattTimePassword");
+            string WattTimeEmail = CloudConfigurationManager.GetSetting("WattTimeEmail");
+            string WattTimeOrganization = CloudConfigurationManager.GetSetting("WattTimeOrganization");
             var selfThrottlingMethod = "AzureTableStorageCallRecollection";
             var maxNumberOfCallsPerMinute = 9;
 
@@ -414,6 +579,11 @@ namespace ApiDataMinerTests
             CarbonEmissionsMiner carbonEmissionsMiner = new CarbonEmissionsMiner(
                                                             wattTimeApiUrl,
                                                             wattTimeApiKey,
+                                                            wattTimeApiV2Url,
+                                                            WattTimeUsername,
+                                                            WattTimePassword,
+                                                            WattTimeEmail,
+                                                            WattTimeOrganization,
                                                             selfThrottlingMethod,
                                                             databaseConnectionString,
                                                             maxNumberOfCallsPerMinute,
@@ -446,7 +616,7 @@ namespace ApiDataMinerTests
                         Assert.IsNotNull(dataPoint);
                         Assert.AreEqual(
                             wattTimeInteraction.ConvertLbsPerMWhTo_GCo2PerkWh((double)result.marginal_carbon.value),
-                            dataPoint.MarginalCO2Intensity_gCO2kWh);
+                            dataPoint.MarginalCO2Intensity_Forcast_gCO2kWh);
                     }
                 }
             }
@@ -480,6 +650,13 @@ namespace ApiDataMinerTests
                         var regionWattTimeName = regionConfiguration.EmissionsMiningRegion.EmissionsWattTimeAbbreviation;
                         var wattTimeApiUrl = regionConfiguration.EmissionsMiningRegion.ApiUrl;
                         var wattTimeApiKey = regionConfiguration.EmissionsMiningRegion.ApiKey;
+
+                        var wattTimeApiV2Url = regionConfiguration.EmissionsMiningRegion.WattTimeApiV2Url;
+                        var wattTimeUsername = regionConfiguration.EmissionsMiningRegion.WattTimeUsername;
+                        var wattTimePassword = regionConfiguration.EmissionsMiningRegion.WattTimePassword;
+                        var wattTimeEmail = regionConfiguration.EmissionsMiningRegion.WattTimeEmail;
+                        var wattTimeOrganization = regionConfiguration.EmissionsMiningRegion.WattTimeOrganization;
+
                         var selfThrottlingMethod = regionConfiguration.WeatherMiningRegion.SelfThrottlingMethod;
                         var maxNumberOfCallsPerMinute =
                             regionConfiguration.WeatherMiningRegion.MaxNumberOfCallsPerMinute;

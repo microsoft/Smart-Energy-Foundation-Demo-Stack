@@ -9,8 +9,14 @@
         <TimeZone>Eastern Standard Time</TimeZone>
         <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
         <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
         <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
         <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
       </EmissionsMiningRegion>
 
       <WeatherMiningRegion friendlyName="US_PJM">
@@ -34,8 +40,14 @@
         <TimeZone>Pacific Standard Time</TimeZone>
         <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
         <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
         <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
         <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
       </EmissionsMiningRegion>
 
       <WeatherMiningRegion friendlyName="US_CAISO">
@@ -59,8 +71,14 @@
         <TimeZone>Central Standard Time</TimeZone>
         <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
         <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
         <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
         <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
       </EmissionsMiningRegion>
 
       <WeatherMiningRegion friendlyName="US_UpperMidwestISO">
@@ -84,8 +102,14 @@
         <TimeZone>Pacific Standard Time</TimeZone>
         <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
         <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
         <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
         <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
       </EmissionsMiningRegion>
 
       <WeatherMiningRegion friendlyName="US_PugetSoundEnergy">
@@ -109,7 +133,14 @@
         <TimeZone>Central Standard Time</TimeZone>
         <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
         <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
         <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
       </EmissionsMiningRegion>
 
       <WeatherMiningRegion friendlyName="US_ERCOT">
@@ -133,8 +164,14 @@
         <TimeZone>Eastern Standard Time</TimeZone>
         <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
         <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
         <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
         <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
       </EmissionsMiningRegion>
 
       <WeatherMiningRegion friendlyName="US_ISONewEngland">
@@ -158,8 +195,14 @@
         <TimeZone>Central European Standard Time</TimeZone>
         <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
         <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
         <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
         <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
       </EmissionsMiningRegion>
 
       <WeatherMiningRegion friendlyName="Norway_Kristiansand">
@@ -182,8 +225,14 @@
         <TimeZone>Central European Standard Time</TimeZone>
         <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
         <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
         <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
         <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
       </EmissionsMiningRegion>
 
       <WeatherMiningRegion friendlyName="France_Paris">
@@ -207,6 +256,11 @@
         <TimeZone>GMT Standard Time</TimeZone>
         <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
         <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
         <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
         <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
         <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
@@ -233,6 +287,11 @@
         <TimeZone>GMT Standard Time</TimeZone>
         <ApiUrl>https://api.watttime.org/api/v1/</ApiUrl>
         <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
         <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
         <MaxNumberOfCallsPerMinute>200</MaxNumberOfCallsPerMinute>
         <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>

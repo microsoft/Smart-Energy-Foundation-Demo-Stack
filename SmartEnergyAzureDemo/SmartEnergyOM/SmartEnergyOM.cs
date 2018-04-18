@@ -488,21 +488,25 @@ namespace SmartEnergyOM
         }
 
         /// <summary>
-        /// Find Weather Emissions based on the WeatherRegionID between startDateTime and endDateTime
+        /// Find Emissions DataPoints based on the WeatherRegionID between startDateTime and endDateTime
         /// </summary>
         /// <param name="EmissionsRegionID">EmissionsRegionID</param>
         /// <param name="startDateTime">DateTime marking the start of the period to query for</param>
         /// <param name="endDateTime">DateTime marking the end of the period to query for</param>
+        /// <param name="dateTimeFlexabilityInMinutes">The maximum range in minutes allowed  outside of the range specified for which datetimes should be accepted</param>
         /// <returns>Emissions datapoints belonging the given EmissionsRegionID between startDateTime and endDateTime</returns>
-        public List<CarbonEmissionsDataPoint> FindCarbonEmissionsDataPoints(int EmissionsRegionID, DateTime startDateTime, DateTime endDateTime)
+        public List<CarbonEmissionsDataPoint> FindCarbonEmissionsDataPoints(int EmissionsRegionID, DateTime startDateTime, DateTime endDateTime, double dateTimeFlexabilityInMinutes = 0)
         {
+            var processedStartDateTime = startDateTime.AddMinutes(-1 * dateTimeFlexabilityInMinutes);
+            var processedEndDateTime = endDateTime.AddMinutes(dateTimeFlexabilityInMinutes);
+
             using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
             {
                 var dbObject =
                     dbModel.CarbonEmissionsDataPoints.Where(
                         r =>
-                            r.EmissionsRegionID == EmissionsRegionID && r.DateTimeUTC > startDateTime
-                            && r.DateTimeUTC < endDateTime);
+                            r.EmissionsRegionID == EmissionsRegionID && r.DateTimeUTC >= processedStartDateTime
+                            && r.DateTimeUTC <= processedEndDateTime);
 
                 return dbObject.ToList();
             }
@@ -536,16 +540,20 @@ namespace SmartEnergyOM
         /// <param name="WeatherRegionID">WeatherRegionID</param>
         /// <param name="startDateTime">DateTime marking the start of the period to query for</param>
         /// <param name="endDateTime">DateTime marking the end of the period to query for</param>
+        /// <param name="dateTimeFlexabilityInMinutes">The maximum range in minutes allowed  outside of the range specified for which datetimes should be accepted</param>
         /// <returns>Weather datapoints belonging the given WeatherRegionID between startDateTime and endDateTime</returns>
-        public List<WeatherDataPoint> FindWeatherDataPoints(int WeatherRegionID, DateTime startDateTime, DateTime endDateTime)
+        public List<WeatherDataPoint> FindWeatherDataPoints(int WeatherRegionID, DateTime startDateTime, DateTime endDateTime, double dateTimeFlexabilityInMinutes = 0)
         {
+            var processedStartDateTime = startDateTime.AddMinutes(-1 * dateTimeFlexabilityInMinutes);
+            var processedEndDateTime = endDateTime.AddMinutes(dateTimeFlexabilityInMinutes);
+
             using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
             {
                 var dbObject =
                     dbModel.WeatherDataPoints.Where(
                         r =>
-                            r.WeatherRegionID == WeatherRegionID && r.DateTimeUTC > startDateTime
-                            && r.DateTimeUTC < endDateTime);
+                            r.WeatherRegionID == WeatherRegionID && r.DateTimeUTC >= processedStartDateTime
+                            && r.DateTimeUTC <= processedEndDateTime);
 
                 return dbObject.ToList();
             }
@@ -579,16 +587,44 @@ namespace SmartEnergyOM
         /// <param name="MarketRegionID">MarketRegionID</param>
         /// <param name="startDateTime">DateTime marking the start of the period to query for</param>
         /// <param name="endDateTime">DateTime marking the end of the period to query for</param>
+        /// <param name="dateTimeFlexabilityInMinutes">The maximum range in minutes allowed  outside of the range specified for which datetimes should be accepted</param>
         /// <returns>Weather datapoints belonging the given MarketRegionID between startDateTime and endDateTime</returns>
-        public List<MarketDataPoint> FindMarketDataPoints(int MarketRegionID, DateTime startDateTime, DateTime endDateTime)
+        public List<MarketDataPoint> FindMarketDataPoints(int MarketRegionID, DateTime startDateTime, DateTime endDateTime, double dateTimeFlexabilityInMinutes = 0)
         {
+            var processedStartDateTime = startDateTime.AddMinutes(-1 * dateTimeFlexabilityInMinutes);
+            var processedEndDateTime = endDateTime.AddMinutes(dateTimeFlexabilityInMinutes);
             using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
             {
                 var dbObject =
                     dbModel.MarketDataPoints.Where(
                         r =>
-                            r.MarketRegionID == MarketRegionID && r.DateTimeUTC > startDateTime
-                            && r.DateTimeUTC < endDateTime);
+                            r.MarketRegionID == MarketRegionID && r.DateTimeUTC >= processedStartDateTime
+                            && r.DateTimeUTC <= processedEndDateTime);
+
+                return dbObject.ToList();
+            }
+        }
+
+        /// <summary>
+        /// Find CarbonEmissionsRelativeMeritDataPoints based on the EmissionsRegionID between startDateTime and endDateTime
+        /// </summary>
+        /// <param name="EmissionsRegionID">EmissionsRegionID</param>
+        /// <param name="startDateTime">DateTime marking the start of the period to query for</param>
+        /// <param name="endDateTime">DateTime marking the end of the period to query for</param>
+        /// <param name="dateTimeFlexabilityInMinutes">The maximum range in minutes allowed  outside of the range specified for which datetimes should be accepted</param>
+        /// <returns>CarbonEmissionsRelativeMeritDataPoints datapoints belonging the given EmissionsRegionID between startDateTime and endDateTime</returns>
+        public List<CarbonEmissionsRelativeMeritDataPoint> FindCarbonEmissionsRelativeMeritDataPoints(int EmissionsRegionID, DateTime startDateTime, DateTime endDateTime, double dateTimeFlexabilityInMinutes = 0)
+        {
+            var processedStartDateTime = startDateTime.AddMinutes(-1 * dateTimeFlexabilityInMinutes);
+            var processedEndDateTime = endDateTime.AddMinutes(dateTimeFlexabilityInMinutes);
+
+            using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
+            {
+                var dbObject =
+                    dbModel.CarbonEmissionsRelativeMeritDataPoints.Where(
+                        r =>
+                            r.EmissionsRegionID == EmissionsRegionID && r.DateTimeUTC >= processedStartDateTime
+                            && r.DateTimeUTC <= processedEndDateTime);
 
                 return dbObject.ToList();
             }
@@ -954,6 +990,70 @@ namespace SmartEnergyOM
             }
         }
 
+        /// <summary>
+        /// Insert a new DataPoint. If an existing value exists with the same Id and DateTime, it is updated with any values passed in. 
+        /// </summary>
+        /// <param name="EmissionsRegionID"></param>
+        /// <param name="dateTime"></param>
+        /// <param name="EmissionsRelativeMerit"></param>
+        /// <param name="EmissionsRelativeMerit_Forcast"></param>
+        /// <param name="maxNumberOfRetries"></param>
+        public void InsertOrUpdateCarbonEmissionsRelativeMeritDataPoints(
+           int EmissionsRegionID,
+           DateTime dateTime,
+           double? EmissionsRelativeMerit = null,
+           double? EmissionsRelativeMerit_Forcast = null,
+           int maxNumberOfRetries = 3)
+        {
+            var updatedSuccessfully = false;
+            var numberOfAttemptsMade = 0;
+
+            while (!updatedSuccessfully)
+            {
+                using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
+                {
+                    // Check if there is an entry already
+                    var existingEntryForThisDateTime =
+                        dbModel.CarbonEmissionsRelativeMeritDataPoints.FirstOrDefault(
+                            r =>
+                                r.EmissionsRegionID == EmissionsRegionID && r.DateTimeUTC.Year == dateTime.Year
+                                && r.DateTimeUTC.Month == dateTime.Month && r.DateTimeUTC.Day == dateTime.Day
+                                && r.DateTimeUTC.Hour == dateTime.Hour && r.DateTimeUTC.Minute == dateTime.Minute
+                                && r.DateTimeUTC.Second == dateTime.Second);
+
+                    var regionEntity = this.FindEmissionsRegion(EmissionsRegionID);
+
+                    if (existingEntryForThisDateTime == null)
+                    {
+                        // No existing entity exists. Add a new entity.
+                        dbModel.CarbonEmissionsRelativeMeritDataPoints.Add(
+                            new CarbonEmissionsRelativeMeritDataPoint()
+                            {
+                                EmissionsRegionID = regionEntity.EmissionsRegionID,
+                                DateTimeUTC = dateTime,
+                                EmissionsRelativeMerit = EmissionsRelativeMerit,
+                                EmissionsRelativeMerit_Forcast = EmissionsRelativeMerit_Forcast,
+                            });
+                    }
+                    else
+                    {
+                        // An existing entity exists. Update it with any new values.
+                        if (EmissionsRelativeMerit != null)
+                        {
+                            existingEntryForThisDateTime.EmissionsRelativeMerit = EmissionsRelativeMerit;
+                        }
+                        if (EmissionsRelativeMerit_Forcast != null)
+                        {
+                            existingEntryForThisDateTime.EmissionsRelativeMerit_Forcast =
+                                EmissionsRelativeMerit_Forcast;
+                        }
+                    }
+
+                    if (SaveChangesWithRetry(maxNumberOfRetries, dbModel, ref numberOfAttemptsMade)) return;
+                }
+            }
+        }
+
         #endregion
 
         #region Delete methods
@@ -1097,6 +1197,35 @@ namespace SmartEnergyOM
                 if (dbObject != null)
                 {
                     dbModel.MarketDataPoints.Remove(dbObject);
+                    this.SaveChangeWithContextReloadUponFailure(dbModel);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Delete object with given EmissionsRegionID and DateTime from the CarbonEmissionsRelativeMeritDataPoints table in the database
+        /// </summary>
+        /// <param name="EmissionsRegionID">
+        /// The Emissions Region ID.
+        /// </param>
+        /// <param name="dateTime">
+        /// Date Time of entry
+        /// </param>
+        public void DeleteCarbonEmissionsRelativeMeritDataPoints(int EmissionsRegionID, DateTime dateTime)
+        {
+            using (var dbModel = new SmartEnergyDatabase(this.DatabaseConnectionString))
+            {
+                var dbObject =
+                    dbModel.CarbonEmissionsRelativeMeritDataPoints.FirstOrDefault(
+                        r =>
+                            r.EmissionsRegionID == EmissionsRegionID
+                            && r.DateTimeUTC.Year == dateTime.Year && r.DateTimeUTC.Month == dateTime.Month
+                            && r.DateTimeUTC.Day == dateTime.Day && r.DateTimeUTC.Hour == dateTime.Hour
+                            && r.DateTimeUTC.Minute == dateTime.Minute && r.DateTimeUTC.Second == dateTime.Second);
+
+                if (dbObject != null)
+                {
+                    dbModel.CarbonEmissionsRelativeMeritDataPoints.Remove(dbObject);
                     this.SaveChangeWithContextReloadUponFailure(dbModel);
                 }
             }

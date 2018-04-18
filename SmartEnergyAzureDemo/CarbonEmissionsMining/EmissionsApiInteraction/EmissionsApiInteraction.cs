@@ -11,6 +11,10 @@ namespace EmissionsApiInteraction
 {
     using ApiInteraction;
     using ApiInteraction.Helper;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using System.IO;
+    using System.Net;
 
     /// <summary>
     /// Class which provides methods to retrieve data from the WattTime Emissions API (https://api.watttime.org/). Requires the caller to register 
@@ -47,7 +51,7 @@ namespace EmissionsApiInteraction
         public List<MarginalCarbonResult.Result> GetMarginalCarbonResults(string WattTimeUrl, string regionAbbreviation, DateTime? startDateTime = null, DateTime? endDateTime = null, TimeSpan? timeout = null, string wattTimeApiKey = null, string customUrlParams = null)
         {
             var resultsList = new List<MarginalCarbonResult.Result>();
-            const string subUrl = "marginal/";
+            const string subUrl = "v1/marginal/";
             var apiQueryUrl = $"{WattTimeUrl}{subUrl}";
             string urlParameters = $"?ba={regionAbbreviation}&page_size=1000";
 
@@ -88,7 +92,7 @@ namespace EmissionsApiInteraction
             }
 
             return resultsList;
-        }
+        }        
 
         /// <summary>
         /// Get Observed Marginal Carbon Results
@@ -117,12 +121,12 @@ namespace EmissionsApiInteraction
             }
 
             // First check for the most granular results available
-            var fiveMinuteMarginalResults = GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, startDateTime, endDateTime, timeout, wattTimeApiKey, customParams);
+            var fiveMinuteMarginalResults =  GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, startDateTime, endDateTime, timeout, wattTimeApiKey, customParams);
             if (fiveMinuteMarginalResults.Any())
             {
                 return fiveMinuteMarginalResults;
             }
-
+           
             // There were no 5 minute Marginal results, try for hourly Marginal Values
             customParams = "&market=RTHR";
             if (customUrlParams != null)
@@ -130,7 +134,7 @@ namespace EmissionsApiInteraction
                 customParams = customUrlParams.StartsWith("&") ? $"{customParams}{customUrlParams}" : $"{customParams}&{customUrlParams}";
             }
             var hourlyMarginalResults = GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, startDateTime, endDateTime, timeout, wattTimeApiKey, customParams);
-            return hourlyMarginalResults;
+            return hourlyMarginalResults; 
         }
 
         /// <summary>
@@ -177,7 +181,7 @@ namespace EmissionsApiInteraction
         public List<GenerationMixResultList.Result> GetGenerationMixAndSystemWideEmissionsResults(string WattTimeUrl, string regionAbbreviation, DateTime? startDateTime = null, DateTime? endDateTime = null, TimeSpan? timeout = null, string wattTimeApiKey = null)
         {
             var resultsList = new List<GenerationMixResultList.Result>();
-            const string subUrl = "datapoints/";
+            const string subUrl = "v1/datapoints/";
             var apiQueryUrl = $"{WattTimeUrl}{subUrl}";
             string urlParameters = $"?ba={regionAbbreviation}&page_size=1000";
 
@@ -213,6 +217,58 @@ namespace EmissionsApiInteraction
         }
 
         /// <summary>
+        /// Retrieve latest Automated Emissions Reductions Index Result for a given region from the WattTime API
+        /// </summary>
+        /// <param name="WattTimeUrl">URL of the Watt Time API</param>
+        /// <param name="regionAbbreviation">Abbreviation for the required region (e.g. "PJM"). See https://api.watttime.org/faq/#where </param>
+        /// <param name="WattTimeUsername">WattTime Username</param>
+        /// <param name="WattTimePassword">WattTime Password</param>
+        /// <param name="timeout">Optional Timeout value</param>
+        /// <returns></returns>
+        public AutomatedEmissionsReductionsIndexResult GetCarbonEmissionsRelativeMeritResults(string WattTimeUrl, string regionAbbreviation, string WattTimeUsername, string WattTimePassword, TimeSpan? timeout = null)
+        {
+            //url: '/index/'
+
+            //    params = {
+            //    "ba":"CAISO_NP15", 
+            //    "latitude":"", 
+            //    "longitude":"", 
+            //     "style": "rating", "percent", "switch" or "all". Default is "rating"
+            //    }
+
+            //    output:
+            //    {
+            //      "ba": "ERCOT",
+            //      "freq": 0.8008281904610115,
+            //      "market": "RTM",
+            //      "percent": 53, -- 0 is best, 100 is worst
+            //      "rating": 4, -- 0 is best, 5 is worst
+            //      "switch": 0, -- 1 = don't use power. 0 = use power. 
+            //      "validFor": 277,
+            //      "validUntil": "2000-01-23T04:56:07.000+00:00"
+            //    }
+
+            const string subUrl = "v2/index/";
+            var apiQueryUrl = $"{WattTimeUrl}{subUrl}";
+            string urlParameters = $"?ba={regionAbbreviation}&style=all&page_size=1000";
+
+            var authToken = RetrieveWattTimeAuthToken(WattTimeUrl, WattTimeUsername, WattTimePassword);
+            var authTokenKey = authToken.Token;
+
+            var webApiHelper = new WebApiSerializerHelper<AutomatedEmissionsReductionsIndexResult>();
+            var result =
+                this.apiInteractionHelper.ExecuteThrottledApiCallWithBearerAuthToken<AutomatedEmissionsReductionsIndexResult>(
+                    timeout,
+                    webApiHelper,
+                    apiQueryUrl,
+                    urlParameters,
+                    authTokenKey,
+                    apiNameForThrottlingRecords);
+            
+            return result;
+        }
+
+        /// <summary>
         /// Retrieve the most recent 5 minutely real time marginal carbon data for a given region from the WattTime API
         /// </summary>
         /// <param name="WattTimeUrl">URL of the Watt Time API</param>
@@ -228,6 +284,128 @@ namespace EmissionsApiInteraction
             var sortedResponses = response.OrderByDescending(x => x.timestamp);
 
             return sortedResponses.FirstOrDefault();
+        }
+
+
+        /// <summary>
+        /// Register the given user details with the WattTime API
+        /// </summary>
+        /// <param name="WattTimeUrl">URL of the Watt Time API</param>
+        /// <param name="regionAbbreviation">Abbreviation for the required region (e.g. "PJM"). See https://api.watttime.org/faq/#where </param>
+        /// <param name="WattTimeUsername">WattTime Username</param>
+        /// <param name="WattTimePassword">WattTime Password</param>
+        /// <param name="WattTimeEmail">Email address to use for the WattTime Service</param>
+        /// <param name="WattTimeOrganization">Organization to use for the WattTime Service</param>
+        /// <param name="ignoreExceptions">False to have any exceptions rethrown. True to ignore exceptions and just return false in the event of a failure or exception</param>
+        /// <returns></returns>
+        public bool RegisterWithWattTime(string WattTimeUrl, string WattTimeUsername, string WattTimePassword, string WattTimeEmail, string WattTimeOrganization, bool ignoreExceptions = true)
+        {
+            //url: 'https://api2.watttime.org/v2/register/'
+
+            //endpoint: / register
+
+            //    params = {
+            //    "username":"contoso", 
+            //    "password":"xyzzy", 
+            //    "email":"contoso@EnvironmentalTechnology.org", 
+            //     "org":"The Environmental Technology Company"} 
+
+            //    output:
+            //    { 'ok':'User created', 'user': 'contoso'}
+
+            const string subUrl = "v2/register";
+            var apiQueryUrl = $"{WattTimeUrl}{subUrl}";
+
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(apiQueryUrl);
+            httpWebRequest.ContentType = "application/json";
+            httpWebRequest.Method = "POST";
+
+            string username = WattTimeUsername;
+            string password = WattTimePassword;
+            string email = WattTimeEmail;
+            string org = WattTimeOrganization;
+
+            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+            {
+                string json = JsonConvert.SerializeObject(new
+                {
+                    username,
+                    password,
+                    email,
+                    org
+                });
+                streamWriter.Write(json);
+            }
+
+            try
+            {
+                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    var result = streamReader.ReadToEnd();
+                }
+            }
+            catch(Exception e)
+            {
+                // Exception encountered. If caller has indicated they want to know if this call fails, rethrow exception. 
+                if(!ignoreExceptions)
+                {
+                    throw (e);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Authenticates a WattTime user session and retrieve Auth Token for further calls
+        /// </summary>
+        /// <param name="WattTimeUrl">URL of the Watt Time API</param>
+        /// <param name="WattTimeUsername">WattTime Username</param>
+        /// <param name="WattTimePassword">WattTime Password</param>
+        /// <returns>User's Auth Token for further API calls</returns>
+        public LoginResult RetrieveWattTimeAuthToken(string WattTimeUrl, string username, string password)
+        {
+            //url: 'https://api2.watttime.org/v2/login/'
+
+            //endpoint: / login
+
+            //    params = {
+            //    "WattTimeUsername":"contoso", 
+            //    "WattTimePassword":"xyzzy" }
+
+            //    output:
+            //    ok: '{"token":"abcdef0123456789fedcabc"}'
+
+            String encodedUsernameAndPassword = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(username + ":" + password));
+
+            const string subUrl = "v2/login";
+            var apiQueryUrl = $"{WattTimeUrl}{subUrl}";
+
+            string loginRsp = string.Empty;
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(apiQueryUrl);
+            httpWebRequest.Method = "GET";
+            String encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(username + ":" + password));
+            httpWebRequest.Headers.Add("Authorization", "Basic " + encoded);
+
+            using (HttpWebResponse response = (HttpWebResponse)httpWebRequest.GetResponse())
+            {
+                using (Stream stream = response.GetResponseStream())
+                {
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        loginRsp = reader.ReadToEnd();
+                    }
+                }
+            }
+
+            var tokenObject = JsonConvert.DeserializeObject<LoginResult>(loginRsp);
+
+            return tokenObject;
         }
 
         /// <summary>

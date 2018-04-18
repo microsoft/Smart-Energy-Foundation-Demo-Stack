@@ -25,29 +25,57 @@ namespace DataApi.Tests
     public class DataApiUnitTests
     {
         [TestMethod]
-        public void TestGetAll()
+        public void TestEmissionsControllerGetAll()
         {
             // Arrange
-            EmissionsController emissionsController = new EmissionsController();
+            EmissionsController controller = new EmissionsController();
 
             // Act
-            var result = emissionsController.Get();
+            var result = controller.Get();
 
             // Assert
             Assert.IsTrue(result.Any());
         }
 
         [TestMethod]
-        public void TestGetById()
+        public void TestEmissionsControllerGetById()
         {
             // Arrange
-            EmissionsController emissionsController = new EmissionsController();
+            EmissionsController controller = new EmissionsController();
             var region = "US_PJM";
 
             // Act
-            var result = emissionsController.Get(region);
+            var result = controller.Get(region);
             var resultContent = (result as OkNegotiatedContentResult<List<GridEmissionsDataPoint>>).Content;
             
+            // Assert
+            Assert.IsTrue(resultContent.Any());
+        }
+
+        [TestMethod]
+        public void TestRegionsControllerGetAll()
+        {
+            // Arrange
+            RegionsController controller = new RegionsController();
+
+            // Act
+            var result = controller.Get();
+
+            // Assert
+            Assert.IsTrue(result.Any());
+        }
+
+        [TestMethod]
+        public void TestGridEmissionsRelativeMeritControllerGetById()
+        {
+            // Arrange
+            GridEmissionsRelativeMeritController controller = new GridEmissionsRelativeMeritController();
+            var region = "US_PJM";
+
+            // Act
+            var result = controller.Get(region);
+            var resultContent = (result as OkNegotiatedContentResult<List<EmissionsRelativeMeritDatapoint>>).Content;
+
             // Assert
             Assert.IsTrue(resultContent.Any());
         }

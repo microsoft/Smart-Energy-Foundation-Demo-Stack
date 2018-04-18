@@ -31,6 +31,7 @@ namespace SmartEnergyOM
         }
     
         public virtual DbSet<CarbonEmissionsDataPoint> CarbonEmissionsDataPoints { get; set; }
+        public virtual DbSet<CarbonEmissionsRelativeMeritDataPoint> CarbonEmissionsRelativeMeritDataPoints { get; set; }
         public virtual DbSet<EmissionsRegion> EmissionsRegions { get; set; }
         public virtual DbSet<MarketDataPoint> MarketDataPoints { get; set; }
         public virtual DbSet<MarketRegion> MarketRegions { get; set; }

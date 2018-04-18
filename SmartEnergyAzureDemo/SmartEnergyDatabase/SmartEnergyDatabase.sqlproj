@@ -79,5 +79,6 @@
     <Build Include="dbo\Views\ProcessedRealTimeEmissionsDataPointsForRender.sql" />
     <Build Include="dbo\Views\ProcessedEmissionsDataPointsForRender.sql" />
     <Build Include="dbo\Views\ProcessedAverageEmissionsDataPointsForRender.sql" />
+    <Build Include="dbo\Tables\CarbonEmissionsRelativeMeritDataPoints.sql" />
   </ItemGroup>
 </Project>

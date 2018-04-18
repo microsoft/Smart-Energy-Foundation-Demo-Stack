@@ -21,6 +21,12 @@ namespace EmissionsApiInteractionTests
         string wattTimeApiUrl = CloudConfigurationManager.GetSetting("WattTimeApiUrl");
         string wattTimeApiKey = CloudConfigurationManager.GetSetting("WattTimeApiKey");
 
+        string wattTimeApiV2Url = CloudConfigurationManager.GetSetting("WattTimeApiV2Url");
+        string WattTimeUsername = CloudConfigurationManager.GetSetting("WattTimeUsername");
+        string WattTimePassword = CloudConfigurationManager.GetSetting("WattTimePassword");
+        string WattTimeEmail = CloudConfigurationManager.GetSetting("WattTimeEmail");
+        string WattTimeOrganization = CloudConfigurationManager.GetSetting("WattTimeOrganization");
+
         [TestMethod]
         public void TestGetMarginalCarbonResults()
         {
@@ -41,13 +47,14 @@ namespace EmissionsApiInteractionTests
             // Arrange
             var regionAbbreviation = "PJM";
             EmissionsApiInteraction emissionsApiInteraction = new EmissionsApiInteraction(selfThrottlingMethod, maxNumberOfCallsPerMinute);
+            emissionsApiInteraction.RegisterWithWattTime(this.wattTimeApiV2Url, WattTimeUsername, WattTimePassword, WattTimeEmail, WattTimeOrganization);
 
             // Act
             var pointsReturned = emissionsApiInteraction.GetMostRecentMarginalCarbonEmissionsResult(this.wattTimeApiUrl, regionAbbreviation, null, wattTimeApiKey);
 
             // Assert
             Assert.IsTrue(pointsReturned.marginal_carbon.value > -1);
-        }
+        }        
 
         [TestMethod]
         public void TestGetGenerationMixAndSystemWideEmissionsResults()
@@ -55,6 +62,7 @@ namespace EmissionsApiInteractionTests
             // Arrange
             var regionAbbreviation = "PJM";
             EmissionsApiInteraction emissionsApiInteraction = new EmissionsApiInteraction(selfThrottlingMethod, maxNumberOfCallsPerMinute);
+            emissionsApiInteraction.RegisterWithWattTime(this.wattTimeApiV2Url, WattTimeUsername, WattTimePassword, WattTimeEmail, WattTimeOrganization);
 
             // Act
             var pointsReturned = emissionsApiInteraction.GetGenerationMixAndSystemWideEmissionsResults(this.wattTimeApiUrl, regionAbbreviation, DateTime.Now.AddDays(-15), DateTime.Now.AddDays(2), null, wattTimeApiKey);
@@ -62,5 +70,49 @@ namespace EmissionsApiInteractionTests
             // Assert
             Assert.IsTrue(pointsReturned.Count > 0);
         }
+
+        [TestMethod]
+        public void TestRegisterWithWattTime()
+        {
+            // Arrange
+            EmissionsApiInteraction emissionsApiInteraction = new EmissionsApiInteraction(selfThrottlingMethod, maxNumberOfCallsPerMinute);
+
+            // Act
+            var tokenReturned = emissionsApiInteraction.RegisterWithWattTime(this.wattTimeApiV2Url, WattTimeUsername, WattTimePassword, WattTimeEmail, WattTimeOrganization);
+
+            // Assert
+            Assert.IsNotNull(tokenReturned);
+        }
+
+        [TestMethod]
+        public void TestCarbonEmissionsRelativeMeritResults()
+        {
+            // Arrange
+            var regionAbbreviation = "PJM";
+            EmissionsApiInteraction emissionsApiInteraction = new EmissionsApiInteraction(selfThrottlingMethod, maxNumberOfCallsPerMinute);
+            emissionsApiInteraction.RegisterWithWattTime(this.wattTimeApiV2Url, WattTimeUsername, WattTimePassword, WattTimeEmail, WattTimeOrganization);
+
+            // Act
+            var indexReturned = emissionsApiInteraction.GetCarbonEmissionsRelativeMeritResults(this.wattTimeApiV2Url, regionAbbreviation, WattTimeUsername, WattTimePassword);
+
+            // Assert
+            Assert.IsTrue(-1 < indexReturned.rating);
+            Assert.IsTrue(indexReturned.rating < 6);
+        }
+
+        [TestMethod]
+        public void TestRetrieveWattTimeAuthToken()
+        {
+            // Arrange
+            EmissionsApiInteraction emissionsApiInteraction = new EmissionsApiInteraction(selfThrottlingMethod, maxNumberOfCallsPerMinute);
+            emissionsApiInteraction.RegisterWithWattTime(this.wattTimeApiV2Url, WattTimeUsername, WattTimePassword, WattTimeEmail, WattTimeOrganization);
+
+            // Act
+            var tokenReturned = emissionsApiInteraction.RetrieveWattTimeAuthToken(this.wattTimeApiV2Url, WattTimeUsername, WattTimePassword);
+
+            // Assert
+            Assert.IsNotNull(tokenReturned);
+        }
     }
 }
+

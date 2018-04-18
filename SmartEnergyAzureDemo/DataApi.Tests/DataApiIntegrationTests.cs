@@ -65,11 +65,13 @@ namespace DataApi.Tests
             string subUrl = $"api/Emissions/{region}";
             DateTime startDateTime = DateTime.UtcNow.AddHours(-1);
             DateTime endDateTime = DateTime.UtcNow;
+            var dateTimeFlexabilityInMinutes = 30;
             var queryDictionary = new Dictionary<string, string>();
             queryDictionary.Add("startDateTime", webApiHelper.FormatDateTimeStringForWebApi(startDateTime.AddMinutes(-1)));
             queryDictionary.Add("endDateTime", webApiHelper.FormatDateTimeStringForWebApi(endDateTime.AddMinutes(1)));
             queryDictionary.Add("returnOnlyNonNullSystemWideEmissionsDataPoints", "false");
             queryDictionary.Add("returnOnlyNonNullMarginalEmissionsDataPoints", "false");
+            queryDictionary.Add("dateTimeFlexabilityInMinutes", dateTimeFlexabilityInMinutes.ToString());
 
             var queryString = webApiHelper.CompileParamsAndEncode(queryDictionary);
             string querySubUrl = $"{subUrl}{queryString}";
@@ -105,6 +107,34 @@ namespace DataApi.Tests
             {
                 Console.Write($"{element.FriendlyName}:{element.EmissionsRegionID},");
             }
+        }
+
+        [TestMethod]
+        public void TestGetGridEmissionsRelativeMeritForRegionAndDateTimes()
+        {
+            //Arrange
+            var region = "US_PJM";
+            string subUrl = $"api/GridEmissionsRelativeMerit/{region}";
+            DateTime startDateTime = DateTime.UtcNow.AddHours(-1);
+            DateTime endDateTime = DateTime.UtcNow;
+            var dateTimeFlexabilityInMinutes = 30;
+            var queryDictionary = new Dictionary<string, string>();
+            queryDictionary.Add("startDateTime", webApiHelper.FormatDateTimeStringForWebApi(startDateTime.AddMinutes(-1)));
+            queryDictionary.Add("endDateTime", webApiHelper.FormatDateTimeStringForWebApi(endDateTime.AddMinutes(1)));
+            queryDictionary.Add("dateTimeFlexabilityInMinutes", dateTimeFlexabilityInMinutes.ToString());
+
+            var queryString = webApiHelper.CompileParamsAndEncode(queryDictionary);
+            string querySubUrl = $"{subUrl}{queryString}";
+
+            //Act
+            var response =
+                webApiHelper.GetHttpResponseContentAsType<List<EmissionsRelativeMeritDatapoint>>(
+                    baseUrl.AbsoluteUri,
+                    querySubUrl).Result;
+
+            //Assert
+            Assert.IsNotNull(response);
+            Assert.IsTrue(response.Any());
         }
     }
 }

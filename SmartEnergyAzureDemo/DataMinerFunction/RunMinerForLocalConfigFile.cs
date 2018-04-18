@@ -4,12 +4,11 @@
 // --------------------------------------------------------------------------------------------------------------------
 using System;
 using System.Configuration;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using System.IO;
-
 using ApiDataMiners;
 using CentralLogger;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Host;
 
 namespace DataMinerFunction
 {
@@ -29,7 +28,6 @@ namespace DataMinerFunction
             var ApiDataMinerConfigFilePath = $"{parent.FullName}\\{ApiDataMinerConfigFileLocation}";
             try
             {
-
                 using (new TimedOperation($"Beginning Mining of all data in Config File from DataMinerAzureFunctionApp",
                                              "DataMinerAzureFunctionApp.Run()"))
                 {
@@ -39,7 +37,7 @@ namespace DataMinerFunction
             }
             catch (Exception e)
             {
-                Logger.Error($"RunMinerForLocalConfigFile: Run(): Exception encountered parsing and mining for miner configuration file {ApiDataMinerConfigFilePath}", "RunMinerForLocalConfigFile.Run()", exception:e);
+                Logger.Error($"RunMinerForLocalConfigFile: Run(): Exception encountered parsing and mining for miner configuration file {ApiDataMinerConfigFilePath}", "RunMinerForLocalConfigFile.Run()", exception: e);
                 throw;
             }
         }
@@ -49,8 +47,15 @@ namespace DataMinerFunction
             var databaseConnectionString = ConfigurationManager.AppSettings["SQLAzureDatabaseEntityFrameworkConnectionString"];
             var wattTimeApiKey = ConfigurationManager.AppSettings["wattTimeApiKey"];
             var wundergroundApiKey = ConfigurationManager.AppSettings["wundergroundApiKey"];
+            var wattTimeApiV2Url = ConfigurationManager.AppSettings["WattTimeApiV2Url"];
+            var wattTimeUsername = ConfigurationManager.AppSettings["WattTimeUsername"];
+            var wattTimePassword = ConfigurationManager.AppSettings["WattTimePassword"];
+            var wattTimeEmail = ConfigurationManager.AppSettings["WattTimeEmail"];
+            var wattTimeOrganization = ConfigurationManager.AppSettings["WattTimeOrganization"];
             var apiDataMiner = new ApiDataMiner(databaseConnectionString);
-            apiDataMiner.ParseMinerSettingsFileAndMineData(apiDataMinerConfigFileLocation, wattTimeApiKey, wundergroundApiKey);
+
+            apiDataMiner.ParseMinerSettingsFileAndMineData(apiDataMinerConfigFileLocation, wattTimeApiKey, wundergroundApiKey, wattTimeUsername, wattTimePassword, wattTimeEmail,
+                        wattTimeOrganization);
         }
     }
 }

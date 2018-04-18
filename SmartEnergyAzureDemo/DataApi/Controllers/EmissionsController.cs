@@ -44,7 +44,8 @@ namespace DataApi.Controllers
         [SwaggerResponse(HttpStatusCode.OK)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         public IHttpActionResult Get([FromUri] string id, [FromUri] DateTime? startDateTime = null, [FromUri] DateTime? endDateTime = null,
-            [FromUri] bool returnOnlyNonNullSystemWideEmissionsDataPoints = false, [FromUri] bool returnOnlyNonNullMarginalEmissionsDataPoints = false)
+            [FromUri] bool returnOnlyNonNullSystemWideEmissionsDataPoints = false, [FromUri] bool returnOnlyNonNullMarginalEmissionsDataPoints = false,
+            [FromUri] double dateTimeFlexabilityInMinutes = 0)
         {
             try
             {
@@ -59,7 +60,7 @@ namespace DataApi.Controllers
                 {
                     var regionId = _objectModel.FindEmissionsRegion(emissionsRegionFriendlyName).EmissionsRegionID;
 
-                    var result = _objectModel.FindCarbonEmissionsDataPoints(regionId, startDateTimeProcessed, endDateTimeProcessed).ToList();
+                    var result = _objectModel.FindCarbonEmissionsDataPoints(regionId, startDateTimeProcessed, endDateTimeProcessed, dateTimeFlexabilityInMinutes).ToList();
 
                     // Remove any relavent results as per search parameters passed in - System Wide and Marginal Emissions
                     if(returnOnlyNonNullSystemWideEmissionsDataPoints)

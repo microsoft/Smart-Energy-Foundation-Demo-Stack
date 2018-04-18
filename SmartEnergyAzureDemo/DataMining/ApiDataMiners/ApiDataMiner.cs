@@ -35,7 +35,13 @@ namespace ApiDataMiners
         /// <param name="ConfigPath"></param>
         /// <param name="wattTimeApiKeyOverride">Optional wattTimeApiKey to Override what's in the MinerConfigXML File</param>
         /// <param name="wundergroundApiKeyOverride">Optional WundergroundApiKey to Override what's in the MinerConfigXML File</param>
-        public void ParseMinerSettingsFileAndMineData(string ConfigPath, string wattTimeApiKeyOverride = null, string wundergroundApiKeyOverride = null)
+        /// <param name="wattTimeUsernameOverride">Optional wattTimeUsername to Override what's in the MinerConfigXML File</param>
+        /// <param name="wattTimePasswordOverride">Optional wattTimePassword to Override what's in the MinerConfigXML File</param>
+        /// <param name="wattTimeEmailOverride">Optional wattTimeEmaiL to Override what's in the MinerConfigXML File</param>
+        /// <param name="wattTimeOrganizationOverride">Optional wattTimeOrganization to Override what's in the MinerConfigXML File</param>
+        public void ParseMinerSettingsFileAndMineData(string ConfigPath, string wattTimeApiKeyOverride = null,
+            string wundergroundApiKeyOverride = null, string wattTimeUsernameOverride = null, string wattTimePasswordOverride = null, string wattTimeEmailOverride = null,
+            string wattTimeOrganizationOverride = null)
         {
             using (var streamReader = new StreamReader(ConfigPath))
             {
@@ -44,7 +50,8 @@ namespace ApiDataMiners
 
                 foreach (var minerConfig in minerConfigs.Regions)
                 {
-                    this.MineRegionData(minerConfig, wattTimeApiKeyOverride, wundergroundApiKeyOverride);
+                    this.MineRegionData(minerConfig, wattTimeApiKeyOverride, wundergroundApiKeyOverride, wattTimeUsernameOverride, wattTimePasswordOverride, wattTimeEmailOverride,
+                        wattTimeOrganizationOverride);
                 }
             }
         }
@@ -55,8 +62,13 @@ namespace ApiDataMiners
         /// <param name="regionConfiguration"></param>
         /// <param name="wattTimeApiKeyOverride">Optional wattTimeApiKey to Override what's in the MinerConfigXML File</param>
         /// <param name="wundergroundApiKeyOverride">Optional WundergroundApiKey to Override what's in the MinerConfigXML File</param>
+        /// <param name="wattTimeUsernameOverride">Optional wattTimeUsername to Override what's in the MinerConfigXML File</param>
+        /// <param name="wattTimePasswordOverride">Optional wattTimePassword to Override what's in the MinerConfigXML File</param>
+        /// <param name="wattTimeEmailOverride">Optional wattTimeEmaiL to Override what's in the MinerConfigXML File</param>
+        /// <param name="wattTimeOrganizationOverride">Optional wattTimeOrganization to Override what's in the MinerConfigXML File</param>
         public void MineRegionData(ApiMinerConfigLayoutRegion regionConfiguration, string wattTimeApiKeyOverride = null,
-            string wundergroundApiKeyOverride = null)
+            string wundergroundApiKeyOverride = null, string wattTimeUsernameOverride = null, string wattTimePasswordOverride = null, string wattTimeEmailOverride = null, 
+            string wattTimeOrganizationOverride = null)
         {
             var regionGroupingName = regionConfiguration.friendlyName;
 
@@ -82,6 +94,8 @@ namespace ApiDataMiners
                         var regionWattTimeName =
                             regionConfiguration.EmissionsMiningRegion.EmissionsWattTimeAbbreviation;
                         var wattTimeApiUrl = regionConfiguration.EmissionsMiningRegion.ApiUrl;
+                        var wattTimeApiV2Url = regionConfiguration.EmissionsMiningRegion.WattTimeApiV2Url;
+
                         string wattTimeApiKey = null;
                         if (string.IsNullOrEmpty(wattTimeApiKeyOverride) || wattTimeApiKeyOverride.Equals("none"))
                         {
@@ -91,9 +105,52 @@ namespace ApiDataMiners
                         {
                             wattTimeApiKey = wattTimeApiKeyOverride;
                         }
+
+                        string wattTimeUsername = null;
+                        if (string.IsNullOrEmpty(wattTimeUsernameOverride) || wattTimeUsernameOverride.Equals("none"))
+                        {
+                            wattTimeUsername = regionConfiguration.EmissionsMiningRegion.WattTimeUsername;
+                        }
+                        else
+                        {
+                            wattTimeUsername = wattTimeUsernameOverride;
+                        }
+
+                        string wattTimePassword = null;
+                        if (string.IsNullOrEmpty(wattTimePasswordOverride) || wattTimePasswordOverride.Equals("none"))
+                        {
+                            wattTimePassword = regionConfiguration.EmissionsMiningRegion.WattTimePassword;
+                        }
+                        else
+                        {
+                            wattTimePassword = wattTimePasswordOverride;
+                        }
+
+                        string wattTimeEmail = null;
+                        if (string.IsNullOrEmpty(wattTimeEmailOverride) || wattTimeEmailOverride.Equals("none"))
+                        {
+                            wattTimeEmail = regionConfiguration.EmissionsMiningRegion.WattTimeEmail;
+                        }
+                        else
+                        {
+                            wattTimeEmail = wattTimeEmailOverride;
+                        }
+
+                        string wattTimeOrganization = null;
+                        if (string.IsNullOrEmpty(wattTimeOrganizationOverride) || wattTimeOrganizationOverride.Equals("none"))
+                        {
+                            wattTimeOrganization = regionConfiguration.EmissionsMiningRegion.WattTimeOrganization;
+                        }
+                        else
+                        {
+                            wattTimeOrganization = wattTimeOrganizationOverride;
+                        }
+
                         var selfThrottlingMethod = regionConfiguration.EmissionsMiningRegion.SelfThrottlingMethod;
                         var maxNumberOfCallsPerMinute =
                             regionConfiguration.EmissionsMiningRegion.MaxNumberOfCallsPerMinute;
+                        var relativeMeritDataSource =
+                            regionConfiguration.EmissionsMiningRegion.RelativeMeritDataSource;
                         var historicStartDateTime = DateTime.UtcNow.AddDays(-15);
                         var historicEndDateTime = DateTime.UtcNow.AddDays(1);
                         var forecastStartDateTime = DateTime.UtcNow.AddDays(-2);
@@ -115,23 +172,36 @@ namespace ApiDataMiners
                                 CarbonEmissionsMiner carbonEmissionsMiner = new CarbonEmissionsMiner(
                                     wattTimeApiUrl,
                                     wattTimeApiKey,
+                                    wattTimeApiV2Url,
+                                    wattTimeUsername,
+                                    wattTimePassword,
+                                    wattTimeEmail,
+                                    wattTimeOrganization,
                                     selfThrottlingMethod,
                                     this.DatabaseConnectionString,
-                                    maxNumberOfCallsPerMinute);
+                                    maxNumberOfCallsPerMinute,
+                                    null,
+                                    relativeMeritDataSource
+                                    );
 
                                 // Mine Recent Actual Data
                                 carbonEmissionsMiner.MineHistoricCarbonResults(
                                     historicStartDateTime,
                                     historicEndDateTime,
                                     regionWattTimeName,
-                                    (int) emissionsRegionId);
+                                    (int)emissionsRegionId);
 
                                 // Mine Forecast Data
                                 carbonEmissionsMiner.MineForecastMarginalCarbonResults(
                                     forecastStartDateTime,
                                     forecastEndDateTime,
                                     regionWattTimeName,
-                                    (int) emissionsRegionId);
+                                    (int)emissionsRegionId);
+
+                                // Calculate or mine relative merit values
+                                carbonEmissionsMiner.MineOrCalculateCarbonEmissionsRelativeMerit(
+                                    regionWattTimeName,
+                                    (int)emissionsRegionId);
                             }
                         }
                         else
@@ -209,13 +279,13 @@ namespace ApiDataMiners
                                             historicEndDateTime,
                                             regionLat,
                                             regionLong,
-                                            (int) weatherRegionId);
+                                            (int)weatherRegionId);
 
                                         // Mine Forecast Data
                                         weatherDataMiner.MineTenDayHourlyForecastWeatherValues(
                                             regionLat,
                                             regionLong,
-                                            (int) weatherRegionId);
+                                            (int)weatherRegionId);
                                         break;
 
                                     case "WundergroundPageSubUrl":
@@ -225,12 +295,12 @@ namespace ApiDataMiners
                                             historicStartDateTime,
                                             historicEndDateTime,
                                             weatherRegionWundergroundSubUrl,
-                                            (int) weatherRegionId);
+                                            (int)weatherRegionId);
 
                                         // Mine Forecast Data
                                         weatherDataMiner.MineTenDayHourlyForecastWeatherValues(
                                             weatherRegionWundergroundSubUrl,
-                                            (int) weatherRegionId);
+                                            (int)weatherRegionId);
                                         break;
                                 }
                             }

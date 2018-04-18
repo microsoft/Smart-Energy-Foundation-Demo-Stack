@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace EmissionsApiInteraction
 {
     /// <summary>
-    /// Represents the JSON structure of the result returned from https://api.watttime.org/api/v1/datapoints/ 
+    /// Represents the JSON structure of the result returned from https://api.watttime.org/api/datapoints/ 
     /// </summary>
     public class GenerationMixResultList
     {

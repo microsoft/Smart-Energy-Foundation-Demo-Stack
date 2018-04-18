@@ -112,11 +112,23 @@ namespace ApiDataMiners
 
         private string apiKeyField;
 
+        private string wattTimeApiV2UrlField;
+
+        private string wattTimeUsernameField;
+
+        private string wattTimePasswordField;
+
+        private string wattTimeEmailField;
+
+        private string wattTimeOrganizationField;
+
         private string friendlyNameField;
 
         private string selfThrottlingMethodField;
 
         private byte maxNumberOfCallsPerMinuteField;
+
+        private string relativeMeritDataSource;
 
         /// <remarks/>
         public string EmissionsWattTimeAbbreviation
@@ -232,6 +244,84 @@ namespace ApiDataMiners
             set
             {
                 this.apiKeyField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string WattTimeApiV2Url
+        {
+            get
+            {
+                return this.wattTimeApiV2UrlField; 
+            }
+            set
+            {
+                this.wattTimeApiV2UrlField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string WattTimeUsername
+        {
+            get
+            {
+                return this.wattTimeUsernameField; 
+            }
+            set
+            {
+                this.wattTimeUsernameField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string WattTimePassword
+        {
+            get
+            {
+                return this.wattTimePasswordField;
+            }
+            set
+            {
+                this.wattTimePasswordField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string WattTimeEmail
+        {
+            get
+            {
+                return this.wattTimeEmailField;
+            }
+            set
+            {
+                this.wattTimeEmailField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string WattTimeOrganization
+        {
+            get
+            {
+                return this.wattTimeOrganizationField;
+            }
+            set
+            {
+                this.wattTimeOrganizationField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string RelativeMeritDataSource
+        {
+            get
+            {
+                return this.relativeMeritDataSource;
+            }
+            set
+            {
+                this.relativeMeritDataSource = value;
             }
         }
 

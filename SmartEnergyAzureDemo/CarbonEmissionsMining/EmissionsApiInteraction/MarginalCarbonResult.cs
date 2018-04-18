@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace EmissionsApiInteraction
 {
     /// <summary>
-    /// Represents the JSON structure of the result returned from https://api.watttime.org/api/v1/marginal/ 
+    /// Represents the JSON structure of the result returned from https://api.watttime.org/api/marginal/ 
     /// </summary>
     public class MarginalCarbonResult
     {
