@@ -52,9 +52,11 @@ namespace DataMinerFunction
             var wattTimePassword = ConfigurationManager.AppSettings["WattTimePassword"];
             var wattTimeEmail = ConfigurationManager.AppSettings["WattTimeEmail"];
             var wattTimeOrganization = ConfigurationManager.AppSettings["WattTimeOrganization"];
+            var darkSkyApiUrl = ConfigurationManager.AppSettings["DarkSkyApiUrl"];
+            var darkSkyApiKey = ConfigurationManager.AppSettings["DarkSkyApiKey"];
             var apiDataMiner = new ApiDataMiner(databaseConnectionString);
 
-            apiDataMiner.ParseMinerSettingsFileAndMineData(apiDataMinerConfigFileLocation, wattTimeApiKey, wundergroundApiKey, wattTimeUsername, wattTimePassword, wattTimeEmail,
+            apiDataMiner.ParseMinerSettingsFileAndMineData(apiDataMinerConfigFileLocation, wattTimeApiKey, wundergroundApiKey, darkSkyApiKey, wattTimeUsername, wattTimePassword, wattTimeEmail,
                         wattTimeOrganization);
         }
     }

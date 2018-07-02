@@ -35,12 +35,13 @@ namespace ApiDataMiners
         /// <param name="ConfigPath"></param>
         /// <param name="wattTimeApiKeyOverride">Optional wattTimeApiKey to Override what's in the MinerConfigXML File</param>
         /// <param name="wundergroundApiKeyOverride">Optional WundergroundApiKey to Override what's in the MinerConfigXML File</param>
+        /// <param name="darkSkyApiKeyOverride">Optional darkSkyApiKeyOverride to Override what's in the MinerConfigXML File</param>
         /// <param name="wattTimeUsernameOverride">Optional wattTimeUsername to Override what's in the MinerConfigXML File</param>
         /// <param name="wattTimePasswordOverride">Optional wattTimePassword to Override what's in the MinerConfigXML File</param>
         /// <param name="wattTimeEmailOverride">Optional wattTimeEmaiL to Override what's in the MinerConfigXML File</param>
         /// <param name="wattTimeOrganizationOverride">Optional wattTimeOrganization to Override what's in the MinerConfigXML File</param>
         public void ParseMinerSettingsFileAndMineData(string ConfigPath, string wattTimeApiKeyOverride = null,
-            string wundergroundApiKeyOverride = null, string wattTimeUsernameOverride = null, string wattTimePasswordOverride = null, string wattTimeEmailOverride = null,
+            string wundergroundApiKeyOverride = null, string darkSkyApiKeyOverride = null, string wattTimeUsernameOverride = null, string wattTimePasswordOverride = null, string wattTimeEmailOverride = null,
             string wattTimeOrganizationOverride = null)
         {
             using (var streamReader = new StreamReader(ConfigPath))
@@ -50,7 +51,7 @@ namespace ApiDataMiners
 
                 foreach (var minerConfig in minerConfigs.Regions)
                 {
-                    this.MineRegionData(minerConfig, wattTimeApiKeyOverride, wundergroundApiKeyOverride, wattTimeUsernameOverride, wattTimePasswordOverride, wattTimeEmailOverride,
+                    this.MineRegionData(minerConfig, wattTimeApiKeyOverride, wundergroundApiKeyOverride, darkSkyApiKeyOverride, wattTimeUsernameOverride, wattTimePasswordOverride, wattTimeEmailOverride,
                         wattTimeOrganizationOverride);
                 }
             }
@@ -62,12 +63,13 @@ namespace ApiDataMiners
         /// <param name="regionConfiguration"></param>
         /// <param name="wattTimeApiKeyOverride">Optional wattTimeApiKey to Override what's in the MinerConfigXML File</param>
         /// <param name="wundergroundApiKeyOverride">Optional WundergroundApiKey to Override what's in the MinerConfigXML File</param>
+        /// <param name="darkSkyApiKeyOverride">Optional darkSkyApiKeyOverride to Override what's in the MinerConfigXML File</param>
         /// <param name="wattTimeUsernameOverride">Optional wattTimeUsername to Override what's in the MinerConfigXML File</param>
         /// <param name="wattTimePasswordOverride">Optional wattTimePassword to Override what's in the MinerConfigXML File</param>
         /// <param name="wattTimeEmailOverride">Optional wattTimeEmaiL to Override what's in the MinerConfigXML File</param>
         /// <param name="wattTimeOrganizationOverride">Optional wattTimeOrganization to Override what's in the MinerConfigXML File</param>
         public void MineRegionData(ApiMinerConfigLayoutRegion regionConfiguration, string wattTimeApiKeyOverride = null,
-            string wundergroundApiKeyOverride = null, string wattTimeUsernameOverride = null, string wattTimePasswordOverride = null, string wattTimeEmailOverride = null, 
+            string wundergroundApiKeyOverride = null, string darkSkyApiKeyOverride = null, string wattTimeUsernameOverride = null, string wattTimePasswordOverride = null, string wattTimeEmailOverride = null, 
             string wattTimeOrganizationOverride = null)
         {
             var regionGroupingName = regionConfiguration.friendlyName;
@@ -208,48 +210,48 @@ namespace ApiDataMiners
                         {
                             Logger.Information(
                                 $"No WattTime Api Key was specified. Skipping this region for Emissions.",
-                                "RunAsync()");
+                                "ApiDataMiner.MineRegionData()");
                         }
                     }
                 }
 
-                // Mine the regions weather if a weather node was supplied
+                // Mine the regions Wunderground weather if a weather node was supplied
                 int? weatherRegionId = null;
-                if (regionConfiguration.WeatherMiningRegion != null)
+                if (regionConfiguration.WundergroundWeatherMiningRegion != null)
                 {
-                    var friendlyName = regionConfiguration.WeatherMiningRegion.friendlyName;
+                    var friendlyName = regionConfiguration.WundergroundWeatherMiningRegion.friendlyName;
 
                     using (
                         new TimedOperation(
-                            $"Beginning Mining of weather data for Region {friendlyName}",
+                            $"Beginning Mining of Wunderground weather data for Region {friendlyName}",
                             "ApiDataMiner.MineRegionData()"))
                     {
 
-                        var timeZone = regionConfiguration.WeatherMiningRegion.TimeZone;
-                        var regionLat = regionConfiguration.WeatherMiningRegion.Latitude;
-                        var regionLong = regionConfiguration.WeatherMiningRegion.Longitude;
+                        var timeZone = regionConfiguration.WundergroundWeatherMiningRegion.TimeZone;
+                        var regionLat = regionConfiguration.WundergroundWeatherMiningRegion.Latitude;
+                        var regionLong = regionConfiguration.WundergroundWeatherMiningRegion.Longitude;
                         var weatherRegionWundergroundSubUrl =
-                            regionConfiguration.WeatherMiningRegion.weatherRegionWundergroundSubUrl;
-                        var wundergroundApiUrl = regionConfiguration.WeatherMiningRegion.ApiUrl;
+                            regionConfiguration.WundergroundWeatherMiningRegion.weatherRegionWundergroundSubUrl;
+                        var wundergroundApiUrl = regionConfiguration.WundergroundWeatherMiningRegion.ApiUrl;
                         string wundergroundApiKey = null;
                         if (string.IsNullOrEmpty(wundergroundApiKeyOverride) || wundergroundApiKeyOverride.Equals("none"))
                         {
-                            wundergroundApiKey = regionConfiguration.WeatherMiningRegion.ApiKey;
+                            wundergroundApiKey = regionConfiguration.WundergroundWeatherMiningRegion.ApiKey;
                         }
                         else
                         {
                             wundergroundApiKey = wundergroundApiKeyOverride;
                         }
-                        var selfThrottlingMethod = regionConfiguration.WeatherMiningRegion.SelfThrottlingMethod;
+                        var selfThrottlingMethod = regionConfiguration.WundergroundWeatherMiningRegion.SelfThrottlingMethod;
                         var maxNumberOfCallsPerMinute =
-                            regionConfiguration.WeatherMiningRegion.MaxNumberOfCallsPerMinute;
+                            regionConfiguration.WundergroundWeatherMiningRegion.MaxNumberOfCallsPerMinute;
                         var historicStartDateTime = DateTime.UtcNow.AddDays(-1);
                         var historicEndDateTime = DateTime.UtcNow.AddDays(1);
 
                         if (!string.IsNullOrEmpty(wundergroundApiKey) && !wundergroundApiKey.Equals("none"))
                         {
                             Logger.Information(
-                                $"About to add Emissions Region and Mine Carbon Emissions Data for {friendlyName} from Wunderground URL {weatherRegionWundergroundSubUrl} from {historicStartDateTime} to {historicEndDateTime} for historic data and insert them into the database",
+                                $"About to add Weather Region and Mine Weather Data for {friendlyName} from Wunderground URL {weatherRegionWundergroundSubUrl} from {historicStartDateTime} to {historicEndDateTime} for historic data and insert them into the database",
                                 "ApiDataMiner.MineRegionData()");
 
                             using (var _objectModel = new SmartEnergyOM(this.DatabaseConnectionString))
@@ -262,15 +264,14 @@ namespace ApiDataMiners
                                         regionLong,
                                         weatherRegionWundergroundSubUrl).WeatherRegionID;
 
-
-                                WeatherDataMiner weatherDataMiner = new WeatherDataMiner(
+                                WundergroundWeatherDataMiner weatherDataMiner = new WundergroundWeatherDataMiner(
                                     wundergroundApiUrl,
                                     wundergroundApiKey,
                                     selfThrottlingMethod,
                                     this.DatabaseConnectionString,
                                     maxNumberOfCallsPerMinute);
 
-                                switch (regionConfiguration.WeatherMiningRegion.MiningMethod)
+                                switch (regionConfiguration.WundergroundWeatherMiningRegion.MiningMethod)
                                 {
                                     case "GPS":
                                         // Mine Recent Actual Data
@@ -309,7 +310,89 @@ namespace ApiDataMiners
                         {
                             Logger.Information(
                                 $"No Wunderground Api Key was specified. Skipping this region for Weather.",
-                                "RunAsync()");
+                                "ApiDataMiner.MineRegionData()");
+                        }
+                    }
+                }
+
+                // Mine the regions DarkSky weather if a weather node was supplied
+                if (regionConfiguration.DarkSkyWeatherMiningRegion != null)
+                {
+                    var friendlyName = regionConfiguration.DarkSkyWeatherMiningRegion.friendlyName;
+
+                    using (
+                        new TimedOperation(
+                            $"Beginning Mining of DarkSky weather data for Region {friendlyName}",
+                            "ApiDataMiner.MineRegionData()"))
+                    {
+                        var timeZone = regionConfiguration.DarkSkyWeatherMiningRegion.TimeZone;
+                        var regionLat = regionConfiguration.DarkSkyWeatherMiningRegion.Latitude;
+                        var regionLong = regionConfiguration.DarkSkyWeatherMiningRegion.Longitude;
+                        var apiUrl = regionConfiguration.DarkSkyWeatherMiningRegion.ApiUrl;
+                        string apiKey = null;
+                        if (string.IsNullOrEmpty(darkSkyApiKeyOverride) || darkSkyApiKeyOverride.Equals("none"))
+                        {
+                            apiKey = regionConfiguration.DarkSkyWeatherMiningRegion.ApiKey;
+                        }
+                        else
+                        {
+                            apiKey = darkSkyApiKeyOverride;
+                        }
+                        var selfThrottlingMethod = regionConfiguration.DarkSkyWeatherMiningRegion.SelfThrottlingMethod;
+                        var maxNumberOfCallsPerMinute =
+                            regionConfiguration.DarkSkyWeatherMiningRegion.MaxNumberOfCallsPerMinute;
+                        var maxNumberOfCallsPerDay =
+                            regionConfiguration.DarkSkyWeatherMiningRegion.MaxNumberOfCallsPerDay;
+                        var historicStartDateTime = DateTime.UtcNow.AddDays(-1);
+                        var historicEndDateTime = DateTime.UtcNow.AddDays(1);
+                        var forecastStartDateTime = DateTime.UtcNow;
+                        var forecastEndDateTime = DateTime.UtcNow.AddDays(10);
+
+                        if (!string.IsNullOrEmpty(apiKey) && !apiKey.Equals("none"))
+                        {
+                            Logger.Information(
+                                $"About to add Weather Region and Mine Weather Data for {friendlyName} with GPS Coords {regionLat},{regionLong} from DarkSky from {historicStartDateTime} to {historicEndDateTime} for historic data and insert them into the database",
+                                "ApiDataMiner.MineRegionData()");
+
+                            using (var _objectModel = new SmartEnergyOM(this.DatabaseConnectionString))
+                            {
+                                weatherRegionId =
+                                    _objectModel.AddWeatherRegion(
+                                        friendlyName,
+                                        timeZone,
+                                        regionLat,
+                                        regionLong).WeatherRegionID;
+
+                                DarkSkyWeatherDataMiner weatherDataMiner = new DarkSkyWeatherDataMiner(
+                                    apiUrl,
+                                    apiKey,
+                                    selfThrottlingMethod,
+                                    this.DatabaseConnectionString,
+                                    maxNumberOfCallsPerMinute,
+                                    maxNumberOfCallsPerDay);
+
+                                // Mine historic data
+                                weatherDataMiner.MineHistoricWeatherValues(
+                                    historicStartDateTime,
+                                    historicEndDateTime,
+                                    regionLat,
+                                    regionLong,
+                                    (int)weatherRegionId);
+
+                                // Mine Forecast Data
+                                weatherDataMiner.MineForecastWeatherValues(
+                                    forecastStartDateTime,
+                                    forecastEndDateTime,
+                                    regionLat,
+                                    regionLong,
+                                    (int)weatherRegionId);
+                            }
+                        }
+                        else
+                        {
+                            Logger.Information(
+                                $"No DarkSky Api Key was specified. Skipping this region for Weather.",
+                                "ApiDataMiner.MineRegionData()");
                         }
                     }
                 }

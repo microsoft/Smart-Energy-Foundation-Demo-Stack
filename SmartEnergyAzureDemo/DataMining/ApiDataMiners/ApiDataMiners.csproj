@@ -44,8 +44,9 @@
     <Compile Include="ApiDataMiner.cs" />
     <Compile Include="ApiMinerConfigLayout.cs" />
     <Compile Include="CarbonEmissionsMiner.cs" />
+    <Compile Include="DarkSkyWeatherDataMiner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WeatherDataMiner.cs" />
+    <Compile Include="WundergroundWeatherDataMiner.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ApiInteraction\ApiInteraction.csproj">

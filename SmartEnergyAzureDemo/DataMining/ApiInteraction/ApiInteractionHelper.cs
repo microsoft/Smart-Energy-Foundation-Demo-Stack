@@ -45,6 +45,7 @@ namespace ApiInteraction
     {
         //Variables to manage inMemoryCallRecollection
         private readonly int maxNumberOfCallsPerMinute;
+        private readonly int maxNumberOfCallsPerDay;
         private List<DateTime> recentApiCalls = new List<DateTime>();
         private SelfThrottlingMethod _selfThrottlingMethod;
 
@@ -54,10 +55,11 @@ namespace ApiInteraction
         /// <param name="_selfThrottlingMethod">The method to use to limit calls to the API to below the given threshold. Options: {None, InMemoryCallRecollection, AzureTableStorageCallRecollection}</param>
         /// <param name="maxNumberOfCallsPerMinute">Maximum number of calls to make to the API per minute</param>
         public ApiInteractionHelper(SelfThrottlingMethod _selfThrottlingMethod = SelfThrottlingMethod.None,
-            int maxNumberOfCallsPerMinute = -1)
+            int maxNumberOfCallsPerMinute = -1, int maxNumberOfCallsPerDay = -1)
         {
             this._selfThrottlingMethod = _selfThrottlingMethod;
             this.maxNumberOfCallsPerMinute = maxNumberOfCallsPerMinute;
+            this.maxNumberOfCallsPerDay = maxNumberOfCallsPerDay;
         }
 
         /// <summary>
@@ -113,17 +115,25 @@ namespace ApiInteraction
         private bool VerifyInMemoryThrottledCallCanProceed()
         {
             // First clean the recent Api Calls list
-            this.recentApiCalls.RemoveAll(x => x < DateTime.UtcNow.AddMinutes(-1));
+            this.recentApiCalls.RemoveAll(x => x < DateTime.UtcNow.AddDays(-1));
 
-            // Now check if we have capacity in our allocation to make a call now
-            if (this.recentApiCalls.Count >= this.maxNumberOfCallsPerMinute)
+            bool canProceed = true;
+
+            // Check if we have capacity in our per minute allocation to make a call now
+            var callsInTheLastMinute = this.recentApiCalls.Where(t => t < DateTime.UtcNow.AddMinutes(-1));
+            if (callsInTheLastMinute.Count() >= this.maxNumberOfCallsPerMinute)
             {
-                return false;
+                canProceed = false;
             }
-            else
+
+            // Check if we have capacity in our daily allocation to make a call now
+            var callsInTheLastDay = this.recentApiCalls.Where(t => t < DateTime.UtcNow.AddDays(-1));
+            if (callsInTheLastDay.Count() >= this.maxNumberOfCallsPerDay)
             {
-                return true;
+                canProceed = false;
             }
+
+            return canProceed;
         }
 
         /// <summary>
@@ -176,23 +186,30 @@ namespace ApiInteraction
         /// </returns>
         private bool VerifyAzureTableStorageThrottledCallCanProceed(string apiKey, string apiName)
         {
-            // Now check if we have capacity in our allocation to make a call now
+            // Now check if we have capacity in our allocation to make a call now 
+            bool canProceed = true;
+
+            // Check per minute limit
             var dateFromLastMinute = DateTime.UtcNow.AddMinutes(-1);
             var dateToLastMinute = DateTime.UtcNow.AddMinutes(1);
             var messages = AzureTableStorageHelper.RetrieveLogMessagesFromTableStorage(apiKey, dateFromLastMinute, dateToLastMinute);
+            
+            if ((messages!= null) && (messages.Count() >= this.maxNumberOfCallsPerMinute))
+            {
+                canProceed = false;
+            }
 
-            if (messages == null)
+            // Check Daily limit
+            var dateFromLastDay = DateTime.UtcNow.AddDays(-1);
+            var dateTimeNow = DateTime.UtcNow.AddMinutes(1);
+            var daySpanMessages = AzureTableStorageHelper.RetrieveLogMessagesFromTableStorage(apiKey, dateFromLastDay, dateTimeNow);
+            
+            if ((daySpanMessages != null) && (daySpanMessages.Count() >= this.maxNumberOfCallsPerDay))
             {
-                return true;
+                canProceed = false;
             }
-            if (messages.Count() >= this.maxNumberOfCallsPerMinute)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+
+            return canProceed;
         }
 
         /// <summary>

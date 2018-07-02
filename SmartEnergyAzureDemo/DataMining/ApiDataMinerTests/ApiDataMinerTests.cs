@@ -3,136 +3,25 @@
 // Copyright(c) Microsoft and Contributors
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace ApiDataMinerTests
+namespace ApiDataMiner.Functional.Tests
 {
+    using System;    
     using System.Collections.Generic;
     using System.IO;
     using System.Xml.Serialization;
-
     using ApiDataMiners;
-
-    using ApiInteraction;
-
     using EmissionsApiInteraction;
-
     using Microsoft.Azure;
-
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using SmartEnergyOM;
-
     using WeatherApiInteraction;
+    using WeatherApiInteraction.DarkSkyWeatherMining;
     using WeatherApiInteraction.WundergroundTenDayHourlyForecastDataClasses;
 
     [TestClass]
     public class ApiDataMinerTests
     {
         private string databaseConnectionString = CloudConfigurationManager.GetSetting("SQLAzureDatabaseEntityFrameworkConnectionString");
-        
-        [TestMethod]
-        public void TestMineHistoricWeatherValues_ByWundergroundLocationName()
-        {
-            // Arrange 
-            var regionSubUrl = "Norway/Kristiansand";
-            var smartGridRegionName = "Norway_Kristiansand";
-            var timeZone = "Central European Standard Time";
-            var regionLat = 58.24158635676374;
-            var regionLong = 8.096923830624974;
-
-            var startDateTime = new DateTime(2017, 1, 1); // DateTime.Now.AddDays(-10);
-            var endDateTime = new DateTime(2017, 2, 1); // var startDateTime = DateTime.Now.AddDays(-1);
-
-            var wundergroundApiUrl = CloudConfigurationManager.GetSetting("WundergroundApiUrl");
-            var wundergroundApiKey = CloudConfigurationManager.GetSetting("WundergroundApiKey");
-            var selfThrottlingMethod = "AzureTableStorageCallRecollection";
-            var maxNumberOfCallsPerMinute = 5;
-
-            int regionId;
-            using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
-            {
-                regionId =
-                    _objectModel.AddWeatherRegion(smartGridRegionName, timeZone, regionLat, regionLong, regionSubUrl).WeatherRegionID;
-            }
-
-
-            var wundergroundWeatherInteraction =
-                new WundergroundWeatherInteraction(
-                    selfThrottlingMethod,
-                    maxNumberOfCallsPerMinute);
-
-            WeatherDataMiner weatherDataMiner = new WeatherDataMiner(
-                                                    wundergroundApiUrl,
-                                                    wundergroundApiKey,
-                                                    selfThrottlingMethod,
-                                                    databaseConnectionString,
-                                                    maxNumberOfCallsPerMinute,
-                                                    wundergroundWeatherInteraction);
-
-            // Act
-            weatherDataMiner.MineHistoricWeatherValues(startDateTime, endDateTime, regionSubUrl, regionId);
-
-            // Assert
-            // Verify that each data point has been recorded in the database
-            var results = wundergroundWeatherInteraction.GetHistoricWeatherData(
-                wundergroundApiUrl,
-                regionSubUrl,
-                wundergroundApiKey,
-                startDateTime,
-                endDateTime);
-            using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
-            {
-                foreach (var result in results)
-                {
-                    var dataPoint = _objectModel.FindWeatherDataPoint(regionId, result.observationDateTime);
-                    Assert.IsNotNull(dataPoint);
-                }
-            }
-        }
-
-        [TestMethod]
-        public void TestMineHistoricWeatherValues_ByGPS()
-        {
-            // Arrange 
-            var startDateTime = new DateTime(2017, 1, 1); // DateTime.Now.AddDays(-10);
-            var endDateTime = new DateTime(2017, 1, 2); // var startDateTime = DateTime.Now.AddDays(-1);
-            
-            var latitude = 58.279231;
-            var longtitude = 6.892410;
-            var smartGridRegionName = "Norway_Oye";
-            var timeZone = "Central European Standard Time";
-
-            var wundergroundApiUrl = CloudConfigurationManager.GetSetting("WundergroundApiUrl");
-            var wundergroundApiKey = CloudConfigurationManager.GetSetting("WundergroundApiKey");
-            var selfThrottlingMethod = "AzureTableStorageCallRecollection";
-            var maxNumberOfCallsPerMinute = 5;
-
-            int regionId;
-            using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
-            {
-                regionId =
-                    _objectModel.AddWeatherRegion(smartGridRegionName, timeZone, latitude, longtitude, null).WeatherRegionID;
-            }
-
-            var wundergroundWeatherInteraction =
-                new WundergroundWeatherInteraction(
-                    selfThrottlingMethod,
-                    maxNumberOfCallsPerMinute);
-
-            WeatherDataMiner weatherDataMiner = new WeatherDataMiner(   
-                                                    wundergroundApiUrl,
-                                                    wundergroundApiKey,
-                                                    selfThrottlingMethod,
-                                                    databaseConnectionString,
-                                                    maxNumberOfCallsPerMinute,
-                                                    wundergroundWeatherInteraction);
-
-            // Act
-            weatherDataMiner.MineHistoricWeatherValues(startDateTime, endDateTime, latitude, longtitude, regionId);
-
-            // Assert
-        }
 
         [TestMethod]
         public void TestMineHistoricMarginalCarbonResults()
@@ -416,7 +305,6 @@ namespace ApiDataMinerTests
         public void TestCalculateHistoricRelativeMeritDataResults()
         {
             // Arrange 
-            var regionWattTimeName = "PJM";
             var smartGridRegionName = "US_PJM";
 
             var startDateTime = DateTime.UtcNow.AddDays(-10);
@@ -657,9 +545,9 @@ namespace ApiDataMinerTests
                         var wattTimeEmail = regionConfiguration.EmissionsMiningRegion.WattTimeEmail;
                         var wattTimeOrganization = regionConfiguration.EmissionsMiningRegion.WattTimeOrganization;
 
-                        var selfThrottlingMethod = regionConfiguration.WeatherMiningRegion.SelfThrottlingMethod;
+                        var selfThrottlingMethod = regionConfiguration.WundergroundWeatherMiningRegion.SelfThrottlingMethod;
                         var maxNumberOfCallsPerMinute =
-                            regionConfiguration.WeatherMiningRegion.MaxNumberOfCallsPerMinute;
+                            regionConfiguration.WundergroundWeatherMiningRegion.MaxNumberOfCallsPerMinute;
                         var startDateTime = DateTime.UtcNow.AddDays(-2);
                         var endDateTime = DateTime.UtcNow.AddDays(10);
 
@@ -691,33 +579,33 @@ namespace ApiDataMinerTests
                     }
 
                     // Verify weather was mined successfully for each region in the Config File
-                    if (regionConfiguration.WeatherMiningRegion != null)
+                    if (regionConfiguration.WundergroundWeatherMiningRegion != null)
                     {
-                        var emissionsRegionName = regionConfiguration.WeatherMiningRegion.friendlyName;
-                        var timeZone = regionConfiguration.WeatherMiningRegion.TimeZone;
-                        var regionLat = regionConfiguration.WeatherMiningRegion.Latitude;
-                        var regionLong = regionConfiguration.WeatherMiningRegion.Longitude;
+                        var emissionsRegionName = regionConfiguration.WundergroundWeatherMiningRegion.friendlyName;
+                        var timeZone = regionConfiguration.WundergroundWeatherMiningRegion.TimeZone;
+                        var regionLat = regionConfiguration.WundergroundWeatherMiningRegion.Latitude;
+                        var regionLong = regionConfiguration.WundergroundWeatherMiningRegion.Longitude;
                         var weatherRegionWundergroundSubUrl =
-                            regionConfiguration.WeatherMiningRegion.weatherRegionWundergroundSubUrl;
-                        var wundergroundApiUrl = regionConfiguration.WeatherMiningRegion.ApiUrl;
-                        var wundergroundApiKey = regionConfiguration.WeatherMiningRegion.ApiKey;
-                        var selfThrottlingMethod = regionConfiguration.WeatherMiningRegion.SelfThrottlingMethod;
+                            regionConfiguration.WundergroundWeatherMiningRegion.weatherRegionWundergroundSubUrl;
+                        var wundergroundApiUrl = regionConfiguration.WundergroundWeatherMiningRegion.ApiUrl;
+                        var wundergroundApiKey = regionConfiguration.WundergroundWeatherMiningRegion.ApiKey;
+                        var selfThrottlingMethod = regionConfiguration.WundergroundWeatherMiningRegion.SelfThrottlingMethod;
                         var maxNumberOfCallsPerMinute =
-                            regionConfiguration.WeatherMiningRegion.MaxNumberOfCallsPerMinute;
+                            regionConfiguration.WundergroundWeatherMiningRegion.MaxNumberOfCallsPerMinute;
 
                         var wundergroundWeatherInteraction = new WundergroundWeatherInteraction(
                                                                  selfThrottlingMethod,
                                                                  maxNumberOfCallsPerMinute);
                         List<HourlyForecast> results = new List<HourlyForecast>();
 
-                        switch (regionConfiguration.WeatherMiningRegion.MiningMethod)
+                        switch (regionConfiguration.WundergroundWeatherMiningRegion.MiningMethod)
                         {
                             case "GPS":
                                 results =
                                wundergroundWeatherInteraction.GetTenDayHourlyForecastWeatherData(
                                    wundergroundApiUrl,
-                                   regionConfiguration.WeatherMiningRegion.Latitude,
-                                   regionConfiguration.WeatherMiningRegion.Longitude,
+                                   regionConfiguration.WundergroundWeatherMiningRegion.Latitude,
+                                   regionConfiguration.WundergroundWeatherMiningRegion.Longitude,
                                    wundergroundApiKey);
                                 break;
 
@@ -730,8 +618,6 @@ namespace ApiDataMinerTests
                                        wundergroundApiKey);
                                 break;
                         }
-
-                       
 
                         int regionId;
                         using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
@@ -748,6 +634,58 @@ namespace ApiDataMinerTests
                                 var dataPoint = _objectModel.FindWeatherDataPoint(
                                     regionId,
                                     result.observationDateTime);
+                                Assert.IsNotNull(dataPoint);
+                            }
+                        }
+                    }
+
+                    // Verify weather was mined successfully for each region in the Config File
+                    if (regionConfiguration.DarkSkyWeatherMiningRegion != null)
+                    {
+                        var regionName = regionConfiguration.DarkSkyWeatherMiningRegion.friendlyName;
+                        var timeZone = regionConfiguration.DarkSkyWeatherMiningRegion.TimeZone;
+                        var regionLat = regionConfiguration.DarkSkyWeatherMiningRegion.Latitude;
+                        var regionLong = regionConfiguration.DarkSkyWeatherMiningRegion.Longitude;
+                        var apiUrl = regionConfiguration.DarkSkyWeatherMiningRegion.ApiUrl;
+                        var apiKey = regionConfiguration.DarkSkyWeatherMiningRegion.ApiKey;
+                        var selfThrottlingMethod = regionConfiguration.DarkSkyWeatherMiningRegion.SelfThrottlingMethod;
+                        var maxNumberOfCallsPerMinute =
+                            regionConfiguration.DarkSkyWeatherMiningRegion.MaxNumberOfCallsPerMinute;
+                        var maxNumberOfCallsPerDay =
+                            regionConfiguration.DarkSkyWeatherMiningRegion.MaxNumberOfCallsPerDay;
+
+                        var darkSkyWeatherInteraction = new DarkSkyWeatherInteraction(
+                                                                selfThrottlingMethod,
+                                                                maxNumberOfCallsPerMinute,
+                                                                maxNumberOfCallsPerDay);
+                        List<HourlyDatum> results = new List<HourlyDatum>();
+
+                        var forecastStartDateTime = DateTime.UtcNow;
+                        var forecastEndDateTime = DateTime.UtcNow.AddDays(10);
+
+                        results = darkSkyWeatherInteraction.GetForecastWeatherData(
+                            apiUrl,
+                            apiKey,
+                            regionLat,
+                            regionLong,
+                            forecastStartDateTime,
+                            forecastEndDateTime);
+                        
+                        int regionId;
+                        using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
+                        {
+                            regionId =
+                                _objectModel.AddWeatherRegion(regionName, timeZone, regionLat, regionLong)
+                                    .WeatherRegionID;
+                        }
+
+                        using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
+                        {
+                            foreach (var result in results)
+                            {
+                                var dataPoint = _objectModel.FindWeatherDataPoint(
+                                    regionId,
+                                    result.dateTime);
                                 Assert.IsNotNull(dataPoint);
                             }
                         }

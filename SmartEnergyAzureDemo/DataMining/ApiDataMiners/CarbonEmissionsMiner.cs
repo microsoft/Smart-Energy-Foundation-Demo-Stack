@@ -302,7 +302,7 @@ namespace ApiDataMiners
             {
                 Logger.Error(
                     $"CarbonEmissionsMiner: MineForecastMarginalCarbonResults(): Exception encountered while emissions Data figures for {regionWattTimeName} between {historicStartDateTime} and {historicEndDateTime}.",
-                    "CarbonEmissionsMiner.MineOrCalculateHistoricRelativeMeritData()",
+                    "CarbonEmissionsMiner.MineForecastMarginalCarbonResults()",
                     null,
                     e);
             }
@@ -327,7 +327,7 @@ namespace ApiDataMiners
             {
                 Logger.Information(
                     $"Entering method for {regionWattTimeName} from WattTime URL {this.wattTimeApiUrl} with method of relative data retrieval / calculation of {this.RelativeMeritDataSource}.",
-                    "CarbonEmissionsMiner.MineOrCalculateCarbonEmissionsRelativeMerit()");
+                    "CarbonEmissionsMiner.MineOrCalculateHistoricRelativeMeritData()");
 
                 switch (this.RelativeMeritDataSource)
                 {
@@ -344,7 +344,7 @@ namespace ApiDataMiners
 
                             Logger.Information(
                                 $"Received result for RelativeMeritData for {regionWattTimeName} from WattTime. Inserting into the database",
-                                "CarbonEmissionsMiner.MineOrCalculateCarbonEmissionsRelativeMerit()");
+                                "CarbonEmissionsMiner.MineOrCalculateRelativeMeritData()");
 
                             // Insert results in the database 
                             using (var _objectModel = new SmartEnergyOM(this.DatabaseConnectionString))
@@ -363,7 +363,7 @@ namespace ApiDataMiners
                         {
                             Logger.Information(
                                 $"No result found when requesting RelativeMeritData for {regionWattTimeName} from WattTime at UTC: {DateTime.UtcNow}.e",
-                                "CarbonEmissionsMiner.MineOrCalculateCarbonEmissionsRelativeMerit()");
+                                "CarbonEmissionsMiner.MineOrCalculateRelativeMeritData()");
                         }
                         break;
 
@@ -390,7 +390,7 @@ namespace ApiDataMiners
                     default:
                         Logger.Information(
                                 $"No known defined method of MineOrCalculateRelativeMeritData supplied to method. Not mining or calculating Historic Relative Merit Data for this region ({regionWattTimeName})",
-                                "CarbonEmissionsMiner.MineOrCalculateCarbonEmissionsRelativeMerit()");
+                                "CarbonEmissionsMiner.MineOrCalculateRelativeMeritData()");
                         return;
                 }
             }
@@ -398,7 +398,7 @@ namespace ApiDataMiners
             {
                 Logger.Error(
                     $"CarbonEmissionsMiner: MineOrCalculateRelativeMeritData(): Exception encountered while emissions Data figures for {regionWattTimeName} between {historicStartDateTime} and {historicEndDateTime}.",
-                    "CarbonEmissionsMiner.MineOrCalculateCarbonEmissionsRelativeMerit()",
+                    "CarbonEmissionsMiner.MineOrCalculateRelativeMeritData()",
                     null,
                     e);
             }

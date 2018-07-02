@@ -46,7 +46,9 @@ namespace ApiDataMiners
 
         private ApiMinerConfigLayoutRegionEmissionsMiningRegion emissionsMiningRegionField;
 
-        private ApiMinerConfigLayoutRegionWeatherMiningRegion weatherMiningRegionField;
+        private ApiMinerConfigLayoutRegionWundergroundWeatherMiningRegion wundergroundWeatherMiningRegionField;
+
+        private ApiMinerConfigLayoutRegionDarkSkyWeatherMiningRegion darkSkyWeatherMiningRegionField;
 
         private string friendlyNameField;
 
@@ -64,15 +66,28 @@ namespace ApiDataMiners
         }
 
         /// <remarks/>
-        public ApiMinerConfigLayoutRegionWeatherMiningRegion WeatherMiningRegion
+        public ApiMinerConfigLayoutRegionWundergroundWeatherMiningRegion WundergroundWeatherMiningRegion
         {
             get
             {
-                return this.weatherMiningRegionField;
+                return this.wundergroundWeatherMiningRegionField;
             }
             set
             {
-                this.weatherMiningRegionField = value;
+                this.wundergroundWeatherMiningRegionField = value;
+            }
+        }
+
+        /// <remarks/>
+        public ApiMinerConfigLayoutRegionDarkSkyWeatherMiningRegion DarkSkyWeatherMiningRegion
+        {
+            get
+            {
+                return this.darkSkyWeatherMiningRegionField;
+            }
+            set
+            {
+                this.darkSkyWeatherMiningRegionField = value;
             }
         }
 
@@ -126,7 +141,7 @@ namespace ApiDataMiners
 
         private string selfThrottlingMethodField;
 
-        private byte maxNumberOfCallsPerMinuteField;
+        private int maxNumberOfCallsPerMinuteField;
 
         private string relativeMeritDataSource;
 
@@ -209,7 +224,7 @@ namespace ApiDataMiners
         }
 
         /// <remarks/>
-        public byte MaxNumberOfCallsPerMinute
+        public int MaxNumberOfCallsPerMinute
         {
             get
             {
@@ -252,7 +267,7 @@ namespace ApiDataMiners
         {
             get
             {
-                return this.wattTimeApiV2UrlField; 
+                return this.wattTimeApiV2UrlField;
             }
             set
             {
@@ -265,7 +280,7 @@ namespace ApiDataMiners
         {
             get
             {
-                return this.wattTimeUsernameField; 
+                return this.wattTimeUsernameField;
             }
             set
             {
@@ -344,7 +359,7 @@ namespace ApiDataMiners
     [System.SerializableAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class ApiMinerConfigLayoutRegionWeatherMiningRegion
+    public partial class ApiMinerConfigLayoutRegionWundergroundWeatherMiningRegion
     {
 
         private string weatherRegionWundergroundSubUrlField;
@@ -363,7 +378,7 @@ namespace ApiDataMiners
 
         private string selfThrottlingMethodField;
 
-        private byte maxNumberOfCallsPerMinuteField;
+        private int maxNumberOfCallsPerMinuteField;
 
         private string friendlyNameField;
 
@@ -472,7 +487,7 @@ namespace ApiDataMiners
         }
 
         /// <remarks/>
-        public byte MaxNumberOfCallsPerMinute
+        public int MaxNumberOfCallsPerMinute
         {
             get
             {
@@ -499,5 +514,147 @@ namespace ApiDataMiners
         }
     }
 
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class ApiMinerConfigLayoutRegionDarkSkyWeatherMiningRegion
+    {
 
+        private double latitudeField;
+
+        private double longitudeField;
+
+        private string timeZoneField;
+
+        private string apiUrlField;
+
+        private string apiKeyField;
+
+        private string selfThrottlingMethodField;
+
+        private int maxNumberOfCallsPerMinuteField;
+
+        private int maxNumberOfCallsPerDayField;
+
+        private string friendlyNameField;
+
+        /// <remarks/>
+        public double Latitude
+        {
+            get
+            {
+                return this.latitudeField;
+            }
+            set
+            {
+                this.latitudeField = value;
+            }
+        }
+
+        /// <remarks/>
+        public double Longitude
+        {
+            get
+            {
+                return this.longitudeField;
+            }
+            set
+            {
+                this.longitudeField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string TimeZone
+        {
+            get
+            {
+                return this.timeZoneField;
+            }
+            set
+            {
+                this.timeZoneField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string ApiUrl
+        {
+            get
+            {
+                return this.apiUrlField;
+            }
+            set
+            {
+                this.apiUrlField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string ApiKey
+        {
+            get
+            {
+                return this.apiKeyField;
+            }
+            set
+            {
+                this.apiKeyField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string SelfThrottlingMethod
+        {
+            get
+            {
+                return this.selfThrottlingMethodField;
+            }
+            set
+            {
+                this.selfThrottlingMethodField = value;
+            }
+        }
+
+        /// <remarks/>
+        public int MaxNumberOfCallsPerMinute
+        {
+            get
+            {
+                return this.maxNumberOfCallsPerMinuteField;
+            }
+            set
+            {
+                this.maxNumberOfCallsPerMinuteField = value;
+            }
+        }
+
+        /// <remarks/>
+        public int MaxNumberOfCallsPerDay
+        {
+            get
+            {
+                return this.maxNumberOfCallsPerDayField;
+            }
+            set
+            {
+                this.maxNumberOfCallsPerDayField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string friendlyName
+        {
+            get
+            {
+                return this.friendlyNameField;
+            }
+            set
+            {
+                this.friendlyNameField = value;
+            }
+        }
+    }
 }
