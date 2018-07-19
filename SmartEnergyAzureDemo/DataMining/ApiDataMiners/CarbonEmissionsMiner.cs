@@ -86,13 +86,11 @@ namespace ApiDataMiners
             this.DatabaseConnectionString = databaseConnectionString;
             this.RelativeMeritDataSource = relativeMeritDataSource;
 
-            // Perform any service specific actions such as registeration
-            switch (this.RelativeMeritDataSource)
+           // Perform any service specific actions such as registeration
+           if( (!string.IsNullOrEmpty(wattTimeUsername)) && (!string.IsNullOrEmpty(WattTimePassword)) )
             {
-                case "WattTime":
-                    // Register the given user details with the WattTime API in case they haven't already been registered. 
-                    this.wattTimeEmissionsInteraction.RegisterWithWattTime(this.WattTimeV2ApiUrl, this.WattTimeUsername, this.WattTimePassword, this.WattTimeEmail, this.WattTimeOrganization, true);
-                    break;
+                // Register the given user details with the WattTime API in case they haven't already been registered. 
+                this.wattTimeEmissionsInteraction.RegisterWithWattTime(this.WattTimeV2ApiUrl, this.WattTimeUsername, this.WattTimePassword, this.WattTimeEmail, this.WattTimeOrganization, true);                    
             }
         }
 
@@ -119,45 +117,40 @@ namespace ApiDataMiners
                     "CarbonEmissionsMiner.MineHistoricMarginalCarbonResults()");
 
                 var results = this.wattTimeEmissionsInteraction.GetObservedMarginalCarbonResults(
-                    wattTimeApiUrl,
+                    WattTimeV2ApiUrl,
                     regionWattTimeName,
+                    WattTimeUsername,
+                    WattTimePassword,
                     historicStartDateTime,
                     historicEndDateTime,
-                    null,
-                    wattTimeApiKey);
+                    null);
 
-                 Logger.Information(
-                    $"Received {results.Count} HistoricMarginalCarbonResults Results for {regionWattTimeName} from WattTime. Inserting them into the database",
-                    "CarbonEmissionsMiner.MineHistoricMarginalCarbonResults()");
+                Logger.Information(
+                   $"Received {results.Count} HistoricMarginalCarbonResults Results for {regionWattTimeName} from WattTime. Inserting them into the database",
+                   "CarbonEmissionsMiner.MineHistoricMarginalCarbonResults()");
 
                 // Insert results in the database 
                 using (var _objectModel = new SmartEnergyOM(this.DatabaseConnectionString))
                 {
                     foreach (var res in results)
                     {
-                        var dateTime = res.timestamp;
+                        var dateTime = res.point_time;
 
-                        var marginalCarbon = res.marginal_carbon.value;
-                        var units = res.marginal_carbon.units;
+                        var marginalCarbon = res.value;
 
-                        if (marginalCarbon != null)
-                        {
-                            var marginalCarbonMetric = units == "lb/MW"
-                                                           ? this.wattTimeEmissionsInteraction
-                                                               .ConvertLbsPerMWhTo_GCo2PerkWh((double)marginalCarbon)
-                                                           : marginalCarbon;
+                        var marginalCarbonMetric = this.wattTimeEmissionsInteraction
+                                                           .ConvertLbsPerMWhTo_GCo2PerkWh((double)marginalCarbon);
 
-                            _objectModel.InsertOrUpdateCarbonEmissionsDataPoints(
-                                regionId,
-                                dateTime,
-                                null,
-                                null,
-                                marginalCarbonMetric,
-                                null);
-                        }
+                        _objectModel.InsertOrUpdateCarbonEmissionsDataPoints(
+                            regionId,
+                            dateTime,
+                            null,
+                            null,
+                            marginalCarbonMetric,
+                            null);
                     }
                 }
-            }
+            } 
             catch (Exception e)
             {
                 Logger.Error(
@@ -191,12 +184,13 @@ namespace ApiDataMiners
                     "CarbonEmissionsMiner.MineForecastMarginalCarbonResults()");
 
                 var results = this.wattTimeEmissionsInteraction.GetForecastMarginalCarbonResults(
-                    wattTimeApiUrl,
+                    WattTimeV2ApiUrl,
                     regionWattTimeName,
+                    WattTimeUsername,
+                    WattTimePassword,
                     historicStartDateTime,
                     historicEndDateTime,
-                    null,
-                    wattTimeApiKey);
+                    null);
 
                 Logger.Information(
                     $"Received {results.Count} ForecastMarginalCarbonResults Results for {regionWattTimeName} from WattTime. Inserting them into the database",
@@ -207,26 +201,20 @@ namespace ApiDataMiners
                 {
                     foreach (var res in results)
                     {
-                        var dateTime = res.timestamp;
+                        var dateTime = res.point_time;
 
-                        var marginalCarbon = res.marginal_carbon.value;
-                        var units = res.marginal_carbon.units;
+                        var marginalCarbon = res.value;
 
-                        if (marginalCarbon != null)
-                        {
-                            var marginalCarbonMetric = units == "lb/MW"
-                                                           ? this.wattTimeEmissionsInteraction
-                                                               .ConvertLbsPerMWhTo_GCo2PerkWh((double)marginalCarbon)
-                                                           : marginalCarbon;
+                        var marginalCarbonMetric = this.wattTimeEmissionsInteraction
+                                                           .ConvertLbsPerMWhTo_GCo2PerkWh((double)marginalCarbon);
 
-                            _objectModel.InsertOrUpdateCarbonEmissionsDataPoints(
-                                regionId,
-                                dateTime,
-                                null,
-                                null,
-                                null,
-                                marginalCarbonMetric);
-                        }
+                        _objectModel.InsertOrUpdateCarbonEmissionsDataPoints(
+                            regionId,
+                            dateTime,
+                            null,
+                            null,
+                            null,
+                            marginalCarbonMetric);
                     }
                 }
             }
@@ -790,3 +778,5 @@ namespace ApiDataMiners
         }
     }
 }
+
+

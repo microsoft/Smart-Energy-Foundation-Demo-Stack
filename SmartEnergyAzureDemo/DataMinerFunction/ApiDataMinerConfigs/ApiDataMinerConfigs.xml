@@ -31,6 +31,43 @@
       </DarkSkyWeatherMiningRegion>
     </Region>
 
+    <Region friendlyName="US_PJM_SOUTH">
+      <EmissionsMiningRegion friendlyName="US_PJM_SOUTH">
+        <EmissionsWattTimeAbbreviation>PJM_SOUTH</EmissionsWattTimeAbbreviation>
+        <Latitude>37.44276433719146</Latitude>
+        <Longitude>-76.87479269270705</Longitude>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>1e618892c1bbdf87b6fa7f5fdeee4365e66901bc</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+    </Region>
+    <Region friendlyName="US_PJM_ATLANTIC">
+      <EmissionsMiningRegion friendlyName="US_PJM_ATLANTIC">
+        <EmissionsWattTimeAbbreviation>PJM_ATLANTIC</EmissionsWattTimeAbbreviation>
+        <Latitude>40.566564</Latitude>
+        <Longitude>-76.98465597395705</Longitude>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>1e618892c1bbdf87b6fa7f5fdeee4365e66901bc</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+    </Region>
+
     <Region friendlyName="US_CAISO">
       <EmissionsMiningRegion friendlyName="US_CAISO">
         <EmissionsWattTimeAbbreviation>CAISO</EmissionsWattTimeAbbreviation>

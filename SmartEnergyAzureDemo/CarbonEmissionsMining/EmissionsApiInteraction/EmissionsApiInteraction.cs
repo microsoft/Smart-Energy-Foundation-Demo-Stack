@@ -42,99 +42,84 @@ namespace EmissionsApiInteraction
         /// </summary>
         /// <param name="WattTimeUrl">URL of the Watt Time API</param>
         /// <param name="regionAbbreviation">Abbreviation for the required region (e.g. "PJM"). See https://api.watttime.org/faq/#where </param>
+        /// <param name="WattTimeUsername">WattTime Username</param>
+        /// <param name="WattTimePassword">WattTime Password</param>
         /// <param name="timeout">Optional Timeout value</param>
         /// <param name="startDateTime">startDateTime</param>
         /// <param name="endDateTime">endDateTime</param>
-        /// <param name="wattTimeApiKey">>WattTime Api Key</param>
         /// <param name="customUrlParams">Optional customUrlParams to add to construct a custom query</param>
         /// <returns>The latest marginal carbon data for a given region from the WattTime API</returns>
-        public List<MarginalCarbonResult.Result> GetMarginalCarbonResults(string WattTimeUrl, string regionAbbreviation, DateTime? startDateTime = null, DateTime? endDateTime = null, TimeSpan? timeout = null, string wattTimeApiKey = null, string customUrlParams = null)
+        public List<MarginalCarbonResultV2Api> GetMarginalCarbonResults(string WattTimeUrl, string regionAbbreviation, string WattTimeUsername, string WattTimePassword, DateTime? startDateTime = null, DateTime? endDateTime = null, TimeSpan? timeout = null, string customUrlParams = null)
         {
-            var resultsList = new List<MarginalCarbonResult.Result>();
-            const string subUrl = "v1/marginal/";
+            var resultsList = new List<MarginalCarbonResultV2Api>();
+            const string subUrl = "v2/data/";
             var apiQueryUrl = $"{WattTimeUrl}{subUrl}";
             string urlParameters = $"?ba={regionAbbreviation}&page_size=1000";
 
 
-            urlParameters = AppendOptionalWattTimeFormattedStartAndEndDateTimeParameters(startDateTime, endDateTime, urlParameters);
+            var authToken = RetrieveWattTimeAuthToken(WattTimeUrl, WattTimeUsername, WattTimePassword);
+            var authTokenKey = authToken.Token;
+
+
+            urlParameters = AppendOptionalWattTimeFormattedStartAndEndDateTimeParameters(startDateTime, endDateTime, urlParameters, true);
 
             if (customUrlParams != null)
             {
                 urlParameters = customUrlParams.StartsWith("&") ? $"{urlParameters}{customUrlParams}" : $"{urlParameters}&{customUrlParams}";
             }
 
-            var webApiHelper = new WebApiSerializerHelper<MarginalCarbonResult.RootObject>();
+            var webApiHelper = new WebApiSerializerHelper<List<MarginalCarbonResultV2Api>>();
             
             var response =
-                this.apiInteractionHelper.ExecuteThrottledApiCall<MarginalCarbonResult.RootObject>(
+                this.apiInteractionHelper.ExecuteThrottledApiCallWithBearerAuthToken<List<MarginalCarbonResultV2Api>>(
                     timeout,
                     webApiHelper,
                     apiQueryUrl,
                     urlParameters,
-                    wattTimeApiKey,
+                    authTokenKey,
                     apiNameForThrottlingRecords);
-
-            // Cycle through the next page until there are no more results
-            resultsList = response.results;
-            var nextPageUrl = response.next;
-            while (nextPageUrl != null)
-            {
-                var furtherResults = this.apiInteractionHelper.ExecuteThrottledApiCall<MarginalCarbonResult.RootObject>(
-                    timeout,
-                    webApiHelper,
-                    nextPageUrl,
-                    null,
-                    wattTimeApiKey,
-                    apiNameForThrottlingRecords);
-                
-                resultsList.AddRange(furtherResults.results);
-                nextPageUrl = furtherResults.next;
-            }
-
-            return resultsList;
-        }        
+          
+            return response;
+        }
 
         /// <summary>
         /// Get Observed Marginal Carbon Results
         /// </summary>
         /// <param name="WattTimeUrl">URL of the Watt Time API</param>
-        /// <param name="regionAbbreviation">Abbreviation for the required region (e.g. "PJM"). See https://api.watttime.org/faq/#where </param>
+        /// <param name="regionAbbreviation">Abbreviation for the required region (e.g. "PJM"). See https://api.watttime.org/faq/#where </param>#
+        /// <param name="WattTimeUsername">WattTime Username</param>
+        /// <param name="WattTimePassword">WattTime Password</param>
         /// <param name="startDateTime">startDateTime</param>
         /// <param name="endDateTime">endDateTime</param>
         /// <param name="timeout">Optional Timeout value</param>
-        /// <param name="wattTimeApiKey">WattTime Api Key</param>
         /// <param name="customUrlParams">Optional customUrlParams to add to construct a custom query</param>
         /// <returns></returns>
-        public List<MarginalCarbonResult.Result> GetObservedMarginalCarbonResults(
+        public List<MarginalCarbonResultV2Api> GetObservedMarginalCarbonResults(
             string WattTimeUrl,
             string regionAbbreviation,
+            string WattTimeUsername, 
+            string WattTimePassword,
             DateTime? startDateTime = null,
             DateTime? endDateTime = null,
             TimeSpan? timeout = null,
-            string wattTimeApiKey = null,
             string customUrlParams = null)
         {
-            var customParams = "&market=RT5M";
+            string customParams = null;
             if (customUrlParams != null)
             {
                 customParams = customUrlParams.StartsWith("&") ? $"{customParams}{customUrlParams}" : $"{customParams}&{customUrlParams}";
             }
 
             // First check for the most granular results available
-            var fiveMinuteMarginalResults =  GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, startDateTime, endDateTime, timeout, wattTimeApiKey, customParams);
+            var fiveMinuteMarginalResults =  GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, WattTimeUsername, WattTimePassword, startDateTime, endDateTime, timeout, customParams);
             if (fiveMinuteMarginalResults.Any())
             {
-                return fiveMinuteMarginalResults;
+                return fiveMinuteMarginalResults.Where(t=> t.datatype.Equals("MOER")).ToList();
             }
-           
-            // There were no 5 minute Marginal results, try for hourly Marginal Values
-            customParams = "&market=RTHR";
-            if (customUrlParams != null)
+            else
             {
-                customParams = customUrlParams.StartsWith("&") ? $"{customParams}{customUrlParams}" : $"{customParams}&{customUrlParams}";
+                return new List<MarginalCarbonResultV2Api>();
             }
-            var hourlyMarginalResults = GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, startDateTime, endDateTime, timeout, wattTimeApiKey, customParams);
-            return hourlyMarginalResults; 
         }
 
         /// <summary>
@@ -142,19 +127,21 @@ namespace EmissionsApiInteraction
         /// </summary>
         /// <param name="WattTimeUrl">URL of the Watt Time API</param>
         /// <param name="regionAbbreviation">Abbreviation for the required region (e.g. "PJM"). See https://api.watttime.org/faq/#where </param>
+        /// <param name="WattTimeUsername">WattTime Username</param>
+        /// <param name="WattTimePassword">WattTime Password</param>
         /// <param name="startDateTime">startDateTime</param>
         /// <param name="endDateTime">endDateTime</param>
         /// <param name="timeout">Optional Timeout value</param>
-        /// <param name="wattTimeApiKey">WattTime Api Key</param>
         /// <param name="customUrlParams">Optional customUrlParams to add to construct a custom query</param>
         /// <returns></returns>
-        public List<MarginalCarbonResult.Result> GetForecastMarginalCarbonResults(
+        public List<MarginalCarbonResultV2Api> GetForecastMarginalCarbonResults(
             string WattTimeUrl,
             string regionAbbreviation,
+            string WattTimeUsername,
+            string WattTimePassword,
             DateTime? startDateTime = null,
             DateTime? endDateTime = null,
             TimeSpan? timeout = null,
-            string wattTimeApiKey = null,
             string customUrlParams = null)
         {
             var customParams = "&market=DAHR";
@@ -165,7 +152,7 @@ namespace EmissionsApiInteraction
                                    : $"{customParams}&{customUrlParams}";
             }
 
-            return GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, startDateTime, endDateTime, timeout, wattTimeApiKey, customParams);
+            return GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, WattTimeUsername, WattTimePassword, startDateTime, endDateTime, timeout, customParams);
         }
 
         /// <summary>
@@ -273,15 +260,17 @@ namespace EmissionsApiInteraction
         /// </summary>
         /// <param name="WattTimeUrl">URL of the Watt Time API</param>
         /// <param name="regionAbbreviation">Abbreviation for the required region (e.g. "PJM"). See https://api.watttime.org/faq/#where </param>
+        /// <param name="WattTimeUsername">WattTime Username</param>
+        /// <param name="WattTimePassword">WattTime Password</param>
         /// <param name="timeout">Optional Timeout value</param>
-        /// <param name="wattTimeApiKey">WattTime Api Key</param>
         /// <returns>The most recent 5 minutely real time marginal carbon data for a given region from the WattTime API</returns>
-        public MarginalCarbonResult.Result GetMostRecentMarginalCarbonEmissionsResult(string WattTimeUrl, string regionAbbreviation, TimeSpan? timeout = null, string wattTimeApiKey = null)
+        public MarginalCarbonResultV2Api GetMostRecentMarginalCarbonEmissionsResult(string WattTimeUrl, string regionAbbreviation, string WattTimeUsername,
+            string WattTimePassword, TimeSpan? timeout = null)
         {
             var customParams = "&market=RT5M";
-            var response = GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, DateTime.Now.AddHours(-1), DateTime.Now.AddHours(1), timeout, wattTimeApiKey, customParams);
+            var response = GetMarginalCarbonResults(WattTimeUrl, regionAbbreviation, WattTimeUsername, WattTimePassword, DateTime.Now.AddHours(-1), DateTime.Now.AddHours(1), timeout,customParams);
 
-            var sortedResponses = response.OrderByDescending(x => x.timestamp);
+            var sortedResponses = response.OrderByDescending(x => x.point_time);
 
             return sortedResponses.FirstOrDefault();
         }
@@ -418,7 +407,7 @@ namespace EmissionsApiInteraction
         private static string AppendOptionalWattTimeFormattedStartAndEndDateTimeParameters(
             DateTime? startDateTime,
             DateTime? endDateTime,
-            string urlParameters)
+            string urlParameters, bool wattTimeApiV2Format = false)
         {
             if (startDateTime != null)
             {
@@ -426,7 +415,14 @@ namespace EmissionsApiInteraction
                 // This can happen when calling DateTime.ToString using the 'z' format specifier, which will include a local time zone offset in the output. In that case, either use the 'Z'..."
                 // This conversion is intentional, and the warning can be ignored. You can modify your exception settings to ignore this specific Warning. The warning will not be thrown 
                 // in a Release build, or when it runs on Azure. 
-                urlParameters = $"{urlParameters}&start_at={startDateTime.Value:yyyy-MM-ddTHH\\:mm\\:sszzz}";
+                if (wattTimeApiV2Format)
+                {
+                    urlParameters = $"{urlParameters}&starttime={startDateTime.Value:yyyy-MM-ddTHH\\:mm\\:sszzz}";
+                }
+                else
+                {
+                    urlParameters = $"{urlParameters}&start_at={startDateTime.Value:yyyy-MM-ddTHH\\:mm\\:sszzz}";
+                }
             }
             if (endDateTime != null)
             {
@@ -434,7 +430,14 @@ namespace EmissionsApiInteraction
                 // This can happen when calling DateTime.ToString using the 'z' format specifier, which will include a local time zone offset in the output. In that case, either use the 'Z'..."
                 // This conversion is intentional, and the warning can be ignored. You can modify your exception settings to ignore this specific Warning. The warning will not be thrown 
                 // in a Release build, or when it runs on Azure. 
-                urlParameters = $"{urlParameters}&end_at={endDateTime.Value:yyyy-MM-ddTHH\\:mm\\:sszzz}";
+                if (wattTimeApiV2Format)
+                {
+                    urlParameters = $"{urlParameters}&endtime={endDateTime.Value:yyyy-MM-ddTHH\\:mm\\:sszzz}";
+                }
+                else
+                {
+                    urlParameters = $"{urlParameters}&end_at={endDateTime.Value:yyyy-MM-ddTHH\\:mm\\:sszzz}";
+                }                
             }
 
             urlParameters = urlParameters.Replace("+", "%2B"); // Plus sign needs to be escaped when passing timezone data to WattTime

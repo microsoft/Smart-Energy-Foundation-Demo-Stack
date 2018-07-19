@@ -41,16 +41,19 @@ namespace ApiDataMiner.Functional.Tests
             var maxNumberOfCallsPerMinute = 9;
 
             List<WattTimeBalancingAuthorityInformation> regionsToMine = new List<WattTimeBalancingAuthorityInformation>();
-
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PSEI", "US_PugetSoundEnergy", "Pacific Standard Time", 47.68009593341535, -122.11638450372567));
 
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("BPA", "US_BPA", "Pacific Standard Time", 40.348444276169, -74.6428556442261));
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("CAISO", "US_CAISO", "Pacific Standard Time", 41.7324, -123.409423));
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("ERCOT", "US_ERCOT", "Central Standard Time", 32.79878236662912, -96.77856445062508));
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("ISONE", "US_ISONewEngland", "Eastern Standard Time", 42.70864591994315, -72.16918945062508));
-            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("MISO", "US_UpperMidwestISO", "Central Standard Time", 41.91853269857261, -93.55193137872567));
-            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PJM", "US_PJM", "Eastern Standard Time", 40.348444276169, -74.6428556442261));
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("MISO", "US_UpperMidwestISO", "Central Standard Time", 41.91853269857261, -93.55193137872567));            
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("SPP", "US_SouthwesternPublicServiceISO", "Eastern Standard Time", 34.41133502036136, -103.19243430841317));
+
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PJM", "US_PJM", "Eastern Standard Time", 40.348444276169, -74.6428556442261));
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PJM_ATLANTIC", "US_PJM_ATLANTIC", "Eastern Standard Time", 40.566564, -76.98465597395705));
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PJM_SOUTH", "US_PJM_SOUTH", "Eastern Standard Time", 37.44276433719146, -76.87479269270705));
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PJM_WEST", "US_PJM_WEST", "Eastern Standard Time", 38.69484915602888, -85.11453878645705));
 
             foreach (var region in regionsToMine)
             {
@@ -94,18 +97,20 @@ namespace ApiDataMiner.Functional.Tests
                 // Assert
                 // Verify that each data point has been recorded in the database
                 var results = wattTimeInteraction.GetObservedMarginalCarbonResults(
-                    wattTimeApiUrl,
+                    wattTimeApiV2Url,
                     region.regionWattTimeName,
+                    WattTimeUsername,
+                    WattTimePassword,
                     startDateTime,
                     endDateTime,
                     null,
-                    wattTimeApiKey);
+                    null);
 
                 using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
                 {
                     foreach (var result in results)
                     {
-                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.timestamp);
+                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.point_time);
                         Assert.IsNotNull(dataPoint);
                     }
                 }
@@ -266,18 +271,19 @@ namespace ApiDataMiner.Functional.Tests
                 // Assert
                 // Verify that each data point has been recorded in the database
                 var marginalCarbonResults = wattTimeInteraction.GetObservedMarginalCarbonResults(
-                    wattTimeApiUrl,
+                    wattTimeApiV2Url,
                     region.regionWattTimeName,
+                    WattTimeUsername,
+                    WattTimePassword,
                     startDateTime,
                     endDateTime,
-                    null,
-                    wattTimeApiKey);
+                    null);
 
                 using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
                 {
                     foreach (var result in marginalCarbonResults)
                     {
-                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.timestamp);
+                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.point_time);
                         Assert.IsNotNull(dataPoint);
                     }
                 }
@@ -299,7 +305,7 @@ namespace ApiDataMiner.Functional.Tests
                     }
                 }
             }
-        }
+        }       
 
         [TestMethod]
         public void TestCalculateHistoricRelativeMeritDataResults()
@@ -487,25 +493,23 @@ namespace ApiDataMiner.Functional.Tests
             // Assert
             // Verify that each data point has been recorded in the database
             var results = wattTimeInteraction.GetForecastMarginalCarbonResults(
-                wattTimeApiUrl,
+                wattTimeApiV2Url,
                 regionWattTimeName,
+                WattTimeUsername,
+                WattTimePassword,
                 startDateTime,
                 endDateTime,
-                null,
-                wattTimeApiKey);
+                null);
 
             using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
             {
                 foreach (var result in results)
                 {
-                    if (result.marginal_carbon.value != null)
-                    {
-                        var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.timestamp);
-                        Assert.IsNotNull(dataPoint);
-                        Assert.AreEqual(
-                            wattTimeInteraction.ConvertLbsPerMWhTo_GCo2PerkWh((double)result.marginal_carbon.value),
-                            dataPoint.MarginalCO2Intensity_Forcast_gCO2kWh);
-                    }
+                    var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.point_time);
+                    Assert.IsNotNull(dataPoint);
+                    Assert.AreEqual(
+                        wattTimeInteraction.ConvertLbsPerMWhTo_GCo2PerkWh((double)result.value),
+                        dataPoint.MarginalCO2Intensity_Forcast_gCO2kWh);
                 }
             }
         }
@@ -555,10 +559,11 @@ namespace ApiDataMiner.Functional.Tests
                         var results = wattTimeInteraction.GetObservedMarginalCarbonResults(
                             wattTimeApiUrl,
                             regionWattTimeName,
+                            wattTimeUsername,
+                            wattTimePassword,
                             startDateTime,
                             endDateTime,
-                            null,
-                            wattTimeApiKey);
+                            null);
 
                         int regionId;
                         using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
@@ -572,7 +577,7 @@ namespace ApiDataMiner.Functional.Tests
                         {
                             foreach (var result in results)
                             {
-                                var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.timestamp);
+                                var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.point_time);
                                 Assert.IsNotNull(dataPoint);
                             }
                         }

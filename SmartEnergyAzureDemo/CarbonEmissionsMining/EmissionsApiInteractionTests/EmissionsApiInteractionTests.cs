@@ -35,7 +35,7 @@ namespace EmissionsApiInteractionTests
             EmissionsApiInteraction emissionsApiInteraction = new EmissionsApiInteraction(selfThrottlingMethod, maxNumberOfCallsPerMinute);
 
             // Act
-            var pointsReturned = emissionsApiInteraction.GetMarginalCarbonResults(this.wattTimeApiUrl, regionAbbreviation, DateTime.Now.AddDays(-2), DateTime.Now.AddDays(2), null, wattTimeApiKey);
+            var pointsReturned = emissionsApiInteraction.GetMarginalCarbonResults(this.wattTimeApiUrl, regionAbbreviation, WattTimeUsername, WattTimePassword, DateTime.Now.AddDays(-2), DateTime.Now.AddDays(2), null, wattTimeApiKey);
 
             // Assert
             Assert.IsTrue(pointsReturned.Count > 0);
@@ -53,7 +53,7 @@ namespace EmissionsApiInteractionTests
             var pointsReturned = emissionsApiInteraction.GetMostRecentMarginalCarbonEmissionsResult(this.wattTimeApiUrl, regionAbbreviation, null, wattTimeApiKey);
 
             // Assert
-            Assert.IsTrue(pointsReturned.marginal_carbon.value > -1);
+            Assert.IsTrue(pointsReturned.value > -1);
         }        
 
         [TestMethod]

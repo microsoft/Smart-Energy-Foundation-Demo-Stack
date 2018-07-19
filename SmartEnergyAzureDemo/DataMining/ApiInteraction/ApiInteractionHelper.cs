@@ -194,7 +194,7 @@ namespace ApiInteraction
             var dateToLastMinute = DateTime.UtcNow.AddMinutes(1);
             var messages = AzureTableStorageHelper.RetrieveLogMessagesFromTableStorage(apiKey, dateFromLastMinute, dateToLastMinute);
             
-            if ((messages!= null) && (messages.Count() >= this.maxNumberOfCallsPerMinute))
+            if ((this.maxNumberOfCallsPerMinute > 0) && (messages != null) && (messages.Count() >= this.maxNumberOfCallsPerMinute))
             {
                 canProceed = false;
             }
@@ -204,7 +204,7 @@ namespace ApiInteraction
             var dateTimeNow = DateTime.UtcNow.AddMinutes(1);
             var daySpanMessages = AzureTableStorageHelper.RetrieveLogMessagesFromTableStorage(apiKey, dateFromLastDay, dateTimeNow);
             
-            if ((daySpanMessages != null) && (daySpanMessages.Count() >= this.maxNumberOfCallsPerDay))
+            if ((this.maxNumberOfCallsPerDay > 0) && (daySpanMessages != null) && (daySpanMessages.Count() >= this.maxNumberOfCallsPerDay))
             {
                 canProceed = false;
             }

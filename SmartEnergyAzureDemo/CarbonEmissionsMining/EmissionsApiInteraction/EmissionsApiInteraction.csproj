@@ -49,6 +49,7 @@
     <Compile Include="LoginResult.cs" />
     <Compile Include="MarginalCarbonResult.cs" />
     <Compile Include="EmissionsApiInteraction.cs" />
+    <Compile Include="MarginalCarbonResultV2Api.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
