@@ -9,6 +9,9 @@
     New-AzureRmResourceGroup -Name $deploymentName -Location $deploymentLocation 
 
     # ARM Deployments
+    
+    ## outputs store (will collect ARM deployment outputs)
+    $outputs = @{}
 
     ## ARM deployment #1
     $idx = 0    # increment manually at each ARM deployment
