@@ -17,6 +17,7 @@ if((Test-Path -Path ".\PowershellHelperFunctions") -eq $false)
 . .\PowershellHelperFunctions\InputHelpers.ps1
 . .\PowershellHelperFunctions\MiscHelpers.ps1
 . .\PowershellHelperFunctions\SSLPSWorkaround.ps1
+. .\Deploy.ps1
 
 # STEP 1: INPUTS (set $USE_DEFAULT_PARAM_VALUES to $true if you wish to not be prompted for input values besides deployment location and name)
 $USE_DEFAULT_PARAM_VALUES = $true
