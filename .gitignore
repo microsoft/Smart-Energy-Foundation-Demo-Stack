@@ -20,7 +20,6 @@ Deploy/arm/armtemplate2siteconfig.json
 x64/
 x86/
 bld/
-[Bb]in/
 [Oo]bj/
 [Ll]og/
 
