@@ -2,7 +2,7 @@
 {
     # INPUTS (deployment name)
     $deploymentName = GetValidInputWithRegex "deployment name (alphanumeric from 3 to 9 characters)" $deploymentNameRegex
-    Write-Output "The deployment name will be : " $deploymentName ". The deployment location will be $deploymentLocation"
+    Write-Output "The deployment name will be : $deploymentName. The deployment location will be $deploymentLocation"
 
     # Creating resource group
     Write-Output "Creating resource group $deploymentName..."
@@ -58,7 +58,7 @@
 
     $functionsEndpoint = $outputs["functionAppBaseUrl"]
     # Set parameters (function name and POST body) for invoking the azure function
-    $functionName = $functionPrepSql     
+    $functionName = $functionPrepSqlName     
     $connString = $outputs["sqlConnectionString"]
     $postParams = @{sqlConnectionString=$connString}
 
