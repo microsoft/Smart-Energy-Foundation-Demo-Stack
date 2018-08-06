@@ -1,0 +1,55 @@
+{
+    "alwaysOn": true,
+    "use32BitWorkerProcess": true,
+    "appSettings": [
+        {
+            "name": "FUNCTIONS_EXTENSION_VERSION",
+            "value": "latest"
+        },
+        {
+            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+            "value": "6.5.0"
+        },
+        {
+            "name": "AzureWebJobsStorage",
+            "value": "DefaultEndpointsProtocol=https;AccountName={storageaccountname};AccountKey={storageaccountkey}"
+        },
+        {
+            "name": "AzureWebJobsDashboard",
+            "value": "DefaultEndpointsProtocol=https;AccountName={storageaccountname};AccountKey={storageaccountkey}"
+        },
+        {
+            "name": "AzureStorageConnectionString",
+            "value": "DefaultEndpointsProtocol=https;AccountName={storageaccountname};AccountKey={storageaccountkey}"
+        },
+        {
+            "name": "SQLAzureDatabaseEntityFrameworkConnectionString",
+            "value": "metadata=res://*/SmartEnergyModel.csdl|res://*/SmartEnergyModel.ssdl|res://*/SmartEnergyModel.msl;provider=System.Data.SqlClient;provider connection string=\"data source={sqlserver}.database.windows.net;initial catalog={sqldb};persist security info=True;user id={sqlserverusername};Password={sqlserverpassword};MultipleActiveResultSets=True;App=EntityFramework\""
+        },
+        {
+            "name": "wattTimeApiKey",
+            "value": "none"
+        },
+        {
+            "name": "WattTimeUsername",
+            "value": "none"
+        },
+        {
+            "name": "WattTimePassword",
+            "value": "none"
+        },
+        {
+            "name": "WattTimeEmail",
+            "value": "none"
+        },
+        {
+            "name": "WattTimeOrganization",
+            "value": "none"
+        },
+        {
+            "name": "DarkSkyApiKey",
+            "value": "none"
+        }
+    ],
+    "connectionStrings": null
+}

@@ -1,0 +1,78 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "siteConfig": {
+            "type": "object"
+        },
+        "servicePlanSku": {
+            "type": "string",
+            "defaultValue": "B1"
+        },
+        "servicePlanTier": {
+            "type": "string",
+            "defaultValue": "Basic"
+        }
+    },
+    "variables": {
+        "uniqueString": "[uniqueString(concat(subscription().subscriptionId, resourceGroup().name))]",
+        "functionAppName": "[concat('functions-', variables('uniqueString'))]",
+        "servicePlanName": "[concat('hosting', variables('uniqueString'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "[parameters('servicePlanSku')]",
+                "tier": "[parameters('servicePlanTier')]",
+                "capacity": 1
+            },
+            "name": "[variables('servicePlanName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]"
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp",
+            "name": "[variables('functionAppName')]",
+            "apiVersion": "2016-03-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[variables('functionAppName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]",
+                "siteConfig": "[parameters('siteConfig')]",
+                "containerSize": 128
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]"
+            ],
+            "resources": [
+                {
+                    "type": "extensions",
+                    "name": "MSDeploy",
+                    "apiVersion": "2016-03-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+                    ],
+                    "properties": {
+                      "packageUri": "https://github.com/bazzdg/Smart-Energy-Foundation-Demo-Stack/blob/master/Deploy/functions/functions.zip?raw=true"
+                    }
+                }
+            ]
+        }
+    ],
+    "outputs": {
+        "functionAppName": {
+            "type": "string",
+            "value": "[variables('functionAppName')]"
+        },
+        "functionAppBaseUrl": {
+            "type": "string",
+            "value": "[concat('https://', reference(variables('functionAppName')).defaultHostName, '/api/')]"
+        },
+        "servicePlanName": {
+            "type": "string",
+            "value": "[variables('servicePlanName')]"
+        }
+    }
+}

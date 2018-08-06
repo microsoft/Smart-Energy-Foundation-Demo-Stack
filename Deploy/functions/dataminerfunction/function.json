@@ -1,0 +1,14 @@
+{
+  "bindings": [
+    {
+      "type": "timerTrigger",
+      "schedule": "0 */30 * * * *",
+      "useMonitor": true,
+      "runOnStartup": false,
+      "name": "myTimer"
+    }
+  ],
+  "disabled": false,
+  "scriptFile": "..\\bin\\DataMinerFunction.dll",
+  "entryPoint": "DataMinerFunction.RunMinerForLocalConfigFile.Run"
+}
