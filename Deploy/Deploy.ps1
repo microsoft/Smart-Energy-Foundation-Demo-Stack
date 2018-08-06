@@ -38,7 +38,7 @@
     $paramsTemplate = $paramsTemplate.Replace("{sqlserverpassword}", $outputs["sqlServerPassword"])
 
     # saving siteconfig to arm template parameters file to be used in arm deploment #2
-    $paramsFile = .\arm\armtemplate2siteconfig.json
+    $paramsFile = ".\arm\armtemplate2siteconfig.json"
     $paramsTemplate | Out-File -FilePath $paramsFile
 
     $azureDeploymentName = $deploymentName + "-" + $idx
