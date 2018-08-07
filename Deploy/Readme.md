@@ -1,7 +1,7 @@
 # Deployment Instructions
 To deploy this solution:
 1. Clone this repo.
-2. Open powershell and navigate to the root of the Deploy folder.
+2. Open powershell and navigate to the **root of the Deploy folder**.
 3. Run Main.ps1. You will be prompted for required inputs.
 NOTE -  By default, the script will use certain default parameters (for example for sql username and password). If you wish to change any of these values or the script's behavior, open Main.ps1 and Deploy.ps1. The comments should be helpful in explaining how the script functions.
 
