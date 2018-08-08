@@ -102,10 +102,10 @@ function Get-AccessToken($tenantId) {
 
 function UploadFunctionsToFunctionApp($zipFilePath, $appName)
 {
-    $apiUrl = "https://" + $appName + ".scm.azurewebsites.net/api/zipdeploy"
+    $apiUrl = "https://" + $appName + ".scm.azurewebsites.net/api/zip/site/wwwroot"
     $userAgent = "powershell/2.0"
     $tenantId = (Get-AzureRmContext).Tenant.TenantId
     $subscription = (Get-AzureRmContext).Subscription.SubscriptionId
     $token = Get-AccessToken $tenantId
-    Invoke-RestMethod -Uri $apiUrl -Headers @{Authorization=("Bearer {0}" -f $token)} -UserAgent $userAgent -Method POST -InFile $zipFilePath -ContentType "multipart/form-data"
+    Invoke-RestMethod -Uri $apiUrl -Headers @{Authorization=("Bearer {0}" -f $token)} -UserAgent $userAgent -Method PUT -InFile $zipFilePath -ContentType "multipart/form-data"
 }

@@ -33,8 +33,10 @@ $anyRegex = "^[\S]+$"
 ## ARM Templates for this solution
 $armTemplates = @("arm\armtemplate1.json", "arm\armtemplate2.json")
 $parameters = @{} # ARM template parameters dictionary. Key is ARM template relative path
-$parameters.Add($armTemplates[0], @{})
-$parameters.Add($armTemplates[1], @{})
+for($idx = 0; $idx -lt $armTemplates.Count; $idx++)
+{
+    $parameters.Add($armTemplates[$idx], @{})
+}
 
 ## Set parameters dictionary for each ARM template to be deployed
 if($USE_DEFAULT_PARAM_VALUES)
