@@ -7,12 +7,6 @@ if ($PSVersionTable.PSVersion.Major -lt 5)
 # CONNECT TO AZURE RM
 if ([string]::IsNullOrEmpty($(Get-AzureRmContext).Account)) {$azureAccount = Login-AzureRmAccount}
 
-SelectSubscription 
-
-$subscriptionId = Get-SubscriptionId
-$subscriptionName = $azureAccount.Context.Subscription.Name
-$tenantId = Get-TenantId
-
 # IMPORT helper functions
 if((Test-Path -Path ".\PowershellHelperFunctions") -eq $false)
 {
@@ -24,6 +18,12 @@ if((Test-Path -Path ".\PowershellHelperFunctions") -eq $false)
 . .\PowershellHelperFunctions\MiscHelpers.ps1
 . .\PowershellHelperFunctions\SSLPSWorkaround.ps1
 . .\Deploy.ps1
+
+SelectSubscription 
+
+$subscriptionId = Get-SubscriptionId
+$subscriptionName = $azureAccount.Context.Subscription.Name
+$tenantId = Get-TenantId
 
 # STEP 1: INPUTS (set $USE_DEFAULT_PARAM_VALUES to $true if you wish to not be prompted for input values besides deployment location and name)
 $USE_DEFAULT_PARAM_VALUES = $true
