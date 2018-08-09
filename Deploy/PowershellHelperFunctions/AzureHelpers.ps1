@@ -123,7 +123,7 @@ function SelectSubscription()
         { 
             if($selectedSubId -ne "******")
             {
-                Write-Host ("`r`nInvalid ID entered. Please enter a valid subscription ID from the following subscriptions available for your account: ")
+                Write-Output ("`r`nInvalid ID entered. Please enter a valid subscription ID from the following subscriptions available for your account: ")
             }
             Write-Output "Please enter a valid subscription ID from the following subscriptions available for your account:`r`n"
             for($idx = 0; $idx -lt $subIds.Count; $idx++)

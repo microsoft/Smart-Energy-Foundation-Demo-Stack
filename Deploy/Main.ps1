@@ -12,7 +12,7 @@ SelectSubscription
 $subscriptionId = Get-SubscriptionId
 $subscriptionName = $azureAccount.Context.Subscription.Name
 $tenantId = Get-TenantId
- 
+
 # IMPORT helper functions
 if((Test-Path -Path ".\PowershellHelperFunctions") -eq $false)
 {
@@ -44,16 +44,49 @@ for($idx = 0; $idx -lt $armTemplates.Count; $idx++)
     $parameters.Add($armTemplates[$idx], @{})
 }
 
+## Special Input (WattTime API and DarkSky API)
+$instructions = @" 
+
+NOTE -- USER INPUT REQUIRED. 
+This solution depends on the DarkSky API and the WattTime API to collect weather data. 
+The following input fields are required: WattTimeUsername, WattTimePassword, WattTimeEmail, WattTimeOrganization, DarkSkyApiKey 
+The following input fields are optional: WattTimeApiKey. 
+Before proceding, please go to https://darksky.net/dev/register to register for the DarkSky API
+Also, please go to https://api.watttime.org/docs/ and look for the create account section to create a WattTime account.
+"@
+
+Write-Output $instructions
+
+Read-Host -Prompt "Once you have completed the above steps please press enter to continue with the solution deployment."
+
 ## Set parameters dictionary for each ARM template to be deployed
 if($USE_DEFAULT_PARAM_VALUES)
 {
     $parameters[$armTemplates[0]].Add("sqlServerUsername", "abcdefg")
-    $parameters[$armTemplates[0]].Add("sqlServerPassword", "Passw0rd-2018")    
+    $parameters[$armTemplates[0]].Add("sqlServerPassword", "Passw0rd-2018")  
+    
+    $wattTimeUsername = GetValidInputWithRegex "WattTimeUsername" $anyRegex
+    $wattTimePassword = GetValidInputWithRegex "WattTimePassword" $anyRegex
+    $wattTimeEmail = GetValidInputWithRegex "WattTimeEmail" $anyRegex
+    $wattTimeOrg = GetValidInputWithRegex "WattTimeOrganization" $anyRegex 
+    $darkSkyApiKey = GetValidInputWithRegex "DarkSkyApiKey" $anyRegex
+    #optional
+    $wattTimeApiKey = Read-Host "Please enter the WattTimeApiKey (OPTIONAL - hit enter for using the default value)" 
+    if($wattTimeApiKey -eq "") { $wattTimeApiKey = "none" }    
 }
 else
 {
     $sqlUsername = GetValidInputWithRegex "sql server username" $sqlUsernameRegex 
     $sqlPassword = GetValidInputWithRegex "sql server password" $anyRegex
+
+    $wattTimeUsername = GetValidInputWithRegex "WattTimeUsername" $anyRegex
+    $wattTimePassword = GetValidInputWithRegex "WattTimePassword" $anyRegex
+    $wattTimeEmail = GetValidInputWithRegex "WattTimeEmail" $anyRegex
+    $wattTimeOrg = GetValidInputWithRegex "WattTimeOrganization" $anyRegex 
+    $darkSkyApiKey = GetValidInputWithRegex "DarkSkyApiKey" $anyRegex
+    #optional
+    $wattTimeApiKey = Read-Host "Please enter the WattTimeApiKey (OPTIONAL - hit enter for using the default value)" 
+    if($wattTimeApiKey -eq "") { $wattTimeApiKey = "none" }
 
     $parameters[$armTemplates[0]].Add("sqlServerUsername", $sqlUsername)
     $parameters[$armTemplates[0]].Add("sqlServerPassword", $sqlPassword)

@@ -13,10 +13,11 @@
     ## outputs store (will collect ARM deployment outputs)
     $outputs = @{}
 
-    ## ARM deployment #1
+    ## ARM deployment #1 (SQL server/db and Storage Acct)
     $idx = 0    # increment manually at each ARM deployment
     $azureDeploymentName = $deploymentName + "-" + $idx
     $armTemplate = $armTemplates[$idx]
+    Write-Output "Deploying via ARM template, $armTemplate, into Azure"
     $armDeployment = New-AzureRmResourceGroupDeployment -Name $azureDeploymentName -ResourceGroupName $deploymentName `
           -TemplateFile ((Get-Item -Path ".\").FullName + "\" + $armTemplate) -TemplateParameterObject $parameters[$armTemplate]
     
@@ -26,9 +27,9 @@
         $outputs.Add($outKey, $armDeployment.Outputs[$outKey].Value)
     } 
 
-    ## ARM deployment #2
+    ## ARM deployment #2 (Function App and App Srv Plan)
     $idx += 1
-    # inserting ARM deployment #1 outputs into which will be used for function app site config
+    # inserting ARM deployment #1 outputs which will be used for function app site config into the arm template 2 parameters template 
     $paramsTemplate = (Get-Content .\arm\armtemplate2siteconfigtemplate.json -Raw)
     $paramsTemplate = $paramsTemplate.Replace("{storageaccountname}", $outputs["storageAccountName"])
     $paramsTemplate = $paramsTemplate.Replace("{storageaccountkey}", $outputs["storageAccountKey"])
@@ -36,6 +37,12 @@
     $paramsTemplate = $paramsTemplate.Replace("{sqlserver}", $outputs["sqlServer"])
     $paramsTemplate = $paramsTemplate.Replace("{sqlserverusername}", $outputs["sqlServerUsername"])
     $paramsTemplate = $paramsTemplate.Replace("{sqlserverpassword}", $outputs["sqlServerPassword"])
+    $paramsTemplate = $paramsTemplate.Replace("{watttimeapikey}", $wattTimeApiKey)
+    $paramsTemplate = $paramsTemplate.Replace("{watttimeusername}", $wattTimeUsername)
+    $paramsTemplate = $paramsTemplate.Replace("{watttimepassword}", $wattTimePassword)
+    $paramsTemplate = $paramsTemplate.Replace("{watttimeemail}",   $wattTimeEmail)
+    $paramsTemplate = $paramsTemplate.Replace("{watttimeorganization}",$wattTimeOrg)
+    $paramsTemplate = $paramsTemplate.Replace("{darkskiapikey}", $darkSkyApiKey)
 
     # saving siteconfig to arm template parameters file to be used in arm deploment #2
     $paramsFile = ".\arm\armtemplate2siteconfig.json"
@@ -43,6 +50,7 @@
 
     $azureDeploymentName = $deploymentName + "-" + $idx
     $armTemplate = $armTemplates[$idx]
+    Write-Output "Deploying via ARM template, $armTemplate, into Azure"
     $armDeployment = New-AzureRmResourceGroupDeployment -Name $azureDeploymentName -ResourceGroupName $deploymentName `
           -TemplateFile ((Get-Item -Path ".\").FullName + "\" + $armTemplate) -TemplateParameterFile $paramsFile
 
@@ -72,5 +80,5 @@
     } 
     
     # DEPLOYMENT COMPLETE
-    Write-Output "DEPLOYMENT COMPLETED. Please return to the Github Page for additional instructions. These output values will likely come in handy:`r`n`r`n OUTPUTS:" $outputs   
+    Write-Output "DEPLOYMENT COMPLETED.`r`nPlease return to the Github Page for additional instructions. These output values will likely come in handy:`r`n`r`nOUTPUTS:" $outputs   
 }

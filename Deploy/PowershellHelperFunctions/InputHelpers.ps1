@@ -16,13 +16,18 @@
 function GetValidInputWithRegex($inputKeyword, $inputRegex)
 {
     $input = "******"
+    if($inputRegex -eq "^[\S]+$")
+    {
+        $input = Read-Host -Prompt ("Please enter the " + $inputKeyword)
+    }
+
     while($input -notmatch $inputRegex)
     { 
         if($input -ne "******")
         {
             Write-Host ("`r`nThe input was invalid. Please re-enter it.`r`n")
         }
-        $input = Read-Host -Prompt ("Please enter a " + $inputKeyword) 
+        $input = Read-Host -Prompt ("Please enter the " + $inputKeyword) 
     }
 
     return $input

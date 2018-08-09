@@ -33,27 +33,27 @@
                     },
                     {
                         "name": "wattTimeApiKey",
-                        "value": "none"
+                        "value": "{watttimeapikey}"
                     },
                     {
                         "name": "WattTimeUsername",
-                        "value": "none"
+                        "value": "{watttimeusername}"
                     },
                     {
                         "name": "WattTimePassword",
-                        "value": "none"
+                        "value": "{watttimepassword}"
                     },
                     {
                         "name": "WattTimeEmail",
-                        "value": "none"
+                        "value": "{watttimeemail}"
                     },
                     {
                         "name": "WattTimeOrganization",
-                        "value": "none"
+                        "value": "{watttimeorganization}"
                     },
                     {
                         "name": "DarkSkyApiKey",
-                        "value": "none"
+                        "value": "{darkskiapikey}"
                     }
                 ],
                 "connectionStrings": null
