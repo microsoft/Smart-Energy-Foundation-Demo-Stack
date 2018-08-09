@@ -100,6 +100,86 @@ function Get-AccessToken($tenantId) {
     }
 }
 
+function SelectSubscription()
+{
+    $subscriptionId = Get-SubscriptionId
+    $subscriptionName = Get-SubscriptionName
+
+    $input = Read-Host -Prompt ("Currently selection subscription is: Name=$subscriptionName; Id=$subscriptionId. If you'd like to change the selected subscription enter 0. Otherwise simply hit enter to proceed with the currently selected subscription")
+    if($input -eq "0")
+    {
+        $subsObj = Get-AzureRmSubscription
+        $subIds = $subsObj | Foreach {"$($_.Id)"} 
+        $subNames = $subsObj | Foreach {"$($_.Name)"} 
+
+        if($subIds.Count -eq 1)
+        {
+            Write-Output "$subscriptionName : is the only available subscription for your account. The deployment will be created in this account"
+            return
+        }
+
+        $selectedSubId = "******"
+        while($subIds -notcontains $selectedSubId)
+        { 
+            if($selectedSubId -ne "******")
+            {
+                Write-Host ("`r`nInvalid ID entered. Please enter a valid subscription ID from the following subscriptions available for your account: ")
+            }
+            Write-Output "Please enter a valid subscription ID from the following subscriptions available for your account:`r`n"
+            for($idx = 0; $idx -lt $subIds.Count; $idx++)
+            {
+                Write-Output "Id:  $($subIds[$idx])  (Name: $($subNames[$idx]))"
+            }
+            $selectedSubId = Read-Host -Prompt ("Subscription ID:   ")
+        }
+
+        if($selectedSubId -eq $subscriptionId)
+        {
+            Write-Output "The unchanged selected subscription is:  $subscriptionName (Id: $subscriptionId)"
+            return $null
+        }
+
+        Get-AzureRmSubscription -SubscriptionId $selectedSubId | Select-AzureRmSubscription 
+        $subscriptionId = $selectedSubId
+        $idx = $subIds.IndexOf($subscriptionId)
+        $subscriptionName = $subNames[$idx]
+        Write-Output "The newly selected subscription is $subscriptionName (Id: $subscriptionId)"
+    }
+}
+
+function Get-SubscriptionId()
+{
+    $currentAzureContext = Get-AzureRmContext
+    if($currentAzureContext -ne $null)
+    {
+        return $currentAzureContext.Subscription.Id
+    }
+
+    return $null
+}
+
+function Get-TenantId()
+{
+    $currentAzureContext = Get-AzureRmContext
+    if($currentAzureContext -ne $null)
+    {
+        return $currentAzureContext.Tenant.Id
+    }
+
+    return $null
+}
+
+function Get-SubscriptionName()
+{
+    $currentAzureContext = Get-AzureRmContext
+    if($currentAzureContext -ne $null)
+    {
+        return $currentAzureContext.Subscription.Name
+    }
+
+    return $null
+}
+
 function UploadFunctionsToFunctionApp($zipFilePath, $appName)
 {
     $apiUrl = "https://" + $appName + ".scm.azurewebsites.net/api/zip/site/wwwroot"

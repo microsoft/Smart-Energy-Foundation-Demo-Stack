@@ -5,8 +5,14 @@ if ($PSVersionTable.PSVersion.Major -lt 5)
 }
 
 # CONNECT TO AZURE RM
-if ([string]::IsNullOrEmpty($(Get-AzureRmContext).Account)) {Login-AzureRmAccount}
+if ([string]::IsNullOrEmpty($(Get-AzureRmContext).Account)) {$azureAccount = Login-AzureRmAccount}
 
+SelectSubscription 
+
+$subscriptionId = Get-SubscriptionId
+$subscriptionName = $azureAccount.Context.Subscription.Name
+$tenantId = Get-TenantId
+ 
 # IMPORT helper functions
 if((Test-Path -Path ".\PowershellHelperFunctions") -eq $false)
 {
