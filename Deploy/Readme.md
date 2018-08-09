@@ -1,4 +1,14 @@
 # Deployment Instructions
+
+## Pre-deployment instructions
+This solution depends on the DarkSky API and the WattTime API to collect weather data. 
+The following input fields will be required: WattTimeUsername, WattTimePassword, WattTimeEmail, WattTimeOrganization, DarkSkyApiKey 
+The following input fields are optional: WattTimeApiKey. 
+Before proceding, please go to https://darksky.net/dev/register to register for the DarkSky API.
+Also, please go to https://api.watttime.org/docs/ and look for the create account section to create a WattTime account.
+
+## Deploying the solution
+Please ensure to have completed the Pre-deployment instructions before running the deployment scripts.
 To deploy this solution:
 1. Clone this repo.
 2. Open powershell and navigate to the **root of the Deploy folder**.
