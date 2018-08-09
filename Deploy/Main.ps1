@@ -48,9 +48,9 @@ for($idx = 0; $idx -lt $armTemplates.Count; $idx++)
 $instructions = @" 
 
 NOTE -- USER INPUT REQUIRED. 
-This solution depends on the DarkSky API and the WattTime API to collect weather data. 
-The following input fields are required: WattTimeUsername, WattTimePassword, WattTimeEmail, WattTimeOrganization, DarkSkyApiKey 
-The following input fields are optional: WattTimeApiKey. 
+This solution depends on the WattTime API (and optionally also the DarkSky API) to collect emissions and weather data. 
+The following input fields are required: WattTimeUsername, WattTimePassword, WattTimeEmail, WattTimeOrganization 
+The following input fields are optional: WattTimeApiKey, DarkSkyApiKey
 Before proceding, please go to https://darksky.net/dev/register to register for the DarkSky API
 Also, please go to https://api.watttime.org/docs/ and look for the create account section to create a WattTime account.
 "@
@@ -69,8 +69,9 @@ if($USE_DEFAULT_PARAM_VALUES)
     $wattTimePassword = GetValidInputWithRegex "WattTimePassword" $anyRegex
     $wattTimeEmail = GetValidInputWithRegex "WattTimeEmail" $anyRegex
     $wattTimeOrg = GetValidInputWithRegex "WattTimeOrganization" $anyRegex 
-    $darkSkyApiKey = GetValidInputWithRegex "DarkSkyApiKey" $anyRegex
     #optional
+    $darkSkyApiKey = Read-Host "Please enter the DarkSkyApiKey (OPTIONAL - hit enter for using the default value)" 
+    if($darkSkyApiKey -eq "") { $darkSkyApiKey = "none" } 
     $wattTimeApiKey = Read-Host "Please enter the WattTimeApiKey (OPTIONAL - hit enter for using the default value)" 
     if($wattTimeApiKey -eq "") { $wattTimeApiKey = "none" }    
 }
@@ -83,10 +84,11 @@ else
     $wattTimePassword = GetValidInputWithRegex "WattTimePassword" $anyRegex
     $wattTimeEmail = GetValidInputWithRegex "WattTimeEmail" $anyRegex
     $wattTimeOrg = GetValidInputWithRegex "WattTimeOrganization" $anyRegex 
-    $darkSkyApiKey = GetValidInputWithRegex "DarkSkyApiKey" $anyRegex
     #optional
+    $darkSkyApiKey = Read-Host "Please enter the DarkSkyApiKey (OPTIONAL - hit enter for using the default value)" 
+    if($darkSkyApiKey -eq "") { $darkSkyApiKey = "none" } 
     $wattTimeApiKey = Read-Host "Please enter the WattTimeApiKey (OPTIONAL - hit enter for using the default value)" 
-    if($wattTimeApiKey -eq "") { $wattTimeApiKey = "none" }
+    if($wattTimeApiKey -eq "") { $wattTimeApiKey = "none" }  
 
     $parameters[$armTemplates[0]].Add("sqlServerUsername", $sqlUsername)
     $parameters[$armTemplates[0]].Add("sqlServerPassword", $sqlPassword)

@@ -1,11 +1,11 @@
 # Deployment Instructions
 
 ## Pre-deployment instructions
-This solution depends on the DarkSky API and the WattTime API to collect weather data. 
-The following input fields will be required: WattTimeUsername, WattTimePassword, WattTimeEmail, WattTimeOrganization, DarkSkyApiKey 
-The following input fields are optional: WattTimeApiKey. 
-Before proceding, please go to https://darksky.net/dev/register to register for the DarkSky API.
-Also, please go to https://api.watttime.org/docs/ and look for the create account section to create a WattTime account.
+This solution depends on the WattTime API to collect Carbon Emissions data. It can also optionally collect weather data from the DarkSky API. 
+The following input fields will be required: WattTimeUsername, WattTimePassword, WattTimeEmail, WattTimeOrganization 
+The following input fields are optional: DarkSkyApiKey, WattTimeApiKey
+Before proceding, please go to https://api.watttime.org/docs/ and look for the create account section to create a WattTime account.
+If weather data is required, please go to https://darksky.net/dev/register to register for the DarkSky API. 
 
 ## Deploying the solution
 Please ensure to have completed the Pre-deployment instructions before running the deployment scripts.
