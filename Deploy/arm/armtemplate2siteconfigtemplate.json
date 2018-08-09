@@ -1,0 +1,69 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "siteConfig": {
+            "value": {                
+                "alwaysOn": true,
+                "use32BitWorkerProcess": true,
+                "appSettings": [
+                    {
+                        "name": "FUNCTIONS_EXTENSION_VERSION",
+                        "value": "latest"
+                    },
+                    {
+                        "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                        "value": "6.5.0"
+                    },
+                    {
+                        "name": "AzureWebJobsStorage",
+                        "value": "DefaultEndpointsProtocol=https;AccountName={storageaccountname};AccountKey={storageaccountkey}"
+                    },
+                    {
+                        "name": "AzureWebJobsDashboard",
+                        "value": "DefaultEndpointsProtocol=https;AccountName={storageaccountname};AccountKey={storageaccountkey}"
+                    },
+                    {
+                        "name": "AzureStorageConnectionString",
+                        "value": "DefaultEndpointsProtocol=https;AccountName={storageaccountname};AccountKey={storageaccountkey}"
+                    },
+                    {
+                        "name": "SQLAzureDatabaseEntityFrameworkConnectionString",
+                        "value": "metadata=res://*/SmartEnergyModel.csdl|res://*/SmartEnergyModel.ssdl|res://*/SmartEnergyModel.msl;provider=System.Data.SqlClient;provider connection string=\"data source={sqlserver}.database.windows.net;initial catalog={sqldb};persist security info=True;user id={sqlserverusername};Password={sqlserverpassword};MultipleActiveResultSets=True;App=EntityFramework\""
+                    },
+                    {
+                        "name": "wattTimeApiKey",
+                        "value": "{watttimeapikey}"
+                    },
+                    {
+                        "name": "WattTimeUsername",
+                        "value": "{watttimeusername}"
+                    },
+                    {
+                        "name": "WattTimePassword",
+                        "value": "{watttimepassword}"
+                    },
+                    {
+                        "name": "WattTimeEmail",
+                        "value": "{watttimeemail}"
+                    },
+                    {
+                        "name": "WattTimeOrganization",
+                        "value": "{watttimeorganization}"
+                    },
+                    {
+                        "name": "DarkSkyApiKey",
+                        "value": "{darkskiapikey}"
+                    }
+                ],
+                "connectionStrings": null
+            }            
+        },
+        "servicePlanSku": {
+            "value": "B1"
+        },
+        "servicePlanTier": {
+            "value": "Basic"
+        }
+    }
+}

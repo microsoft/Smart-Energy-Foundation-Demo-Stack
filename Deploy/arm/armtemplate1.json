@@ -1,0 +1,126 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sqlServerUsername": {
+      "metadata": {
+        "description": "Username for SQL Server that will be created for results database (minimum 3 characters)"
+      },
+      "type": "string",
+      "minLength": 3
+    },
+    "sqlServerPassword": {
+      "metadata": {
+        "description": "Password for SQL Server that will be created for results database"
+      },
+      "type": "securestring",
+      "minLength": 8
+    }
+  },
+  "variables": {
+    "uniqueString": "[uniqueString(concat(subscription().subscriptionId, resourceGroup().name))]",
+
+    "sqlServer": "[concat(variables('uniqueString'),'srv')]",
+    "sqlDatabase": "[concat(variables('uniqueString'),'db')]",
+    "sqlServerUsername": "[parameters('sqlServerUsername')]",
+    "sqlServerPassword": "[parameters('sqlServerPassword')]",
+    "startIpAddress": "0.0.0.0",
+    "endIpAddress": "255.255.255.255",
+    "sqlServerVersion": "12.0",
+    "edition": "Standard",
+    "databaseTier": "S1",
+    "collation": "SQL_Latin1_General_CP1_CI_AS",
+    "maxSizeBytes": "2147483648",
+    "sqlSvrResourceId": "[resourceId('Microsoft.Sql/servers', variables('sqlServer'))]",
+    "sqlDbResourceId": "[resourceId('Microsoft.Sql/servers/databases', variables('sqlServer'), variables('sqlDatabase'))]",
+    "storageaccountname": "[concat(variables('uniqueString'),'stg')]",
+    "resourceGroupName": "[resourceGroup().name]"
+  },
+  "resources": [
+      {
+          "name": "[variables('sqlServer')]",
+          "type": "Microsoft.Sql/servers",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "properties": {
+              "administratorLogin": "[variables('sqlServerUsername')]",
+              "administratorLoginPassword": "[variables('sqlServerPassword')]",
+              "version": "[variables('sqlServerVersion')]"
+            },
+            "resources": [
+                {
+                    "name": "[variables('sqlDatabase')]",
+                    "type": "databases",
+                    "location": "[resourceGroup().location]",
+                    "apiVersion": "2014-04-01-preview",
+                    "dependsOn": [ "[concat('Microsoft.Sql/servers/', variables('sqlServer'))]" ],
+                    "properties": {
+                        "edition": "[variables('edition')]",
+                        "requestedServiceObjectiveName": "[variables('databaseTier')]",
+                        "collation": "[variables('collation')]",
+                        "maxSizeBytes": "[variables('maxSizeBytes')]"
+                    }
+                },
+                {
+                    "apiVersion": "2014-04-01-preview",
+                    "dependsOn": [ "[concat('Microsoft.Sql/servers/', variables('sqlServer'))]" ],
+                    "location": "[resourceGroup().location]",
+                    "name": "AllowAllWindowsAzureIps",
+                    "properties": {
+                        "startIpAddress": "[variables('startIpAddress')]",
+                        "endIpAddress": "[variables('endIpAddress')]"
+                    },
+                    "type": "firewallrules"
+                }
+            ]
+        },
+        {     
+          "type": "Microsoft.Storage/storageAccounts",
+          "sku": {
+            "name": "Standard_LRS",
+            "tier": "Standard"
+          },
+          "kind": "Storage",
+          "name": "[variables('storageaccountname')]",
+          "apiVersion": "2016-01-01",
+          "location": "[resourceGroup().location]",
+          "tags": {},
+          "properties": {},
+          "dependsOn": []
+        }
+  ],
+  "outputs": {
+        "sqlServer": {
+            "type": "string",
+            "value": "[variables('sqlServer')]"
+        },
+        "sqlDatabase": {
+            "type": "string",
+            "value": "[variables('sqlDatabase')]"
+        },
+        "sqlServerUsername": {
+            "type": "string",
+            "value": "[variables('sqlServerUsername')]"
+        },
+        "sqlServerPassword": {
+            "type": "string",
+            "value": "[variables('sqlServerPassword')]"
+        },
+        "sqlConnectionString": {
+            "type": "string",
+            "value": "[concat('Server=tcp:',variables('sqlServer'),'.database.windows.net,1433;Database=',variables('sqlDatabase'),';User ID=',variables('sqlServerUsername'),';Password=',variables('sqlServerPassword'),';Trusted_Connection=False;Encrypt=True;Connection Timeout=30')]"
+        },
+        "storageAccountName": {
+          "type": "string",
+          "value": "[variables('storageAccountName')]"
+      },
+        "storageAccountKey": {
+          "type": "string",
+          "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
+      },
+      "SQLDatabaseEntityFrameworkConnectionString": {
+            "type": "string",
+            "value": "[concat('metadata=res://*/SmartEnergyModel.csdl|res://*/SmartEnergyModel.ssdl|res://*/SmartEnergyModel.msl;provider=System.Data.SqlClient;provider connection string=\"data source=',variables('sqlServer'),'.database.windows.net;initial catalog=',variables('sqlDatabase'),';persist security info=True;user id=',variables('sqlServerUsername'),';Password=',variables('sqlServerPassword'),';MultipleActiveResultSets=True;App=EntityFramework\"')]"
+        }
+    }
+}

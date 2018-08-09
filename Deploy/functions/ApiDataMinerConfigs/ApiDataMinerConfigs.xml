@@ -1,0 +1,343 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ApiMinerConfigLayout>
+  <Regions>
+    <Region friendlyName="US_PJM">
+      <EmissionsMiningRegion friendlyName="US_PJM">
+        <EmissionsWattTimeAbbreviation>PJM</EmissionsWattTimeAbbreviation>
+        <Latitude>40.348444276169</Latitude>
+        <Longitude>-74.6428556442261</Longitude>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+
+      <DarkSkyWeatherMiningRegion friendlyName="US_PJM">
+        <Latitude>40.348444276169</Latitude>
+        <Longitude>-74.6428556442261</Longitude>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>https://api.darksky.net/</ApiUrl>
+        <ApiKey>**MyDarkSkyApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>3</MaxNumberOfCallsPerMinute>
+        <MaxNumberOfCallsPerDay>500</MaxNumberOfCallsPerDay>
+      </DarkSkyWeatherMiningRegion>
+    </Region>
+	
+	<Region friendlyName="US_PJM_ATLANTIC">
+      <EmissionsMiningRegion friendlyName="US_PJM_ATLANTIC">
+        <EmissionsWattTimeAbbreviation>PJM_ATLANTIC</EmissionsWattTimeAbbreviation>
+        <Latitude>40.566564</Latitude>
+        <Longitude>-76.98465597395705</Longitude>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>1e618892c1bbdf87b6fa7f5fdeee4365e66901bc</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+    </Region>
+
+    <Region friendlyName="US_PJM_SOUTH">
+      <EmissionsMiningRegion friendlyName="US_PJM_SOUTH">
+        <EmissionsWattTimeAbbreviation>PJM_SOUTH</EmissionsWattTimeAbbreviation>
+        <Latitude>37.44276433719146</Latitude>
+        <Longitude>-76.87479269270705</Longitude>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>1e618892c1bbdf87b6fa7f5fdeee4365e66901bc</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+       <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+    </Region>
+
+    <Region friendlyName="US_CAISO">
+      <EmissionsMiningRegion friendlyName="US_CAISO">
+        <EmissionsWattTimeAbbreviation>CAISO</EmissionsWattTimeAbbreviation>
+        <Latitude>41.7324</Latitude>
+        <Longitude>-123.409423</Longitude>
+        <TimeZone>Pacific Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+
+      <DarkSkyWeatherMiningRegion friendlyName="US_CAISO">
+        <Latitude>41.7324</Latitude>
+        <Longitude>-123.409423</Longitude>
+        <TimeZone>Pacific Standard Time</TimeZone>
+        <ApiUrl>https://api.darksky.net/</ApiUrl>
+        <ApiKey>**MyDarkSkyApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>3</MaxNumberOfCallsPerMinute>
+        <MaxNumberOfCallsPerDay>500</MaxNumberOfCallsPerDay>
+      </DarkSkyWeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="US_UpperMidwestISO">
+      <EmissionsMiningRegion friendlyName="US_UpperMidwestISO">
+        <EmissionsWattTimeAbbreviation>MISO</EmissionsWattTimeAbbreviation>
+        <Latitude>41.91853269857261</Latitude>
+        <Longitude>-93.55193137872567</Longitude>
+        <TimeZone>Central Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+
+      <DarkSkyWeatherMiningRegion friendlyName="US_UpperMidwestISO">
+        <Latitude>41.91853269857261</Latitude>
+        <Longitude>-93.55193137872567</Longitude>
+        <TimeZone>Central Standard Time</TimeZone>
+        <ApiUrl>https://api.darksky.net/</ApiUrl>
+        <ApiKey>**MyDarkSkyApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>3</MaxNumberOfCallsPerMinute>
+        <MaxNumberOfCallsPerDay>500</MaxNumberOfCallsPerDay>
+      </DarkSkyWeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="US_PugetSoundEnergy">
+      <EmissionsMiningRegion friendlyName="US_PugetSoundEnergy">
+        <EmissionsWattTimeAbbreviation>PSEI</EmissionsWattTimeAbbreviation>
+        <Latitude>47.68009593341535</Latitude>
+        <Longitude>-122.11638450372567</Longitude>
+        <TimeZone>Pacific Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+
+      <DarkSkyWeatherMiningRegion friendlyName="US_PugetSoundEnergy">
+        <Latitude>47.68009593341535</Latitude>
+        <Longitude>-122.11638450372567</Longitude>
+        <TimeZone>Pacific Standard Time</TimeZone>
+        <ApiUrl>https://api.darksky.net/</ApiUrl>
+        <ApiKey>**MyDarkSkyApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>3</MaxNumberOfCallsPerMinute>
+        <MaxNumberOfCallsPerDay>500</MaxNumberOfCallsPerDay>
+      </DarkSkyWeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="US_ERCOT">
+      <EmissionsMiningRegion friendlyName="US_ERCOT">
+        <EmissionsWattTimeAbbreviation>ERCOT</EmissionsWattTimeAbbreviation>
+        <Latitude>31.076386442248403</Latitude>
+        <Longitude>-96.92138671375</Longitude>
+        <TimeZone>Central Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+
+      <DarkSkyWeatherMiningRegion friendlyName="US_ERCOT">
+        <Latitude>31.076386442248403</Latitude>
+        <Longitude>-96.92138671375</Longitude>
+        <TimeZone>Central Standard Time</TimeZone>
+        <ApiUrl>https://api.darksky.net/</ApiUrl>
+        <ApiKey>**MyDarkSkyApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>3</MaxNumberOfCallsPerMinute>
+        <MaxNumberOfCallsPerDay>500</MaxNumberOfCallsPerDay>
+      </DarkSkyWeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="US_ISONewEngland">
+      <EmissionsMiningRegion friendlyName="US_ISONewEngland">
+        <EmissionsWattTimeAbbreviation>ISONE</EmissionsWattTimeAbbreviation>
+        <Latitude>42.70864591994315</Latitude>
+        <Longitude>-72.16918945062508</Longitude>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+
+      <DarkSkyWeatherMiningRegion friendlyName="US_ISONewEngland">
+        <Latitude>42.70864591994315</Latitude>
+        <Longitude>-72.16918945062508</Longitude>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>https://api.darksky.net/</ApiUrl>
+        <ApiKey>**MyDarkSkyApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>3</MaxNumberOfCallsPerMinute>
+        <MaxNumberOfCallsPerDay>500</MaxNumberOfCallsPerDay>
+      </DarkSkyWeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="Norway">
+      <EmissionsMiningRegion friendlyName="Norway">
+        <EmissionsWattTimeAbbreviation>NO</EmissionsWattTimeAbbreviation>
+        <Latitude>58.279231</Latitude>
+        <Longitude>6.892410</Longitude>
+        <TimeZone>Central European Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+
+      <DarkSkyWeatherMiningRegion friendlyName="Norway_Kristiansand">
+        <Latitude>42.70864591994315</Latitude>
+        <Longitude>-72.16918945062508</Longitude>
+        <TimeZone>Eastern Standard Time</TimeZone>
+        <ApiUrl>https://api.darksky.net/</ApiUrl>
+        <ApiKey>**MyDarkSkyApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>3</MaxNumberOfCallsPerMinute>
+        <MaxNumberOfCallsPerDay>500</MaxNumberOfCallsPerDay>
+      </DarkSkyWeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="France">
+      <EmissionsMiningRegion friendlyName="France">
+        <EmissionsWattTimeAbbreviation>FR</EmissionsWattTimeAbbreviation>
+        <Latitude>48.856614</Latitude>
+        <Longitude>2.3522219</Longitude>
+        <TimeZone>Central European Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+
+      <DarkSkyWeatherMiningRegion friendlyName="France_Paris">
+        <Latitude>48.856614</Latitude>
+        <Longitude>2.3522219</Longitude>
+        <TimeZone>Central European Standard Time</TimeZone>
+        <ApiUrl>https://api.darksky.net/</ApiUrl>
+        <ApiKey>**MyDarkSkyApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>3</MaxNumberOfCallsPerMinute>
+        <MaxNumberOfCallsPerDay>500</MaxNumberOfCallsPerDay>
+      </DarkSkyWeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="Ireland">
+      <EmissionsMiningRegion friendlyName="Ireland">
+        <EmissionsWattTimeAbbreviation>IE</EmissionsWattTimeAbbreviation>
+        <Latitude>53.3498</Latitude>
+        <Longitude>-6.2603</Longitude>
+        <TimeZone>GMT Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+
+      <DarkSkyWeatherMiningRegion friendlyName="Ireland">
+        <Latitude>53.3498</Latitude>
+        <Longitude>-6.2603</Longitude>
+        <TimeZone>GMT Standard Time</TimeZone>
+        <ApiUrl>https://api.darksky.net/</ApiUrl>
+        <ApiKey>**MyDarkSkyApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>3</MaxNumberOfCallsPerMinute>
+        <MaxNumberOfCallsPerDay>500</MaxNumberOfCallsPerDay>
+      </DarkSkyWeatherMiningRegion>
+    </Region>
+
+    <Region friendlyName="UK">
+      <EmissionsMiningRegion friendlyName="UK">
+        <EmissionsWattTimeAbbreviation>National Grid</EmissionsWattTimeAbbreviation>
+        <Latitude>51.5073509</Latitude>
+        <Longitude>-0.12775829999998223</Longitude>
+        <TimeZone>GMT Standard Time</TimeZone>
+        <ApiUrl>https://api.watttime.org/api/</ApiUrl>
+        <ApiKey>**MyWattTimeApiKey**</ApiKey>
+        <WattTimeApiV2Url>https://api2.watttime.org/</WattTimeApiV2Url>
+        <WattTimeUsername>**MyWattTimeUsername**</WattTimeUsername>
+        <WattTimePassword>**MyWattTimePassword**</WattTimePassword>
+        <WattTimeEmail>**MWattTimeEmail**</WattTimeEmail>
+        <WattTimeOrganization>**MyWattTimeOrganization**</WattTimeOrganization>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>500</MaxNumberOfCallsPerMinute>
+        <RelativeMeritDataSource>WattTime</RelativeMeritDataSource>
+      </EmissionsMiningRegion>
+
+      <DarkSkyWeatherMiningRegion friendlyName="UK_London">
+        <Latitude>51.5073509</Latitude>
+        <Longitude>-0.12775829999998223</Longitude>
+        <TimeZone>GMT Standard Time</TimeZone>
+        <ApiUrl>https://api.darksky.net/</ApiUrl>
+        <ApiKey>**MyDarkSkyApiKey**</ApiKey>
+        <SelfThrottlingMethod>AzureTableStorageCallRecollection</SelfThrottlingMethod>
+        <MaxNumberOfCallsPerMinute>3</MaxNumberOfCallsPerMinute>
+        <MaxNumberOfCallsPerDay>500</MaxNumberOfCallsPerDay>
+      </DarkSkyWeatherMiningRegion>
+    </Region>
+
+  </Regions>
+</ApiMinerConfigLayout>
