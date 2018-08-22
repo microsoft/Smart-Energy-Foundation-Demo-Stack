@@ -50,7 +50,7 @@ namespace EmissionsApiInteractionTests
             emissionsApiInteraction.RegisterWithWattTime(this.wattTimeApiV2Url, WattTimeUsername, WattTimePassword, WattTimeEmail, WattTimeOrganization);
 
             // Act
-            var pointsReturned = emissionsApiInteraction.GetMostRecentMarginalCarbonEmissionsResult(this.wattTimeApiUrl, regionAbbreviation, null, wattTimeApiKey);
+            var pointsReturned = emissionsApiInteraction.GetMostRecentMarginalCarbonEmissionsResult(this.wattTimeApiV2Url, regionAbbreviation, WattTimeUsername, WattTimePassword);
 
             // Assert
             Assert.IsTrue(pointsReturned.value > -1);
