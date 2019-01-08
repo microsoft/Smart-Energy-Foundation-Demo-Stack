@@ -3,6 +3,8 @@ Optimising energy consumption based on the real-time Marginal Emissions of an el
 This is a demonstration solution to show how data from several Web based APIs can be mined, visualised and acted upon in a Microsoft Azure solution. This solution collects real-time Carbon Emissions data from the WattTime API (https://api.watttime.org/), and global Weather data and weather forecasts from the Wunderground API (https://www.wunderground.com/). It then visualises this data over time to allow the user to understand the relationship between the two. It demonstrates the ability to collect related pieces of data into a single place to allow automation to act upon the conclusions extracted from it. For example, automating devices via the Azure IoT service to minimise net Carbon Emissions.
 For more information, and the source code of the solution, see the project's GitHub page at https://github.com/Microsoft/Smart-Energy-Foundation-Demo-Stack .
 
+![Image](https://github.com/Microsoft/Smart-Energy-Foundation-Demo-Stack/blob/master/Images/MarginalEmissionsDashboard.PNG)
+
 # Problem and Solution Space
 [Video](https://www.youtube.com/watch?v=5VjkwxCsWv4) on the background on this Solution.
 
