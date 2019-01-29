@@ -58,11 +58,7 @@
     foreach($outKey in $armDeployment.Outputs.Keys) 
     { 
         $outputs.Add($outKey, $armDeployment.Outputs[$outKey].Value)
-    } 
-    
-    # Uploading CIQS function helpers to Function App service
-    Write-Output "Uploading CIQS function helpers to Function App Service....."
-    UploadFunctionsToFunctionApp .\ciqsfunctions.zip  $outputs["functionAppName"]
+    }
 
     $functionsEndpoint = $outputs["functionAppBaseUrl"]
     # Set parameters (function name and POST body) for invoking the azure function
@@ -70,15 +66,63 @@
     $connString = $outputs["sqlConnectionString"]
     $postParams = @{sqlConnectionString=$connString}
 
-    # Function invocation step
-    Write-Output "Invoking function.....$functionName"
-    try {        
-        Invoke-RestMethod -Method 'Post' -Uri ($functionsEndpoint + $functionName) -Body ($postParams | ConvertTo-Json) -Headers @{'Content-Type'="application/json"} 
-    }
-    catch {
-        Write-Error $_.Exception | Format-List -Force
-    } 
+    populateDatabase -ResourceGroupName $deploymentName
     
     # DEPLOYMENT COMPLETE
     Write-Output "DEPLOYMENT COMPLETED.`r`nPlease return to the Github Page for additional instructions. These output values will likely come in handy:`r`n`r`nOUTPUTS:" $outputs   
+}
+
+function populateDatabase(
+    # Parameter help description
+    [string]
+    $ResourceGroupName
+) {
+    $servername = (Get-AzureRmSqlServer -ResourceGroupName $ResourceGroupName).ServerName
+    $dbname = (Get-AzureRmSqlDatabase -ResourceGroupName $ResourceGroupName -ServerName $servername).DatabaseName.Where( {$_ -ne 'master'} )[0]
+    $containerName = "$ResourceGroupName-blob"
+    
+    $username = 'abcdefg'
+    $pwd = 'Passw0rd-2018' | ConvertTo-SecureString -AsPlainText -Force
+    
+    $storageAccount = Get-AzureRmStorageAccount -ResourceGroupName $ResourceGroupName
+    $storageAccountName = $storageAccount.StorageAccountName
+    $blobStorage = New-AzureStorageContainer -Name $containerName -Context $storageAccount.Context -Permission blob
+    
+    $filePath = ".\carbon_emissions_v1.bacpac"
+    $outputFileName = "seed.bacpac"
+    Write-Host "Uploading file: '$filePath' to blob storage '$blobStorage.' as filename '$outputFileName'"
+    $file = ($blobStorage | Set-AzureStorageBlobContent -File $filePath -Blob $outputFileName)
+    $storageUri = $file.ICloudBlob.Uri.AbsoluteUri
+    
+    Write-Host "Importing data from bacpac file '$filepath' into database '$ResourceGroupName/$dbname'"
+    $importRequest = New-AzureRmSqlDatabaseImport `
+        -ResourceGroupName $ResourceGroupName `
+        -ServerName $servername `
+        -DatabaseName $dbname `
+        -StorageKeyType "StorageAccessKey" `
+        -StorageKey $(Get-AzureRmStorageAccountKey -ResourceGroupName $ResourceGroupName -StorageAccountName $storageAccountName).Value[0] `
+        -StorageUri $storageUri `
+        -AdministratorLogin $username `
+        -AdministratorLoginPassword $pwd `
+        -Edition Standard `
+        -ServiceObjectiveName S0 `
+        -DatabaseMaxSizeBytes 5000000
+
+    # Check import status and wait for the import to complete
+    Write-Host "Waiting for import to complete"
+    $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+    [Console]::Write("Importing")
+    while ($importStatus.Status -eq "InProgress")
+    {
+        $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+        [Console]::Write(".")
+        Start-Sleep -s 10
+    }
+    [Console]::WriteLine("")
+    if ($importStatus.Status -eq "Succeeded") {
+        Write-Host "Import has succeeded" -ForegroundColor "Green"
+    } else {
+        Write-Host "Import has not succeeded" -ForegroundColor "Red"
+    }
+    
 }
