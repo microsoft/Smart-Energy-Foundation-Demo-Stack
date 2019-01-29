@@ -18,7 +18,7 @@ namespace DataMinerFunction
         public static void Run([TimerTrigger("0 */30 * * * *")]TimerInfo myTimer, TraceWriter log, ExecutionContext executionContext)
         {
             const string ApiDataMinerConfigFileLocation = "ApiDataMinerConfigs\\ApiDataMinerConfigs.xml";
-
+            
             // Get Function's Main directory, and the parent of that to access the Configuration file published with the Project
             var directory = executionContext.FunctionDirectory;
             var dirInfo = new DirectoryInfo(directory);
@@ -37,7 +37,7 @@ namespace DataMinerFunction
             }
             catch (Exception e)
             {
-                Logger.Error($"RunMinerForLocalConfigFile: Run(): Exception encountered parsing and mining for miner configuration file {ApiDataMinerConfigFilePath}", "RunMinerForLocalConfigFile.Run()", exception: e);
+                log.Error($"RunMinerForLocalConfigFile: Run(): Exception encountered parsing and mining for miner configuration file {ApiDataMinerConfigFilePath}, {e}", e);
                 throw;
             }
         }

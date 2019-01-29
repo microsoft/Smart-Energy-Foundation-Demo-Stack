@@ -55,7 +55,7 @@
                         "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
                     ],
                     "properties": {
-                      "packageUri": "https://github.com/Microsoft/Smart-Energy-Foundation-Demo-Stack/blob/master/Deploy/functions/functions.zip?raw=true"
+                      "packageUri": "https://github.com/Microsoft/Smart-Energy-Foundation-Demo-Stack/blob/master/Deploy/dataminer-functions.zip?raw=true"
                     }
                 }
             ]
