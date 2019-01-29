@@ -58,11 +58,7 @@
     foreach($outKey in $armDeployment.Outputs.Keys) 
     { 
         $outputs.Add($outKey, $armDeployment.Outputs[$outKey].Value)
-    } 
-    
-    # Uploading CIQS function helpers to Function App service
-    Write-Output "Uploading CIQS function helpers to Function App Service....."
-    UploadFunctionsToFunctionApp .\ciqsfunctions.zip  $outputs["functionAppName"]
+    }
 
     $functionsEndpoint = $outputs["functionAppBaseUrl"]
     # Set parameters (function name and POST body) for invoking the azure function

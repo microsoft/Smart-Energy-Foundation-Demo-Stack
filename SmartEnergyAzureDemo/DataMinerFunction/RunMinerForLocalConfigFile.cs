@@ -12,7 +12,7 @@ using Microsoft.Azure.WebJobs.Host;
 
 namespace DataMinerFunction
 {
-    public static class RunMinerForLocalConfigFile1
+    public static class RunMinerForLocalConfigFile
     {
         [FunctionName("RunMinerForLocalConfigFile")]
         public static void Run([TimerTrigger("0 */30 * * * *")]TimerInfo myTimer, TraceWriter log, ExecutionContext executionContext)
