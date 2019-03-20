@@ -47,13 +47,15 @@ namespace ApiDataMiner.Functional.Tests
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("CAISO", "US_CAISO", "Pacific Standard Time", 41.7324, -123.409423));
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("ERCOT", "US_ERCOT", "Central Standard Time", 32.79878236662912, -96.77856445062508));
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("ISONE", "US_ISONewEngland", "Eastern Standard Time", 42.70864591994315, -72.16918945062508));
-            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("MISO", "US_UpperMidwestISO", "Central Standard Time", 41.91853269857261, -93.55193137872567));            
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("MISO", "US_UpperMidwestISO", "Central Standard Time", 41.91853269857261, -93.55193137872567));
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("SPP", "US_SouthwesternPublicServiceISO", "Eastern Standard Time", 34.41133502036136, -103.19243430841317));
 
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PJM", "US_PJM", "Eastern Standard Time", 40.348444276169, -74.6428556442261));
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PJM_ATLANTIC", "US_PJM_ATLANTIC", "Eastern Standard Time", 40.566564, -76.98465597395705));
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PJM_SOUTH", "US_PJM_SOUTH", "Eastern Standard Time", 37.44276433719146, -76.87479269270705));
             regionsToMine.Add(new WattTimeBalancingAuthorityInformation("PJM_WEST", "US_PJM_WEST", "Eastern Standard Time", 38.69484915602888, -85.11453878645705));
+
+            regionsToMine.Add(new WattTimeBalancingAuthorityInformation("IE", "Ireland", "GMT Standard Time", 53.3498, -6.2603));
 
             foreach (var region in regionsToMine)
             {
@@ -698,6 +700,72 @@ namespace ApiDataMiner.Functional.Tests
                 }
             }
         }
+
+        [TestMethod]
+        public void TestMineHistoricWeatherData()
+        {
+            // Arrange 
+            var smartGridRegionName = "Ireland";
+            var timeZone = "GMT Standard Time";
+            var regionLat = 53.3498;
+            var regionLong = -6.2603;
+
+            var startDateTime = DateTime.UtcNow.AddDays(-10);
+            var endDateTime = DateTime.UtcNow.AddDays(-1);
+
+            var DarkSkyApiUrl = CloudConfigurationManager.GetSetting("DarkSkyApiUrl");
+            var DarkSkyApiKey = CloudConfigurationManager.GetSetting("DarkSkyApiKey");
+            var selfThrottlingMethod = "AzureTableStorageCallRecollection";
+            var maxNumberOfCallsPerMinute = 9;
+            var maxNumberOfCallsPerDay = 250;
+
+            int regionId;
+            using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
+            {
+                regionId =
+                    _objectModel.AddWeatherRegion(smartGridRegionName, timeZone, regionLat, regionLong)
+                        .WeatherRegionID;
+            }
+
+            var darkSkyWeatherInteraction = new DarkSkyWeatherInteraction(
+                selfThrottlingMethod, maxNumberOfCallsPerMinute);
+
+            DarkSkyWeatherDataMiner miner = new DarkSkyWeatherDataMiner(
+                DarkSkyApiUrl,
+                DarkSkyApiKey,
+                selfThrottlingMethod,
+                databaseConnectionString,
+                maxNumberOfCallsPerMinute,
+                maxNumberOfCallsPerDay,
+                darkSkyWeatherInteraction);
+
+            // Act
+            miner.MineHistoricWeatherValues(
+                startDateTime,
+                endDateTime,
+                regionLat,
+                regionLong,
+                regionId);
+
+            // Assert
+            // Verify that each data point has been recorded in the database
+            var results = darkSkyWeatherInteraction.GetHistoricWeatherData(
+               DarkSkyApiUrl, DarkSkyApiKey,
+               regionLat,
+               regionLong,
+               startDateTime,
+               endDateTime,
+               null);
+
+            using (var _objectModel = new SmartEnergyOM(databaseConnectionString))
+            {
+                foreach (var result in results)
+                {
+                    var dataPoint = _objectModel.FindCarbonEmissionsDataPoint(regionId, result.dateTime);
+                    Assert.IsNotNull(dataPoint);
+                }
+            }
+        }        
 
         /// <summary>
         /// A class to represent a WattTime Balancing Authority along with it's timezone, latitude and longtitude for passing to Emissions Mining integration tests
